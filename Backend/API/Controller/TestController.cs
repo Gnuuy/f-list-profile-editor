@@ -1,5 +1,7 @@
 using Application;
+using Application.DTO.Create;
 using Domain;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controller;
@@ -14,16 +16,59 @@ public class TestController : ControllerBase
         _testService = testService;
     }
     
-    [HttpGet]
-    public Test Test()
+    [HttpPost]
+    public IActionResult Test([FromBody] TestCreateDTO inputTest)
     {
-       return _testService.Test();
+        try
+        {
+            return Ok(_testService.Test(inputTest));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+       
     }
     
     [HttpGet]
-    [Route("/")]
-    public string Test2()
+    public IActionResult GetTestMessages()
     {
-        return "Kish is very nice for helping me out with this!";
+        try
+        {
+            return Ok(_testService.GetTests());
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
+
+    [HttpGet]
+    [Route("{id}")]
+    public IActionResult GetTestById([FromRoute] int id)
+    {
+        try
+        {
+            return Ok(_testService.GetTestById(id));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpDelete]
+    [Route("{id}")]
+    public IActionResult DeleteTest([FromRoute] int id)
+    {
+        try
+        {
+            return Ok(_testService.DeleteTestById(id));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    
 }

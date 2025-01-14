@@ -1,4 +1,8 @@
-using Application.DependencyResolver;
+using FluentValidation;
+using AppResolver = Application.DependencyResolver;
+using InfResolver = Infrastructure.DependencyResolver;
+using Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +11,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
-Resolver.RegisterApplicationLayer(builder.Services);
+
+//Register dependency Layers
+AppResolver.Resolver.RegisterApplicationLayer(builder.Services);
+InfResolver.Resolver.RegisterInfrastructureLayer(builder.Services);
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddDbContext<DatabaseContext>(options =>
+{
+    options.UseSqlite("Data Source = db.db");
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
