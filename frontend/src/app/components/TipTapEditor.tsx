@@ -1,18 +1,89 @@
+import Placeholder from '@tiptap/extension-placeholder';
 import { useEditor, EditorContent } from '@tiptap/react';
-import Image from '@tiptap/extension-image'
 import StarterKit from '@tiptap/starter-kit';
-import { useState } from 'react';
-import { useCallback } from 'react';
+import Details from '@tiptap-pro/extension-details';
+import DetailsContent from '@tiptap-pro/extension-details-content';
+import DetailsSummary from '@tiptap-pro/extension-details-summary';
+import React, { useCallback, useState } from 'react';
+import Button from './Button';
 
 const TiptapEditor = () => {
   const [bbcode, setBBCode] = useState('');
 
   const editor = useEditor({
-    extensions: [StarterKit, Image],
-    content: '<p>Hello, start editing!</p>',
+    extensions: [
+      StarterKit,
+      Details.configure({
+        persist: true,
+        HTMLAttributes: {
+          class: 'details',
+        },
+      }),
+      DetailsSummary,
+      DetailsContent,
+      Placeholder.configure({
+        includeChildren: true,
+        placeholder: ({ node }) => {
+          if (node.type.name === 'detailsSummary') {
+            return 'Summary';
+          }
+          return null;
+        },
+      }),
+    ],
+    content: `
+      <p>Look at these details</p>
+      <details>
+        <summary>This is a summary</summary>
+        <p>Surprise!</p>
+      </details>
+      <p>Nested details are also supported</p>
+      <details open>
+        <summary>This is another summary</summary>
+        <p>And there is even more.</p>
+        <details>
+          <summary>We need to go deeper</summary>
+          <p>Booya!</p>
+        </details>
+      </details>
+    `,
   });
 
-  // Function to convert HTML to BBCode
+  const addCollapsible = useCallback(() => {
+    editor?.chain().focus().insertContent({
+      type: 'details',
+      content: [
+        {
+          type: 'detailsSummary',
+          content: [
+            {
+              type: 'text',
+              text: 'Summary',
+            },
+          ],
+        },
+        {
+          type: 'detailsContent',
+          content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: 'This is collapsible content.',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    }).run();
+  }, [editor]);
+
+  if (!editor) {
+    return null;
+  }
+
   const exportToBBCode = () => {
     const htmlContent = editor?.getHTML() || '';
     const bbcodeContent = htmlContent
@@ -23,47 +94,32 @@ const TiptapEditor = () => {
       .replace(/<h2>(.*?)<\/h2>/g, '[h2]$1[/h2]')
       .replace(/<ul>(.*?)<\/ul>/gs, '[list]$1[/list]')
       .replace(/<li>(.*?)<\/li>/g, '[*]$1')
-      .replace(/<p>(.*?)<\/p>/g, '$1\n\n'); // F-List often uses double line breaks for paragraphs
+      .replace(/<img src="(.*?)"(.*?)>/g, '[img]$1[/img]')
+      .replace(/<details><summary>(.*?)<\/summary>(.*?)<\/details>/gs, '[collapse=$1]$2[/collapse]')
+      .replace(/<p>(.*?)<\/p>/g, '$1\n\n');
 
     setBBCode(bbcodeContent);
     navigator.clipboard.writeText(bbcodeContent);
     alert('BBCode copied to clipboard!');
   };
 
-  const addImage = useCallback(() => {
-    const url = window.prompt('URL')
-
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run()
-    }
-  }, [editor])
-
-  if (!editor) {
-    return null; // Prevent rendering until the editor is ready
-  }
-
   return (
     <div>
-      {/* Toolbar */}
-      <div className="toolbar">
-        <button onClick={() => editor.chain().focus().toggleBold().run()}>Bold</button>
-        <button onClick={() => editor.chain().focus().toggleItalic().run()}>Italic</button>
-        <button onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>H1</button>
-        <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>H2</button>
-        <button onClick={() => editor.chain().focus().toggleBulletList().run()}>Bullet List</button>
-        <button onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}>
-        <button onClick={addImage}>Set image</button>
-          Clear Formatting
-        </button>
+      <h2>F-List WYSIWYG Editor</h2>
+
+      <div className="toolbar" style={{display : "flex", gap: "0px", justifyContent: "left"}}>
+        <Button title="Bold" onClick={() => editor.chain().focus().toggleBold().run()}/>
+        <Button title="Italic" onClick={() => editor.chain().focus().toggleItalic().run()}/>
+        <Button title="Clear Formatting" onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}/>
+        <Button title="Add Collapsible" onClick={() => addCollapsible()}/>
       </div>
 
-      {/* Editor Content */}
-      <div className="editor-container">
-        <EditorContent editor={editor} />
-      </div>
+      <EditorContent editor={editor} />
 
-      {/* Export Button */}
-      <button onClick={exportToBBCode} style={{ marginTop: '20px' }}>
+      <button
+        onClick={exportToBBCode}
+        style={{ marginTop: '20px', padding: '10px 15px', backgroundColor: '#0070f3', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+      >
         Export to BBCode
       </button>
     </div>

@@ -9,13 +9,24 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.4.1",
+    "@mui/material-nextjs": "^6.3.1",
+    "@mui/styled-engine-sc": "^6.4.0",
+    "@tiptap-pro/extension-details": "^2.17.2",
+    "@tiptap-pro/extension-details-content": "^2.17.2",
+    "@tiptap-pro/extension-details-summary": "^2.17.2",
     "@tiptap/core": "^2.11.3",
     "@tiptap/extension-image": "^2.11.3",
+    "@tiptap/extension-placeholder": "^2.11.3",
     "@tiptap/react": "^2.11.3",
     "@tiptap/starter-kit": "^2.11.3",
     "next": "15.1.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "styled-components": "^6.1.14"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
