@@ -4,6 +4,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Details from '@tiptap-pro/extension-details';
 import DetailsContent from '@tiptap-pro/extension-details-content';
 import DetailsSummary from '@tiptap-pro/extension-details-summary';
+import TextAlign from '@tiptap/extension-text-align';
 import React, { useCallback, useState } from 'react';
 import Button from './Button';
 
@@ -21,6 +22,9 @@ const TiptapEditor = () => {
       }),
       DetailsSummary,
       DetailsContent,
+      TextAlign.configure({
+        types: ['heading', 'paragraph']
+      }),
       Placeholder.configure({
         includeChildren: true,
         placeholder: ({ node }) => {
@@ -96,7 +100,9 @@ const TiptapEditor = () => {
       .replace(/<li>(.*?)<\/li>/g, '[*]$1')
       .replace(/<img src="(.*?)"(.*?)>/g, '[img]$1[/img]')
       .replace(/<details><summary>(.*?)<\/summary>(.*?)<\/details>/gs, '[collapse=$1]$2[/collapse]')
-      .replace(/<p>(.*?)<\/p>/g, '$1\n\n');
+      .replace(/<p>(.*?)<\/p>/g, '$1\n\n')
+      .replace(/<strong>(.*?)<\/strong>/g, '[b]$1[/b]')
+      .replace(/<em>(.*?)<\/em>/g, '[i]$1[/i]');
 
     setBBCode(bbcodeContent);
     navigator.clipboard.writeText(bbcodeContent);
@@ -105,13 +111,26 @@ const TiptapEditor = () => {
 
   return (
     <div>
-      <h2>F-List WYSIWYG Editor</h2>
-
-      <div className="toolbar" style={{display : "flex", gap: "0px", justifyContent: "left"}}>
-        <Button title="Bold" onClick={() => editor.chain().focus().toggleBold().run()}/>
-        <Button title="Italic" onClick={() => editor.chain().focus().toggleItalic().run()}/>
-        <Button title="Clear Formatting" onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}/>
-        <Button title="Add Collapsible" onClick={() => addCollapsible()}/>
+      <div className="flex justify-between flex-nowrap spaced">
+        <div className="flex">
+          <Button title="" onClick={() => editor.chain().focus().toggleItalic().run()} iconPath="/icons/italic-font.png" />
+          <Button title="" onClick={() => editor.chain().focus().toggleBold().run()} iconPath="/icons/bold.png" />
+          <Button title="" onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}/>
+          <Button title="" onClick={() => addCollapsible()}/>
+          <Button title=""/>
+        </div>
+        <div className="flex">
+          <Button title="" onClick={() => editor.chain().focus().setTextAlign('left')} iconPath="/icons/justify-left.png"/>
+          <Button title="" onClick={() => editor.chain().focus().setTextAlign('center')} iconPath="/icons/center-align.png"/>
+          <Button title="" onClick={() => editor.chain().focus().setTextAlign('justify')} iconPath="/icons/justify.png"/>
+          <Button title="" onClick={() => editor.chain().focus().setTextAlign('right')} iconPath="/icons/justify-right.png"/>
+        </div>
+        <div className="flex">
+          <Button title="" iconPath="/icons/justify-right.png"/>
+          <Button title="" iconPath="/icons/justify-right.png"/>
+          <Button title="" iconPath="/icons/justify-right.png"/>
+          <Button title="" iconPath="/icons/justify-right.png"/>
+        </div>
       </div>
 
       <EditorContent editor={editor} />

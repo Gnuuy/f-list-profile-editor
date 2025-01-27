@@ -4,17 +4,16 @@ import * as React from 'react';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import TiptapEditor from './components/TipTapEditor';
-import Grid from '@mui/material/Grid2'
 import NavBar from './components/NavBar';
 
 export default function Home() {
   return (
-    <div className="bg-[#001122]">
+    <div className="bg-[#001122] shadow-custom-black rounded">
         <Header />
         <div>
           <NavBar />
           <div className="flex h-screen">
-            <div className="w-[200px] bg-[#0B345F]">
+            <div className="w-[210px] bg-[#0B345F]">
               <p className="text-white p-4">Fixed Width (200px)</p>
             </div>
 
