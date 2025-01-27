@@ -23,7 +23,14 @@ const TiptapEditor = () => {
       DetailsSummary,
       DetailsContent,
       TextAlign.configure({
-        types: ['heading', 'paragraph']
+        types: [
+          'paragraph',   // Regular paragraphs
+          'heading',     // Headings (h1, h2, etc.)
+          'listItem',    // Items in lists
+          'blockquote',  // Block quotes
+          'tableCell',   // Cells in tables
+          'note',        // Example of a custom node
+        ]
       }),
       Placeholder.configure({
         includeChildren: true,
@@ -90,25 +97,39 @@ const TiptapEditor = () => {
 
   const exportToBBCode = () => {
     const htmlContent = editor?.getHTML() || '';
+  
+    // Group all centered blocks into one [center] tag
     const bbcodeContent = htmlContent
-      .replace(/<b>(.*?)<\/b>/g, '[b]$1[/b]')
-      .replace(/<i>(.*?)<\/i>/g, '[i]$1[/i]')
-      .replace(/<u>(.*?)<\/u>/g, '[u]$1[/u]')
-      .replace(/<h1>(.*?)<\/h1>/g, '[h1]$1[/h1]')
-      .replace(/<h2>(.*?)<\/h2>/g, '[h2]$1[/h2]')
-      .replace(/<ul>(.*?)<\/ul>/gs, '[list]$1[/list]')
-      .replace(/<li>(.*?)<\/li>/g, '[*]$1')
-      .replace(/<img src="(.*?)"(.*?)>/g, '[img]$1[/img]')
-      .replace(/<details><summary>(.*?)<\/summary>(.*?)<\/details>/gs, '[collapse=$1]$2[/collapse]')
-      .replace(/<p>(.*?)<\/p>/g, '$1\n\n')
-      .replace(/<strong>(.*?)<\/strong>/g, '[b]$1[/b]')
-      .replace(/<em>(.*?)<\/em>/g, '[i]$1[/i]');
-
+      .replace(/<strong>(.*?)<\/strong>/g, '[b]$1[/b]') // Bold
+      .replace(/<em>(.*?)<\/em>/g, '[i]$1[/i]') // Italics
+      .replace(/<img src="(.*?)"(.*?)>/g, '[img]$1[/img]') // Images
+      .replace(/<details><summary>(.*?)<\/summary>(.*?)<\/details>/gs, '[collapse=$1]$2[/collapse]') // Collapsible sections
+      // Combine all adjacent <p style="text-align: center"> blocks into a single [center] block
+      .replace(/(<p style="text-align: center">([\s\S]*?)<\/p>)/g, (match, content) => {
+        return content.replace(/<br\s*\/?>/gi, '\n'); // Replace <br> with newlines
+      })
+      .replace(
+        /(<p style="text-align: center">([\s\S]*?)<\/p>\n?)+/g,
+        (match) => {
+          const combined = match
+            .replace(/<p style="text-align: center">/g, '') // Remove opening <p>
+            .replace(/<\/p>/g, '') // Remove closing </p>
+            .trim(); // Trim unnecessary whitespace
+          return `[center]${combined}[/center]`; // Wrap entire block in one [center] tag
+        }
+      )
+      .replace(/<p>(.*?)<\/p>/g, '$1\n\n') // Handle normal paragraphs
+      .replace(/<p style="text-align: right">([\s\S]*?)<\/p>/g, '[right]$1[/right]') // Right-aligned text
+      .replace(/<p style="text-align: justify">([\s\S]*?)<\/p>/g, '[justify]$1[/justify]'); // Justified text
+  
+    // Copy the processed BBCode to clipboard and alert the user
     setBBCode(bbcodeContent);
     navigator.clipboard.writeText(bbcodeContent);
     alert('BBCode copied to clipboard!');
   };
-
+  
+  
+  
   return (
     <div>
       <div className="flex justify-between flex-nowrap spaced">
@@ -120,10 +141,10 @@ const TiptapEditor = () => {
           <Button title=""/>
         </div>
         <div className="flex">
-          <Button title="" onClick={() => editor.chain().focus().setTextAlign('left')} iconPath="/icons/justify-left.png"/>
-          <Button title="" onClick={() => editor.chain().focus().setTextAlign('center')} iconPath="/icons/center-align.png"/>
-          <Button title="" onClick={() => editor.chain().focus().setTextAlign('justify')} iconPath="/icons/justify.png"/>
-          <Button title="" onClick={() => editor.chain().focus().setTextAlign('right')} iconPath="/icons/justify-right.png"/>
+          <Button title="" onClick={() => editor.chain().focus().setTextAlign('left').run()} iconPath="/icons/justify-left.png"/>
+          <Button title="" onClick={() => editor.chain().focus().setTextAlign('center').run()} iconPath="/icons/center-align.png"/>
+          <Button title="" onClick={() => editor.chain().focus().setTextAlign('justify').run()} iconPath="/icons/justify.png"/>
+          <Button title="" onClick={() => editor.chain().focus().setTextAlign('right').run()} iconPath="/icons/justify-right.png"/>
         </div>
         <div className="flex">
           <Button title="" iconPath="/icons/justify-right.png"/>
