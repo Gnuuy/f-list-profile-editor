@@ -8,12 +8,12 @@ export default function FAQ()
         <PageLayout sideBarChildren=
         {
             <div>
-                adwada
+                Sani is so round
             </div>
         } mainBarChildren=
         {
             <div>
-                dawdad
+                Sani is super soft
             </div>
         }>
         </PageLayout>

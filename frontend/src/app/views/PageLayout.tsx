@@ -13,10 +13,10 @@ interface ViewProps
 export default function PageLayout({sideBarChildren, mainBarChildren}: ViewProps)
 {
     return (
-            <div className="bg-[#001122] shadow-custom-black rounded">
+            <div className="LayoutMain">
                 <Header />
                 <NavBar />
-                  <div className="main-layout">
+                  <div className="layoutGrid">
                     <SideBar>
                             {sideBarChildren}
                     </SideBar>

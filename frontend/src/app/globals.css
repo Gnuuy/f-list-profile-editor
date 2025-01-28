@@ -11,36 +11,45 @@
     --navButtonBorder: #0b345f;
     --navButtonBg: linear-gradient(to bottom, #1c4a72 #134478);
     --headerBg: #001122;
+    --headerBorderColor: #0f1f2e;
     --footerBg: linear-gradient(to bottom, #2468af, #134478);
+    --footerBorder: #0b345f;
     --editorBorder: linear-gradient(to bottom, #2468af #134478);
     --editorButtonBg: linear-gradient(to bottom, #1c4a72 #194064);
     --editorButtonHover:#235a8f;
   } 
 
+  .dark {
+    --bg: #1e1818;
+    --bodyBg: #000000;
+    --sidebarBg: #2e2828;
+    --navBarBg: linear-gradient(to bottom, #2e2828, #1e1818);
+    --navButtonBorder: #1e1818;
+    --navButtonBg: linear-gradient(to bottom, #1c4a72 #134478);
+    --headerBg: #5c5656;
+    --headerBorderColor: #5c5656;
+    --footerBg: linear-gradient(to bottom, #4c4646, #4c4646);
+    --footerBorder: #cccccc;
+    --editorBorder: #0b345f;
+    --editorButtonBg: linear-gradient(to bottom, #373131 #1e1818);
+    --editorButtonHover:#666666;
+  }
+
   .light {
     --bg: #ffffff;
-    --sidebarBg: #eeeeff;
     --bodyBg: #dddddd;
+    --sidebarBg: #eeffff;
     --navBarBg: linear-gradient(to bottom, #3d3d3d, #222222);
-    --navButtonBag: linear-gradient(to bottom, #3d3d3d, #222222);
+    --navButtonBorder: #222222;
+    --navButtonBg: linear-gradient(to bottom, #1c4a72 #134478);
     --headerBg: #778888;
-    --footerBg: #eeffff;
+    --headerBorderColor: #556666;
+    --footerBg: linear-gradient(to bottom, #eeffff, #eeffff);
+    --footerBorder: #cccccc;
     --editorBorder: #ccffcc;
-    --editorButtonBg: linear-gradient(to bottom, #1c4a72 #194064);
+    --editorButtonBg: linear-gradient(to bottom, #2468af #dfeffc);
+    --editorButtonHover:#666666;
   }
-
-  .dark {
-    --bg: #2e2828:;
-    --sidebarBg: #2e2828;
-    --bodyBg: #000000;
-    --navBarBg: linear-gradient(to bottom, #2e2828 #1e1a1a);
-    --navButtonBg: linear-gradient(to bottom, #2e2828 #1e1a1a);
-    --headerBg: #5c5656;
-    --footerBg: #4c4646;
-    --editorBorder: #0b345f;
-    --editorButtonBg: linear-gradient(to bottom, #1c4a72 #194064);
-  }
-
   
   body {
     background-color: var(--bodyBg);
@@ -61,7 +70,7 @@
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: space-between;
-    height: 33px;
+    height: 32px;
     border-bottom: 2px solid var(--navButtonBorder);
   }
 
@@ -147,11 +156,13 @@
 
   /* Header */
   .header {
-    background-color: var(--navBarBg);
+    background-color: var(--headerBg);
     height: 148px;
+    width: 100%;
     min-height: 148;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
+    border-top: 2px solid var(--headerBorderColor);
   }
 
   /* Footer */
@@ -161,10 +172,18 @@
     background: var(--footerBg);
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
-    border: 2px solid var(--navButtonBorder)
+    border-top: 1px solid var(--footerBorder);
+    border-left: 1px solid var(--footerBorder);
+    border-right: 1px solid var(--footerBorder);
   }
 
-  .main-layout {
+  .LayoutMain 
+  {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .layoutGrid {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
