@@ -1,16 +1,24 @@
-import Button from './Button'
+import Button from './NBButton'
 import Link from 'next/link'
+import TButton from './ThemeButton'
 
 export default function NavBar()
 {
     return (
-    <div className="bg-gradient-to-b from-[#1c4971] to-[#173e63] flex flex-row border-b-2 border-b-[#0B345F]">
-        <Link href="/">
-            <Button title="Editor" iconPath='/icons/edit.png' />
-        </Link>
-        <Link href="/faq">
-            <Button title="FAQ" iconPath='/icons/faq.png' />
-        </Link>
+    <div className="navBar">
+        <div>
+            <Link href="/">
+                <Button title="Editor" iconPath='/icons/edit.png' />
+            </Link>
+            <Link href="/faq">
+                <Button title="FAQ" iconPath='/icons/faq.png' />
+            </Link>
+        </div>
+        <div>
+            <TButton title="Default" color="#1b446f" />
+            <TButton title="Dark" color="#2e2828" />
+            <TButton title="Light" color="#ffffff" />
+        </div>
     </div>
     )
 }

@@ -2,26 +2,182 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #2b2b2b;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+    --bg: #1b446f;
+    --bodyBg: #08192d;
+    --sidebarBg: #0b345f;
+    --navBarBg: linear-gradient(to bottom, #1c4a72, #194064);
+    --navButtonBorder: #0b345f;
+    --navButtonBg: linear-gradient(to bottom, #1c4a72 #134478);
+    --headerBg: #001122;
+    --footerBg: linear-gradient(to bottom, #2468af, #134478);
+    --editorBorder: linear-gradient(to bottom, #2468af #134478);
+    --editorButtonBg: linear-gradient(to bottom, #1c4a72 #194064);
+    --editorButtonHover:#235a8f;
+  } 
 
-body {
-  background-color: #08192d;
-  background-repeat: repeat;
-  background-attachment: fixed;
-  background-size: auto;
-  color: #ffffff;
-  font-family: Verdana, Helvetica;
-  font-size: 12;
-  margin: 0;
-  padding: 20;
+  .light {
+    --bg: #ffffff;
+    --sidebarBg: #eeeeff;
+    --bodyBg: #dddddd;
+    --navBarBg: linear-gradient(to bottom, #3d3d3d, #222222);
+    --navButtonBag: linear-gradient(to bottom, #3d3d3d, #222222);
+    --headerBg: #778888;
+    --footerBg: #eeffff;
+    --editorBorder: #ccffcc;
+    --editorButtonBg: linear-gradient(to bottom, #1c4a72 #194064);
+  }
+
+  .dark {
+    --bg: #2e2828:;
+    --sidebarBg: #2e2828;
+    --bodyBg: #000000;
+    --navBarBg: linear-gradient(to bottom, #2e2828 #1e1a1a);
+    --navButtonBg: linear-gradient(to bottom, #2e2828 #1e1a1a);
+    --headerBg: #5c5656;
+    --footerBg: #4c4646;
+    --editorBorder: #0b345f;
+    --editorButtonBg: linear-gradient(to bottom, #1c4a72 #194064);
+  }
+
+  
+  body {
+    background-color: var(--bodyBg);
+    background-repeat: repeat;
+    background-attachment: fixed;
+    background-size: auto;
+    color: #ffffff;
+    font-family: Verdana, Helvetica;
+    font-size: 12;
+    margin: 0;
+    padding: 20;
+  }
+  
+  /* Navigation Bar Styling */
+  .navBar{
+    background-image: var(--navBarBg);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    height: 33px;
+    border-bottom: 2px solid var(--navButtonBorder);
+  }
+
+  .navBar div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .navBarButtonsGrid{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .navBarButton{
+    padding: 6px;
+    background-color: var(--navButtonBg);
+    border-right: 1px solid var(--navButtonBorder);
+  }
+  
+  .navBarButton button {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+  }
+  
+  .navBarButton img {
+    height: 20px;
+    width: 20px;
+    filter: invert(1);
+  }
+
+  .navBarButton span {
+    color: white;
+    padding-left: 4px;
+    font-size: 12;
+    font-family: Verdana, Helvetica;
+  }
+
+  .navBarButton:hover
+  {
+    background-color: var(--editorButtonHover);
+  }
+
+  .navBarThemeButtonGrid
+  {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  .navBarThemeButton {
+    min-width: 60px;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid var(--navButtonBorder);
+  }
+
+  .navBarThemeButton button {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .navBarThemeButton:hover {
+    background-color: var(--editorButtonHover);
+  }
+
+  .navBarThemeButton div {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: var(--button-color, #1b446f);
+    border: 1px solid var(--navButtonBorder);
+  }
+
+  /* Header */
+  .header {
+    background-color: var(--navBarBg);
+    height: 148px;
+    min-height: 148;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+  }
+
+  /* Footer */
+  .footer {
+    height: 150px;
+    width: 100%;
+    background: var(--footerBg);
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border: 2px solid var(--navButtonBorder)
+  }
+
+  .main-layout {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .mainView {
+    flex: 1;
+    min-height: 1000px;
+    background-color: var(--bg);
+  }
+
+  .sideBar {
+    width: 230px;
+    background-color: var(--sidebarBg);
+  }
 }
