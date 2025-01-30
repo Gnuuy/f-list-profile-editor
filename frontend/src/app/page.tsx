@@ -13,8 +13,12 @@ export default function Home() {
     } mainBarChildren=
     {
       <div>
-        <EditorControlBar />
-        <Editor />
+        <div className="mainView-Editor">
+            <EditorControlBar />
+          <div className='editor-Container'>
+            <Editor />
+          </div>
+        </div>
       </div>
     }>
     </PageLayout>

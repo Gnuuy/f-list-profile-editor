@@ -14,7 +14,7 @@
     --headerBorderColor: #0f1f2e;
     --footerBg: linear-gradient(to bottom, #2468af, #134478);
     --footerBorder: #0b345f;
-    --editorBorder: linear-gradient(to bottom, #2468af #134478);
+    --editorBorder: #0b345f;
     --editorButtonBg: linear-gradient(to bottom, #1c4a72 #194064);
     --editorButtonHover:#235a8f;
   } 
@@ -198,5 +198,19 @@
   .sideBar {
     width: 230px;
     background-color: var(--sidebarBg);
+  }
+
+  .mainView-Editor {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    min-width: 659px;
+    padding: 10px;
+  }
+
+  .editor-Container
+  {
+    border: 1px solid var(--editorBorder);
+    min-height: 600px;
   }
 }
