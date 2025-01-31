@@ -1,17 +1,19 @@
 interface ButtonProps {
-    title: string;
+    buttonText: string;
+    title?: string;
     iconPath?: string;
     onClick?: () => void;
+    disabled?: boolean;
 
 }
 
-export default function NBButton({ title, iconPath, onClick }: ButtonProps) 
+export default function NBButton({ buttonText, title, iconPath, onClick, disabled }: ButtonProps) 
 {
     return (
       <div className="navBarButton">
-        <button type="button" onClick={onClick}>
+        <button type="button" title={title} onClick={onClick} disabled={disabled}>
             <img src={iconPath} />
-            <span>{title}</span>
+            <span>{buttonText}</span>
         </button>
       </div>
     );

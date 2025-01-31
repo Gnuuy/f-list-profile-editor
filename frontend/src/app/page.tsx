@@ -1,26 +1,26 @@
 'use client'
 
 import Editor from "./components/Editor";
-import EditorControlBar from "./components/EditorControlBar";
+import EditorToolBar from "./components/EditorToolBar";
+import { EditorProvider } from "./context/EditorContext";
 import PageLayout from "./views/PageLayout";
 
 export default function Home() {
   return (
-    <PageLayout sideBarChildren={
-      <div>
-        adwada
-      </div>
-    } mainBarChildren=
-    {
-      <div>
-        <div className="mainView-Editor">
-            <EditorControlBar />
-          <div className='editor-Container'>
-            <Editor />
+    <EditorProvider>
+      <PageLayout
+        sideBarChildren={<div>adwada</div>}
+        mainBarChildren={
+          <div>
+            <div className="mainView-Editor">
+              <EditorToolBar />
+              <div className="editor-Container">
+                <Editor />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    }>
-    </PageLayout>
+        }
+      />
+    </EditorProvider>
   );
 }

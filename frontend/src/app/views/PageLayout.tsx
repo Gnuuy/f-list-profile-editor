@@ -17,12 +17,12 @@ export default function PageLayout({sideBarChildren, mainBarChildren}: ViewProps
                 <Header />
                 <NavBar />
                   <div className="layoutGrid">
-                    <SideBar>
-                            {sideBarChildren}
-                    </SideBar>
-                    <MainView>
-                            {mainBarChildren}
-                    </MainView>
+                      <SideBar>
+                        {sideBarChildren}
+                      </SideBar>
+                      <MainView>
+                        {mainBarChildren}
+                      </MainView>
                   </div>
                 <Footer />
             </div>

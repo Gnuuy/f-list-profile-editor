@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { ThemeProvider } from "./context/ThemeContext";
 import "./globals.css";
+import { BBCodeProvider } from "./context/ParserContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "F-list Profile Editor",
+  title: "Profile Editor",
   description: "",
 };
 
@@ -30,9 +31,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider>
-          <AppRouterCacheProvider>
-            {children}
-          </AppRouterCacheProvider>
+          <BBCodeProvider>
+            <AppRouterCacheProvider>
+              {children}
+            </AppRouterCacheProvider>
+          </BBCodeProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -200,11 +200,15 @@
     background-color: var(--sidebarBg);
   }
 
+  .editor{
+    padding: 5px;
+    min-height: 1000px;
+  }
+
   .mainView-Editor {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-    min-width: 659px;
     padding: 10px;
   }
 

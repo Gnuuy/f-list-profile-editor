@@ -10,27 +10,33 @@ export default function NavBar() {
     <div className="navBar">
       <div>
         <Link href="/">
-          <Button title="Editor" iconPath="/icons/edit.png" />
+          <Button buttonText="Editor" iconPath="/icons/edit.png" disabled={false} />
         </Link>
         <Link href="/faq">
-          <Button title="FAQ" iconPath="/icons/faq.png" />
+          <Button buttonText="FAQ" iconPath="/icons/faq.png" disabled={false} />
+        </Link>
+        <Link href="/faq">
+          <Button buttonText="Profiles" title="Service Unavailable" iconPath="/icons/faq.png" disabled={true} />
+        </Link>
+        <Link href="/faq">
+          <Button buttonText="Feedback" title="Service Unavailable" iconPath="/icons/faq.png" disabled={true} />
         </Link>
       </div>
       <div>
         <TButton
           title="Default"
           onClick={() => setTheme('default')}
-          color="#1b446f"
+          circleColor="#1b446f"
         />
         <TButton
           title="Dark"
           onClick={() => setTheme('dark')}
-          color="#2e2828"
+          circleColor="#2e2828"
         />
         <TButton
           title="Light"
           onClick={() => setTheme('light')}
-          color="#ffffff"
+          circleColor="#ffffff"
         />
       </div>
     </div>
