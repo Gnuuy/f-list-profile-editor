@@ -1,8 +1,10 @@
 "use client";
 
-import { EditorContent } from "@tiptap/react";
+import { EditorContent, BubbleMenu } from "@tiptap/react";
 import React, { useEffect } from "react";
 import { useEditorContext } from "../context/EditorContext";
+import BubbleMenuLayout from "./BubbleMenuLayout";
+
 
 export default function Editor() {
   const { editor } = useEditorContext();
@@ -19,6 +21,9 @@ export default function Editor() {
 
   return (
     <div className="editor">
+      {editor && <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+        <BubbleMenuLayout />
+      </BubbleMenu>}
       <EditorContent editor={editor} />
     </div>
   );

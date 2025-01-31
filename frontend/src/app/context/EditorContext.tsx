@@ -21,9 +21,11 @@ import { DragHandlePlugin } from "@tiptap-pro/extension-drag-handle";
 interface EditorContextValue {
   editor: Editor | null;
 
+  toggleDrag: () => void;
+
   italic: () => void;
   bold: () => void;
-  underline: () => void;
+  underline: () => void
   strikethrough: () => void;
   subscript: () => void;
   superscript: () => void;
@@ -67,12 +69,16 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
       reader.onload = () => {
         editor?.chain().focus().setImage({ src: reader.result as string }).run();
       };
-      reader.readAsDataURL(file); // Convert to Base64
+      reader.readAsDataURL(file);
     };
   
     input.click();
   }, [editor]);
   
+
+  const toggleDrag = () => {
+    editor?.setEditable(!editor.isEditable)
+    editor?.view.dispatch(editor.view.state.tr)}
 
   // Text Modifiers
   const italic = () => editor?.chain().focus().toggleItalic().run();
@@ -89,8 +95,8 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
   const justifyFull = () => editor?.chain().focus().setTextAlign("justify").run();
 
   const contextValue = useMemo(() => {
-    if (!editor) return { editor: null, justifyLeft, justifyCenter, justifyRight, justifyFull, italic, bold, underline, strikethrough, subscript, superscript, addImage};
-    return { editor, justifyLeft, justifyCenter, justifyRight, justifyFull, italic, bold, underline, strikethrough, subscript, superscript, addImage };
+    if (!editor) return { editor: null, justifyLeft, justifyCenter, justifyRight, justifyFull, italic, bold, underline, strikethrough, subscript, superscript, addImage, toggleDrag};
+    return { editor, justifyLeft, justifyCenter, justifyRight, justifyFull, italic, bold, underline, strikethrough, subscript, superscript, addImage, toggleDrag };
   }, [editor]);
 
   useEffect(() => {

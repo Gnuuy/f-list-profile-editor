@@ -217,4 +217,40 @@
     resize: vertical;
     overflow: auto;
   }
+
+  .bubble-menu {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 230px;
+    background: var(--navBarBg);
+    border: 2px solid var(--editorBorder);
+    border-radius: 7rem;
+    box-shadow: #0f1f2e;
+    padding: 2px;
+  }
+
+  .bubble-menu div {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+  }
+
+  .bubble-button {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 16px;
+    padding: 6px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: 0.2s;
+  }
+
+  .is-active {
+    background-color: #2fda62; /* Example: Blue background */
+    color: white; /* Example: White text */
+    border-radius: 4px;
+  }
 }
