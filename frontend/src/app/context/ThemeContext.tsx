@@ -11,13 +11,17 @@ interface ThemeContextProps {
 const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'default';
-  });
+  const [theme, setTheme] = useState<string>('default');
 
   useEffect(() => {
-    document.body.className = theme; // Apply the theme to the body
-    localStorage.setItem('theme', theme); // Persist theme in localStorage
+    // Only run on the client
+    const storedTheme = localStorage.getItem('theme') || 'default';
+    setTheme(storedTheme);
+  }, []);
+
+  useEffect(() => {
+    document.body.className = theme;
+    localStorage.setItem('theme', theme);
   }, [theme]);
 
   return (

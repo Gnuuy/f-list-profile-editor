@@ -2,16 +2,19 @@ import ToolbarButton from "./EditorToolbarButton";
 import { useEditorContext } from "../context/EditorContext";
 
 export default function EditorToolBar() {
-  const { justifyLeft, justifyCenter, justifyRight, justifyFull } = useEditorContext();
+  const { editor, justifyLeft, justifyCenter, justifyRight, justifyFull, italic, bold, underline, strikethrough, subscript, superscript, addImage } = useEditorContext();
 
   return (
     <div className="flex flex-row flex-nowrap justify-between">
       <div className="flex flex-row flex-nowrap">
-        <ToolbarButton title="Italic" imgPath="/icons/italic.png" />
-        <ToolbarButton title="Bold" imgPath="/icons/bold.png" />
-        <ToolbarButton title="Underline" imgPath="/icons/underline.png" />
-        <ToolbarButton title="Colour" imgPath="/icons/colour.png" />
-        <ToolbarButton title="Insert Image" imgPath="/icons/image.png" />
+        <ToolbarButton title="Italic" onClick={italic} imgPath="/icons/italic.png" />
+        <ToolbarButton title="Bold" onClick={bold} imgPath="/icons/bold.png" />
+        <ToolbarButton title="Underline" onClick={underline} imgPath="/icons/underline.png" />
+        <ToolbarButton title="Strikethrough" onClick={strikethrough} imgPath="/icons/strikethrough.png" />
+        <ToolbarButton title="Subscript" onClick={subscript} imgPath="/icons/subscript.png" />
+        <ToolbarButton title="Superscript" onClick={superscript} imgPath="/icons/superscript.png" />
+        <ToolbarButton title="Colour" onClick={strikethrough} imgPath="/icons/colour.png" />
+        <ToolbarButton title="Insert Image" onClick={addImage} imgPath="/icons/image.png" />
       </div>
       <div className="flex flex-row flex-nowrap">
         <ToolbarButton title="Justify Left" onClick={justifyLeft} imgPath="/icons/justify-left.png" />
