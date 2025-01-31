@@ -248,9 +248,7 @@
     transition: 0.2s;
   }
 
-  .is-active {
-    background-color: #2fda62; /* Example: Blue background */
-    color: white; /* Example: White text */
-    border-radius: 4px;
+  .bubble-button-active {
+    background-color: #2fda62;
   }
 }

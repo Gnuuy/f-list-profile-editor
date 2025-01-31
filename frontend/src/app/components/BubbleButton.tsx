@@ -1,23 +1,22 @@
-interface BubbleButtonProps
-{
+interface BubbleButtonProps {
     title: string;
-    className: string;
+    isActive?: boolean;
+    imgPath: string;
+
     onClick?: () => void;
-    imgPath:string;
-}
-
-export default function BubbleButton({className, title, imgPath, onClick}: BubbleButtonProps) {
+  }
+  
+  export default function BubbleButton({ title, isActive = false, imgPath, onClick }: BubbleButtonProps) {
     return (
-        <div>
-            <button 
-            className={className}
-
-            title={title}
-            type="button"
-            onClick={onClick}
-            >
-                <img src={imgPath} className="h-4 w-4 filter invert" />
-            </button>
-        </div>
-    )
-}
+      <div>
+        <button
+          className={isActive ? "bubble-button bubble-button-active" : "bubble-button"}
+          type="button"
+          title={title}
+          onClick={onClick}
+        >
+          <img src={imgPath} className="h-4 w-4 filter invert" alt={title} />
+        </button>
+      </div>
+    );
+  }
