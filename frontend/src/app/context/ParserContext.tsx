@@ -1,134 +1,202 @@
 'use client';
 
 import React, { createContext, useContext } from 'react';
+import type {
+  DocumentNode,
+  Node,
+  Mark,
+} from '../interface/types'
 
-// Create context
-const BBCodeContext = createContext();
+interface BBCodeContextValue {
+  parseBBCodeToJSON: (bbcode: string) => DocumentNode;
+  parseJSONToBBCode: (json: DocumentNode) => string;
+}
 
-// BBCode provider component
-export const BBCodeProvider = ({ children }) => {
-  // Function to parse BBCode into TipTap JSON
-  const parseBBCodeToJSON = (bbcode) => {
-    const nodes = [];
-    let currentIndex = 0;
+const BBCodeContext = createContext<BBCodeContextValue | null>(null);
 
-    // Regex to match BBCode tags
-    const bbcodeRegex = /\[(\w+)(?:=([^\]]+))?\](.*?)\[\/\1\]/gs;
+const addMarkToTextNodes = (nodes: Node[], mark: Mark) => {
+  nodes.forEach((node) => {
+    if (node.type === 'text') {
+      node.marks = [...(node.marks || []), mark];
+    }
+  });
+};
 
-    let match;
-    while ((match = bbcodeRegex.exec(bbcode)) !== null) {
-      const [fullMatch, tag, attribute, content] = match;
+export const BBCodeProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
+  const parseBBCodeToJSON = (bbcode: string): DocumentNode => {
+    let index = 0;
 
-      if (currentIndex < match.index) {
-        nodes.push({
-          type: 'text',
-          text: bbcode.slice(currentIndex, match.index),
-        });
+    const parseNodes = (stopTag?: string): Node[] => {
+      const nodes: Node[] = [];
+
+      while (index < bbcode.length) {
+        const nextOpen = bbcode.indexOf('[', index);
+        if (nextOpen === -1) {
+          nodes.push({ type: 'text', text: bbcode.slice(index) });
+          break;
+        }
+
+        if (nextOpen > index) {
+          nodes.push({ type: 'text', text: bbcode.slice(index, nextOpen) });
+        }
+
+        const endBracket = bbcode.indexOf(']', nextOpen);
+        if (endBracket === -1) break;
+
+        const tagContent = bbcode.slice(nextOpen + 1, endBracket).trim();
+        const isClosing = tagContent.startsWith('/');
+        const tagNameRaw = isClosing ? tagContent.slice(1).trim() : tagContent;
+        const [tagName, attr] = tagNameRaw.split('=');
+
+        index = endBracket + 1;
+
+        if (isClosing) {
+          if (stopTag === tagName) break;
+          else continue;
+        }
+
+        const contentStart = index;
+        const childNodes = parseNodes(tagName.trim().toLowerCase());
+        const contentEnd = index;
+        const innerText = bbcode.slice(contentStart, contentEnd);
+
+        switch (tagName.trim().toLowerCase()) {
+          case 'b':
+            addMarkToTextNodes(childNodes, { type: 'bold' });
+            nodes.push(...childNodes);
+            break;
+          case 'i':
+            addMarkToTextNodes(childNodes, { type: 'italic' });
+            nodes.push(...childNodes);
+            break;
+          case 'u':
+            addMarkToTextNodes(childNodes, { type: 'underline' });
+            nodes.push(...childNodes);
+            break;
+          case 's':
+            addMarkToTextNodes(childNodes, { type: 'strike' });
+            nodes.push(...childNodes);
+            break;
+          case 'sub':
+            addMarkToTextNodes(childNodes, { type: 'subscript' });
+            nodes.push(...childNodes);
+            break;
+          case 'sup':
+            addMarkToTextNodes(childNodes, { type: 'superscript' });
+            nodes.push(...childNodes);
+            break;
+          case 'color':
+            if (attr) {
+              addMarkToTextNodes(childNodes, {
+                type: 'textStyle',
+                attrs: { color: attr },
+              });
+            }
+            nodes.push(...childNodes);
+            break;
+          case 'url':
+            addMarkToTextNodes(childNodes, {
+              type: 'link',
+              attrs: { href: attr || innerText.trim() },
+            });
+            nodes.push(...childNodes);
+            break;
+          case 'img':
+            nodes.push({
+              type: 'image',
+              attrs: { src: attr || innerText.trim(), alt: 'Image' },
+            });
+            break;
+          case 'hr':
+            nodes.push({ type: 'horizontalRule' });
+            break;
+          case 'center':
+          case 'left':
+          case 'right':
+            nodes.push({
+              type: 'paragraph',
+              attrs: { textAlign: tagName as 'left' | 'right' | 'center' },
+              content: childNodes,
+            });
+            break;
+          default:
+            nodes.push({ type: 'text', text: innerText });
+            break;
+        }
       }
 
-      switch (tag) {
-        case 'b':
-          nodes.push({ type: 'text', text: content, marks: [{ type: 'bold' }] });
-          break;
-        case 'i':
-          nodes.push({ type: 'text', text: content, marks: [{ type: 'italic' }] });
-          break;
-        case 'u':
-          nodes.push({ type: 'text', text: content, marks: [{ type: 'underline' }] });
-          break;
-        case 'color':
-          nodes.push({
-            type: 'text',
-            text: content,
-            marks: [{ type: 'textStyle', attrs: { color: attribute } }],
-          });
-          break;
-        case 'center':
-        case 'left':
-        case 'right':
-          nodes.push({
-            type: 'paragraph',
-            attrs: { textAlign: tag },
-            content: [{ type: 'text', text: content }],
-          });
-          break;
-        case 'list':
-          nodes.push({
-            type: 'bulletList',
-            content: content
-              .split('[*]')
-              .filter((item) => item.trim())
-              .map((item) => ({
-                type: 'listItem',
-                content: [{ type: 'text', text: item }],
-              })),
-          });
-          break;
-        case 'list=1':
-          nodes.push({
-            type: 'orderedList',
-            content: content
-              .split('[*]')
-              .filter((item) => item.trim())
-              .map((item) => ({
-                type: 'listItem',
-                content: [{ type: 'text', text: item }],
-              })),
-          });
-          break;
-        case 'img':
-          nodes.push({
-            type: 'image',
-            attrs: {
-              src: attribute || content,
-              alt: 'Image',
-            },
-          });
-          break;
-        case 'hr':
-          nodes.push({ type: 'horizontalRule' });
-          break;
-        default:
-          nodes.push({ type: 'text', text: content });
-          break;
-      }
+      return nodes;
+    };
 
-      currentIndex = bbcodeRegex.lastIndex;
-    }
-
-    if (currentIndex < bbcode.length) {
-      nodes.push({ type: 'text', text: bbcode.slice(currentIndex) });
-    }
-
-    return { type: 'doc', content: nodes };
+    const content = parseNodes();
+    return { type: 'doc', content };
   };
 
-  // Function to convert JSON to BBCode
-  const parseJSONToBBCode = (json) => {
-    let bbcode = '';
+  const parseJSONToBBCode = (json: DocumentNode): string => {
+    const buildMarks = (text: string, marks: Mark[] = []): string => {
+      return marks.reduce((acc, mark) => {
+        switch (mark.type) {
+          case 'bold': return `[b]${acc}[/b]`;
+          case 'italic': return `[i]${acc}[/i]`;
+          case 'underline': return `[u]${acc}[/u]`;
+          case 'strike': return `[s]${acc}[/s]`;
+          case 'subscript': return `[sub]${acc}[/sub]`;
+          case 'superscript': return `[sup]${acc}[/sup]`;
+          case 'textStyle': return `[color=${mark.attrs.color}]${acc}[/color]`;
+          case 'link': return `[url=${mark.attrs.href}]${acc}[/url]`;
+          default: return acc;
+        }
+      }, text);
+    };
 
-    const traverseNode = (node) => {
-      if (node.type === 'text') {
-        const marks = node.marks || [];
-        const startTags = marks.map((mark) => `[${mark.type}]`).join('');
-        const endTags = marks.map((mark) => `[/${mark.type}]`).reverse().join('');
-
-        bbcode += `${startTags}${node.text}${endTags}`;
-      } else if (node.type === 'paragraph') {
-        bbcode += `[${node.attrs.textAlign || 'left'}]${node.content.map(traverseNode).join('')}[/${node.attrs.textAlign || 'left'}]\n\n`;
-      } else if (node.type === 'bulletList' || node.type === 'orderedList') {
-        const listTag = node.type === 'orderedList' ? 'list=1' : 'list';
-        bbcode += `[${listTag}]\n${node.content.map((item) => `[*]${item.content.map(traverseNode).join('')}`).join('\n')}\n[/${listTag}]\n\n`;
+    const printNode = (node: Node): string => {
+      switch (node.type) {
+        case 'text':
+          return buildMarks(node.text, node.marks);
+        case 'paragraph': {
+          const align = node.attrs?.textAlign;
+          const content = node.content?.map(printNode).join('') ?? '';
+          return content;
+        }
+        case 'image':
+          return `[img]${node.attrs.src}[/img]`;
+        case 'horizontalRule':
+          return `[hr]`;
+        default:
+          return '';
       }
     };
 
-    json.content.forEach(traverseNode);
-    return bbcode.trim();
+    const groupedByAlignment: Record<string, string[]> = {};
+
+    json.content.forEach((node) => {
+      if (node.type === 'paragraph') {
+        const align = node.attrs?.textAlign || 'left';
+        const rendered = printNode(node);
+        if (!groupedByAlignment[align]) groupedByAlignment[align] = [];
+        groupedByAlignment[align].push(rendered);
+      } else {
+        if (!groupedByAlignment['left']) groupedByAlignment['left'] = [];
+        groupedByAlignment['left'].push(printNode(node));
+      }
+    });
+
+    return Object.entries(groupedByAlignment).map(([align, blocks]) => {
+      const content = blocks.join('\n');
+      if (align === 'left') return content;
+      return `[${align}]${content}[/${align}]`;
+    }).join('\n');
   };
 
-  return <BBCodeContext.Provider value={{ parseBBCodeToJSON, parseJSONToBBCode }}>
-    {children}
-    </BBCodeContext.Provider>;
+  return (
+    <BBCodeContext.Provider value={{ parseBBCodeToJSON, parseJSONToBBCode }}>
+      {children}
+    </BBCodeContext.Provider>
+  );
 };
 
-export const useBBCode = () => useContext(BBCodeContext);
+export const useBBCode = (): BBCodeContextValue => {
+  const ctx = useContext(BBCodeContext);
+  if (!ctx) throw new Error('useBBCode must be used within a BBCodeProvider');
+  return ctx;
+};

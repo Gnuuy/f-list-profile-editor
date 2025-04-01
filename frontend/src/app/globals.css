@@ -9,7 +9,7 @@
     --sidebarBg: #0b345f;
     --navBarBg: linear-gradient(to bottom, #1c4a72, #194064);
     --navButtonBorder: #0b345f;
-    --navButtonBg: linear-gradient(to bottom, #1c4a72, #134478);
+    --navButtonBg: linear-gradient(to bottom, #1c4a72, #194064);
     --headerBg: #001122;
     --headerBorderColor: #0f1f2e;
     --footerBg: linear-gradient(to bottom, #2468af, #134478);
@@ -64,7 +64,7 @@
     padding: 20px;
   }
 
-  /* Navigation Bar Styling */
+  /* Navigation Bar */
   .navBar {
     background: var(--navBarBg);
     display: flex;
@@ -113,7 +113,7 @@
   }
 
   .navBarButton:hover {
-    background-color: var(--editorButtonHover);
+    background: var(--editorButtonHover);
   }
 
   .navBarThemeButtonGrid {
@@ -155,6 +155,10 @@
 
   /* Header */
   .header {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    justify-content: flex-end;
     background: var(--headerBg);
     height: 148px;
     width: 100%;
@@ -177,6 +181,7 @@
     border-right: 1px solid var(--footerBorder);
   }
 
+  /* Layout */
   .LayoutMain {
     display: flex;
     flex-direction: column;
@@ -198,10 +203,24 @@
     width: 230px;
     background-color: var(--sidebarBg);
   }
-
+  
+  /* Editor */
   .editor {
     padding: 5px;
     min-height: 1000px;
+  }
+
+  .ProseMirror {
+    flex-grow: 1;
+    min-height: 250px;
+    padding: 10px;
+  }
+  
+  .ProseMirror:empty::before {
+    content: "Click to start typing...";
+    color: #aaa;
+    display: block;
+    pointer-events: none;
   }
 
   .mainView-Editor {
@@ -218,12 +237,47 @@
     overflow: auto;
   }
 
+  /* Toolbar */
+  .toolbar-button {
+    padding: 4px;
+    background: var(--navButtonBg);
+    border-left: 1px solid var(--editorBorder);
+    border-right-color: 1px solid var(--editorBorder);
+    border-top: 1px solid var(--editorBorder);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    transition: 0.2s;
+  }
+
+  .toolbar-button:hover {
+    background: var(--editorButtonHover);
+  }
+
+  .toolbar-button-active{
+    background: var(--editorButtonHover);
+  }
+
+  .colour-menu {
+    position: absolute;
+    top: 40px; /* ✅ Ensure it appears below the button */
+    left: 10px;
+    background: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    display: flex !important; /* ✅ Force visibility */
+    flex-wrap: wrap;
+    gap: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* ✅ Ensure it appears above other elements */
+  }
+
+  /* Bubble Menu */
   .bubble-menu {
     display: flex;
     flex-wrap: nowrap;
     flex-direction: row;
     justify-content: space-between;
-    width: 230px;
+    width: 240px;
     background: var(--navBarBg);
     border: 2px solid var(--editorBorder);
     border-radius: 7rem;
@@ -248,7 +302,11 @@
     transition: 0.2s;
   }
 
+  .bubble-button:hover {
+    background: var(--editorButtonHover);
+  }
+
   .bubble-button-active {
-    background-color: #2fda62;
+    background: var(--editorButtonHover);
   }
 }

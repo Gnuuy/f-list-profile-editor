@@ -1,29 +1,52 @@
-"use client";
+'use client';
 
-import { EditorContent, BubbleMenu } from "@tiptap/react";
-import React, { useEffect } from "react";
-import { useEditorContext } from "../context/EditorContext";
-import BubbleMenuLayout from "./BubbleMenuLayout";
-
+import { useEffect } from 'react';
+import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Underline from '@tiptap/extension-underline';
+import Superscript from '@tiptap/extension-superscript';
+import Subscript from '@tiptap/extension-subscript';
+import Image from '@tiptap/extension-image';
+import Dropcursor from '@tiptap/extension-dropcursor';
+import TextStyle from '@tiptap/extension-text-style';
+import Color from '@tiptap/extension-color';
+import TextAlign from '@tiptap/extension-text-align';
+import { CustomBlockquote } from './CustomBlockquote';
+import BubbleMenuLayout from './BubbleMenuLayout';
+import { useEditorContext } from '../context/EditorContext';
 
 export default function Editor() {
-  const { editor } = useEditorContext();
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({ blockquote: false }),
+      Underline,
+      Superscript,
+      Subscript,
+      Dropcursor,
+      Image,
+      Color.configure({ types: ['textStyle'] }),
+      TextStyle.configure({}),
+      TextAlign.configure({ types: ['paragraph'], defaultAlignment: 'left' }),
+      CustomBlockquote,
+    ],
+    content: '<p>Hello! Welcome to the WYSIWYG Profile Editor!</p>',
+  });
+
+  const { setEditorInstance } = useEditorContext();
 
   useEffect(() => {
-    if (editor && !editor.isDestroyed) {
-      editor.commands.setContent(`<p>Hello! Welcome to the F-list WYSIWYG Profile Editor!</p>`);
+    if (editor) {
+      setEditorInstance(editor);
     }
-  }, [editor]);
+  }, [editor, setEditorInstance]);
 
-  if (!editor) {
-    return <div>Loading Editor...</div>;
-  }
+  if (!editor) return <div>Loading Editor...</div>;
 
   return (
     <div className="editor">
-      {editor && <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+      <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
         <BubbleMenuLayout />
-      </BubbleMenu>}
+      </BubbleMenu>
       <EditorContent editor={editor} />
     </div>
   );

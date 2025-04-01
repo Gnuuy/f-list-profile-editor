@@ -1,6 +1,9 @@
+'use client'
+
 import ToolbarButton from "./EditorToolbarButton";
 import { useEditorContext } from "../context/EditorContext";
 import { useEffect, useState } from "react";
+import ColourMenu from "./ColourMenu";
 
 export default function EditorToolBar() {
     const {
@@ -16,7 +19,9 @@ export default function EditorToolBar() {
         subscript,
         superscript,
         addImage,
-        toggleDrag
+        toggleDrag,
+        toggleColourPicker,
+        insertQuote
     } = useEditorContext();
     const [forceUpdate, setForceUpdate] = useState(0);
 
@@ -82,10 +87,24 @@ export default function EditorToolBar() {
         />
         <ToolbarButton
         title="Colour"
-        onClick={strikethrough}
+        onClick={(event) => toggleColourPicker(event)}
         imgPath="/icons/colour.png"
         />
-        <ToolbarButton title="Insert Image" onClick={addImage} imgPath="/icons/image.png" />
+        <ColourMenu />
+        <ToolbarButton 
+        title="Insert Image" 
+        onClick={addImage} 
+        imgPath="/icons/image.png" 
+        />
+        <ToolbarButton 
+        title="Insert Image" 
+        onClick={addImage} 
+        imgPath="/icons/image.png" 
+        />
+        <ToolbarButton
+        title="Qoute"
+        onClick={insertQuote}
+        imgPath="" />
       </div>
       <div className="flex flex-row flex-nowrap">
         <ToolbarButton
