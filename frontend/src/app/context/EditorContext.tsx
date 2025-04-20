@@ -17,6 +17,8 @@ interface EditorContextValue {
   strikethrough: () => void;
   subscript: () => void;
   superscript: () => void;
+  addQuote: () => void;
+  addCollapsible: () => void;
 
   toggleColourPicker: (event?: React.MouseEvent<HTMLButtonElement>) => void;
   setColour: (colour: string) => void;
@@ -88,6 +90,9 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
   const subscript = () => editorInstance?.chain().focus().toggleSubscript().run();
   const superscript = () => editorInstance?.chain().focus().toggleSuperscript().run();
 
+  const addQuote = () => editorInstance?.chain().focus().setQuote().run();
+  const addCollapsible = () => editorInstance?.chain().focus().addCollapsible().run();
+
   const justifyLeft = () => editorInstance?.chain().focus().setTextAlign('left').run();
   const justifyCenter = () => editorInstance?.chain().focus().setTextAlign('center').run();
   const justifyRight = () => editorInstance?.chain().focus().setTextAlign('right').run();
@@ -114,6 +119,8 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
 
   const contextValue = useMemo(() => ({
     editor: editorInstance,
+    addQuote,
+    addCollapsible,
     setEditorInstance,
     toggleDrag,
     italic,

@@ -21,7 +21,8 @@ export default function EditorToolBar() {
         addImage,
         toggleDrag,
         toggleColourPicker,
-        insertQuote
+        addQuote,
+        addCollapsible
     } = useEditorContext();
     const [forceUpdate, setForceUpdate] = useState(0);
 
@@ -103,9 +104,14 @@ export default function EditorToolBar() {
         />
         <ToolbarButton
         title="Qoute"
-        onClick={insertQuote}
+        onClick={addQuote}
+        imgPath="" />
+        <ToolbarButton
+        title="Qoute"
+        onClick={addCollapsible}
         imgPath="" />
       </div>
+
       <div className="flex flex-row flex-nowrap">
         <ToolbarButton
         title="Justify Left"
@@ -129,6 +135,7 @@ export default function EditorToolBar() {
         imgPath="/icons/justify.png"
         />
       </div>
+      
       <div className="flex flex-row flex-nowrap">
         <ToolbarButton
         title="Toggle Drag"

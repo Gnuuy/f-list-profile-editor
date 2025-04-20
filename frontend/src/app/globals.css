@@ -18,6 +18,8 @@
     --editorButtonBg: linear-gradient(to bottom, #1c4a72, #194064);
     --editorButtonHover: #235a8f;
     --button-color: #1b446f;
+    --quote-background: linear-gradient(to bottom, #2468af, #134579);
+    --quote-border: #10345a;
   }
 
   .dark {
@@ -259,16 +261,16 @@
 
   .colour-menu {
     position: absolute;
-    top: 40px; /* ✅ Ensure it appears below the button */
+    top: 40px;
     left: 10px;
     background: white;
     border: 1px solid #ddd;
     padding: 10px;
-    display: flex !important; /* ✅ Force visibility */
+    display: flex !important;
     flex-wrap: wrap;
     gap: 5px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000; /* ✅ Ensure it appears above other elements */
+    z-index: 1000;
   }
 
   /* Bubble Menu */
@@ -308,5 +310,31 @@
 
   .bubble-button-active {
     background: var(--editorButtonHover);
+  }
+
+  .genericButton {
+    
+  }
+
+  .quoteHeader {
+    background: var(--quote-background);
+    border-color: #0b345f;
+    font-weight: bold;
+    color: #cccccc;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    border-radius: 5px;
+    border: 2px solid var(--quote-border);
+    padding-left: 10px;
+    margin: 2px;
+  }
+
+  .collapsibleHeader {
+    background: var(--quote-background);
+    border-color: #0b345f;
+    border-radius: 5px;
+    border: 2px solid var(--quote-border);
+    padding-left: 10px;
+    margin: 2px;
   }
 }

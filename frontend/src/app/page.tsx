@@ -21,22 +21,22 @@ function EditorPage() {
   const { editor } = useEditorContext();
   const { parseJSONToBBCode } = useBBCode();
 
-  const setBBcode = () => {
-    if (!editor) return;
-
-    const json = editor.getJSON();
-    const bbcode = parseJSONToBBCode(json);
-
-    navigator.clipboard.writeText(bbcode)
-      .then(() => console.log("✅ BBCode copied to clipboard"))
-      .catch((err) => console.error("❌ Failed to copy:", err));
-  };
+  // const setBBcode = () => {
+  //   if (!editor) return;
+  // 
+  //   const json = editor.getJSON();
+  //   const bbcode = parseJSONToBBCode(json);
+  // 
+  //   navigator.clipboard.writeText(bbcode)
+  //     .then(() => console.log("✅ BBCode copied to clipboard"))
+  //     .catch((err) => console.error("❌ Failed to copy:", err));
+  // };
 
   return (
     <PageLayout
       sideBarChildren={
         <div>
-          <Button title="Export" onClick={setBBcode} />
+          <Button title="Export" />
         </div>
       }
       mainBarChildren={

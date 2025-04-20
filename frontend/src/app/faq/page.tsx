@@ -1,5 +1,7 @@
 'use client'
 
+import Collapsible from "../components/Collapsible"
+import QuoteBlock from "../components/QuoteBlock"
 import PageLayout from "../views/PageLayout"
 
 export default function FAQ()
@@ -13,7 +15,9 @@ export default function FAQ()
         } mainBarChildren=
         {
             <div>
-                Sani is super soft
+                <QuoteBlock />
+                <br />
+                <br />
             </div>
         }>
         </PageLayout>
