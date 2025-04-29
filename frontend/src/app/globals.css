@@ -20,6 +20,7 @@
     --button-color: #1b446f;
     --quote-background: linear-gradient(to bottom, #2468af, #134579);
     --quote-border: #10345a;
+    --collapse-closed-color: linear-gradient(to bottom, #13599f, #13599f)
   }
 
   .dark {
@@ -316,7 +317,7 @@
     
   }
 
-  .quoteHeader {
+  .custom-quote {
     background: var(--quote-background);
     border-color: #0b345f;
     font-weight: bold;
@@ -329,12 +330,48 @@
     margin: 2px;
   }
 
-  .collapsibleHeader {
-    background: var(--quote-background);
-    border-color: #0b345f;
-    border-radius: 5px;
-    border: 2px solid var(--quote-border);
-    padding-left: 10px;
-    margin: 2px;
+  .quoteHeader {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-style: italic;
+    font-size: 12px;
+  }
+
+  .quote-content{
+    margin: 10px 0px 10px 0px;
+  }
+
+  .collapseBox {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 1em 0;
+    overflow: hidden;
+  }
+  .collapseBoxHead {
+    background: var(--collapse-closed-color);
+    padding: 0.5em 1em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .collapseIcon {
+    transition: transform 0.2s;
+  }
+
+  .collapseBoxContent {
+    background: var(--bodyBg);
+    padding: 1em;
+    display: block;
+  }
+  .collapseBox.closed .collapseBoxContent {
+    display: none;
+  }
+
+  .collapseTitle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
   }
 }

@@ -5,8 +5,6 @@ export default function QuoteBlock() {
   return (
     <NodeViewWrapper as="blockquote" className="custom-quote">
       <div className="quoteHeader">Quote:
-        <br />
-        <br />
         <NodeViewContent as="div" className="quote-content" />
       </div>
     </NodeViewWrapper>

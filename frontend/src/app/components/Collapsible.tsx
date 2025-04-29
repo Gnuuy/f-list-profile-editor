@@ -10,44 +10,46 @@ export default function CollapsibleNodeView({ node, updateAttributes }: NodeView
   const [isOpen, setIsOpen] = useState(true);
   const inputRef = useRef<HTMLDivElement>(null);
 
+  // Save title on blur
   const handleBlur = () => {
-    const newTitle = inputRef.current?.innerText?.trim() || '';
+    const newTitle = inputRef.current?.innerText.trim() || '';
     if (newTitle !== title) {
       updateAttributes({ title: newTitle });
     }
   };
 
   return (
-    <NodeViewWrapper as="div" className="custom-collapsible">
-      <div className="collapsibleHeader">
-        <button
-          type="button"
-          className="collapsibleToggle"
-          onClick={() => setIsOpen(prev => !prev)}
-        >
-          ⬇
-        </button>
+    <NodeViewWrapper
+      as="div"
+      className={`collapseBox${isOpen ? '' : ' closed'}`}
+    >
+      <div
+        className="collapseBoxHead"
+        onClick={() => setIsOpen(open => !open)}
+      >
         <div
           ref={inputRef}
           contentEditable
           suppressContentEditableWarning
           onBlur={handleBlur}
-          className="collapsibleTitle"
-          style={{
-            display: 'inline-block',
-            fontWeight: 'bold',
-            outline: 'none',
-            minWidth: '2ch',
+          onMouseDown={e => {
+            e.stopPropagation()
+            e.preventDefault()
+            inputRef.current?.focus()
           }}
+          className="collapseTitle"
         >
+          <img
+            src={isOpen ? '/icons/chevron-expand.png' : '/icons/chevron.png'}
+            alt="toggle"
+            style={{ marginRight: '0.5rem' }}
+          />
           {title}
         </div>
       </div>
-      {isOpen && (
-        <div className="collapsible-content">
-          <NodeViewContent as="div" />
-        </div>
-      )}
+      <div className="collapseBoxContent">
+        <NodeViewContent as="div" />
+      </div>
     </NodeViewWrapper>
   );
 }
