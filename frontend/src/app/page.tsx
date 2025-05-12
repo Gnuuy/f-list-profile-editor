@@ -8,6 +8,7 @@ import EditorToolBar from "./components/EditorToolBar";
 import { EditorProvider, useEditorContext } from "./context/EditorContext";
 import { useBBCode } from "./context/ParserContext";
 import PageLayout from "./views/PageLayout";
+import FloatingToolbar from "./components/FloatingToolbar";
 
 export default function Home() {
   return (
@@ -43,8 +44,9 @@ function EditorPage() {
         <div>
           <div className="mainView-Editor">
             <EditorToolBar />
-            <div className="editor-Container">
-              <EditorWrapper />
+              <div className="editor-Container">
+              <FloatingToolbar />
+            <EditorWrapper />
             </div>
           </div>
         </div>

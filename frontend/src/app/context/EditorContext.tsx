@@ -6,8 +6,9 @@ import type { Editor } from '@tiptap/react';
 interface EditorContextValue {
   editor: Editor | null;
   setEditorInstance: (editor: Editor) => void;
+
   isColourPickerOpen: boolean;
-  colourPickerPosition: { top: number; left: number };
+  colourPickerPosition: DOMRect | null;
 
   toggleDrag: () => void;
 
@@ -22,22 +23,22 @@ interface EditorContextValue {
 
   toggleColourPicker: (event?: React.MouseEvent<HTMLButtonElement>) => void;
   setColour: (colour: string) => void;
+  closeColourPicker: () => void;
+
   addImage: () => void;
 
   justifyLeft: () => void;
   justifyCenter: () => void;
   justifyRight: () => void;
   justifyFull: () => void;
-
-  insertQuote: () => void;
 }
 
 const EditorContext = createContext<EditorContextValue | undefined>(undefined);
 
 export function EditorProvider({ children }: { children: React.ReactNode }) {
   const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
-  const [isColourPickerOpen, setColourPickerOpen] = useState(false);
-  const [colourPickerPosition, setColorPickerPosition] = useState({ top: 0, left: 0 });
+  const [isColourPickerOpen, setIsColourPickerOpen] = useState(false);
+  const [colourPickerPosition, setColourPickerPosition] = useState<DOMRect | null>(null);
 
   const addImage = () => {
     if (!editorInstance) return;
@@ -66,21 +67,23 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
   };
 
   const toggleColourPicker = (event?: React.MouseEvent<HTMLButtonElement>) => {
-    setColourPickerOpen((prev) => !prev);
-
-    if (event) {
-      const rect = event.currentTarget.getBoundingClientRect();
-      setColorPickerPosition({
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX,
-      });
-    }
+  if (isColourPickerOpen) {
+    closeColourPicker();
+  } else if (event) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setColourPickerPosition(rect);
+    setIsColourPickerOpen(true);
+  }
   };
 
-  const setColour = (colour: string) => {
-    if (!editorInstance) return;
-    editorInstance.chain().focus().setColor(colour).run();
-    setColourPickerOpen(false);
+  const closeColourPicker = () => {
+    setIsColourPickerOpen(false);
+    setColourPickerPosition(null);
+  };
+
+  const setColour = (color: string) => {
+    editorInstance?.chain().focus().setColor(color).run();
+    closeColourPicker();
   };
 
   const italic = () => editorInstance?.chain().focus().toggleItalic().run();
@@ -98,25 +101,6 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
   const justifyRight = () => editorInstance?.chain().focus().setTextAlign('right').run();
   const justifyFull = () => editorInstance?.chain().focus().setTextAlign('justify').run();
 
-  const insertQuote = () => {
-    if (!editorInstance) return;
-
-    editorInstance.chain().focus().insertContent({
-      type: 'blockquote',
-      content: [
-        {
-          type: 'paragraph',
-          content: [
-            {
-              type: 'text',
-              text: 'Your quoted text here.',
-            },
-          ],
-        },
-      ],
-    }).run();
-  };
-
   const contextValue = useMemo(() => ({
     editor: editorInstance,
     addQuote,
@@ -129,17 +113,17 @@ export function EditorProvider({ children }: { children: React.ReactNode }) {
     strikethrough,
     subscript,
     superscript,
-    toggleColourPicker,
-    setColour,
     addImage,
     justifyLeft,
     justifyCenter,
     justifyRight,
     justifyFull,
-    insertQuote,
+    toggleColourPicker,
     isColourPickerOpen,
     colourPickerPosition,
-  }), [editorInstance, isColourPickerOpen, colourPickerPosition]);
+    setColour,
+    closeColourPicker,
+  }), [editorInstance]);
 
   return <EditorContext.Provider value={contextValue}>{children}</EditorContext.Provider>;
 }

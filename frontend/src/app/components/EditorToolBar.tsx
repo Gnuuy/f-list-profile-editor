@@ -22,7 +22,7 @@ export default function EditorToolBar() {
         toggleDrag,
         toggleColourPicker,
         addQuote,
-        addCollapsible
+        addCollapsible,
     } = useEditorContext();
     const [forceUpdate, setForceUpdate] = useState(0);
 
@@ -88,7 +88,7 @@ export default function EditorToolBar() {
         />
         <ToolbarButton
         title="Colour"
-        onClick={(event) => toggleColourPicker(event)}
+        onClick={toggleColourPicker}
         imgPath="/icons/colour.png"
         />
         <ColourMenu />
@@ -105,11 +105,11 @@ export default function EditorToolBar() {
         <ToolbarButton
         title="Qoute"
         onClick={addQuote}
-        imgPath="" />
+        imgPath="/icons/image.png" />
         <ToolbarButton
         title="Qoute"
         onClick={addCollapsible}
-        imgPath="" />
+        imgPath="/icons/image.png" />
       </div>
 
       <div className="flex flex-row flex-nowrap">

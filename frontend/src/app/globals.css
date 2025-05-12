@@ -313,10 +313,6 @@
     background: var(--editorButtonHover);
   }
 
-  .genericButton {
-    
-  }
-
   .custom-quote {
     background: var(--quote-background);
     border-color: #0b345f;
@@ -372,6 +368,84 @@
   .collapseTitle {
     display: flex;
     align-items: center;
+    cursor: pointer;
+  }
+
+  .floating-toolbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    background-color: var(--toolbar-bg);
+    color: var(--toolbar-text);
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    border-top: 1px solid var(--toolbar-border);
+    z-index: 1000;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .floating-toolbar button {
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .floating-toolbar-toggle {
+    position: fixed;
+    bottom: 60px;
+    right: 20px;
+    z-index: 1001;
+  }
+
+  .floating-toolbar-toggle button {
+    background-color: var(--btn-bg);
+    color: var(--btn-text);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+    .colour-menu {
+    display: grid;
+    grid-template-columns: repeat(6, 20px);
+    gap: 5px;
+    padding: 8px;
+    background-color: var(--toolbar-bg);
+    border: 1px solid var(--toolbar-border);
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+
+  .colour-swatch {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #333;
+    cursor: pointer;
+  }
+
+  .colour-menu {
+  display: grid;
+  grid-template-columns: repeat(6, 24px);
+  gap: 6px;
+  background-color: var(--toolbar-bg, #222);
+  border: 1px solid var(--toolbar-border, #444);
+  border-radius: 4px;
+  padding: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  z-index: 1000;
+  }
+  
+  .colour-swatch {
+    width: 24px;
+    height: 24px;
+    border: 1px solid #333;
     cursor: pointer;
   }
 }

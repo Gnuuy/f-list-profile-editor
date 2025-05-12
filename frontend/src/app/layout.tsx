@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { ThemeProvider } from "./context/ThemeContext";
-import "./globals.css";
 import { BBCodeProvider } from "./context/ParserContext";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Profile Editor",
-  description: "",
+  description: "awdad",
 };
 
 export default function RootLayout({

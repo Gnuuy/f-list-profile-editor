@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
+import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Superscript from '@tiptap/extension-superscript';
@@ -11,7 +11,6 @@ import Dropcursor from '@tiptap/extension-dropcursor';
 import TextStyle from '@tiptap/extension-text-style';
 import Color from '@tiptap/extension-color';
 import TextAlign from '@tiptap/extension-text-align';
-import BubbleMenuLayout from './BubbleMenuLayout';
 import { useEditorContext } from '../context/EditorContext';
 import { CustomBlockquote } from './CustomQuoteBlock';
 import { CustomCollapsible } from './CustomCollapsible';
@@ -46,9 +45,6 @@ export default function Editor() {
 
   return (
     <div className="editor">
-      <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
-        <BubbleMenuLayout />
-      </BubbleMenu>
       <EditorContent editor={editor} />
     </div>
   );
