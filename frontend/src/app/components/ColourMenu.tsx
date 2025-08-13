@@ -16,6 +16,13 @@ export default function ColourMenu() {
     setColour,
   } = useEditorContext();
 
+  console.log(
+  "👀 ColourMenu render – open:",
+  isColourPickerOpen,
+  "pos:",
+  colourPickerPosition
+);
+
   const ref = useRef<HTMLDivElement>(null);
 
   // close when clicking outside
@@ -31,6 +38,7 @@ export default function ColourMenu() {
 
   if (!isColourPickerOpen || !colourPickerPosition) return null;
 
+  
   return (
     <div
       ref={ref}
