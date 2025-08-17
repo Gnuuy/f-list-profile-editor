@@ -1,0 +1,61 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.4.1",
+    "@mui/material-nextjs": "^6.3.1",
+    "@mui/styled-engine-sc": "^6.4.0",
+    "@tiptap/core": "3.2.0",
+    "@tiptap/extension-character-count": "3.2.0",
+    "@tiptap/extension-collaboration": "3.2.0",
+    "@tiptap/extension-color": "3.2.0",
+    "@tiptap/extension-details": "3.2.0",
+    "@tiptap/extension-drag-handle": "3.2.0",
+    "@tiptap/extension-drag-handle-react": "3.2.0",
+    "@tiptap/extension-dropcursor": "3.2.0",
+    "@tiptap/extension-font-family": "3.2.0",
+    "@tiptap/extension-image": "3.2.0",
+    "@tiptap/extension-node-range": "3.2.0",
+    "@tiptap/extension-placeholder": "3.2.0",
+    "@tiptap/extension-subscript": "3.2.0",
+    "@tiptap/extension-superscript": "3.2.0",
+    "@tiptap/extension-text-align": "3.2.0",
+    "@tiptap/extension-text-style": "3.2.0",
+    "@tiptap/extension-underline": "3.2.0",
+    "@tiptap/pm": "3.2.0",
+    "@tiptap/react": "3.2.0",
+    "@tiptap/starter-kit": "3.2.0",
+    "next": "15.4.6",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "styled-components": "^6.1.14",
+    "y-prosemirror": "^1.2.15",
+    "y-protocols": "^1.0.6",
+    "yjs": "^13.6.23"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^20",
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.7",
+    "eslint": "^9",
+    "eslint-config-next": "15.4.6",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  },
+  "overrides": {
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.7"
+  }
+}

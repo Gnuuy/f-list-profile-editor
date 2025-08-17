@@ -1,6 +1,7 @@
 'use client'
 
 import Collapsible from "../components/Collapsible"
+import ColourMenu from "../components/ColourMenu"
 import QuoteBlock from "../components/QuoteBlock"
 import PageLayout from "../views/PageLayout"
 
@@ -16,6 +17,7 @@ export default function FAQ()
         {
             <div>
                 <QuoteBlock />
+                <ColourMenu />
                 <br />
                 <br />
             </div>

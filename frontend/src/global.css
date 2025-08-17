@@ -1,0 +1,282 @@
+:root {
+  --bg: #1b446f;
+  --bodyBg: #08192d;
+  --sidebarBg: #0b345f;
+  --navBarBg: linear-gradient(to bottom, #1c4a72, #194064);
+  --navButtonBorder: #0b345f;
+  --navButtonBg: linear-gradient(to bottom, #1c4a72, #194064);
+  --headerBg: #001122;
+  --headerBorderColor: #0f1f2e;
+  --footerBg: linear-gradient(to bottom, #2468af, #134478);
+  --footerBorder: #0b345f;
+  --editorBorder: #0b345f;
+  --editorButtonBg: linear-gradient(to bottom, #1c4a72, #194064);
+  --editorButtonHover: #235a8f;
+  --button-color: #1b446f;
+  --quote-background: linear-gradient(to bottom, #2468af, #134579);
+  --quote-border: #10345a;
+  --collapse-closed-color: linear-gradient(to bottom, #13599f, #13599f);
+}
+
+.dark {
+  --bg: #1e1818;
+  --bodyBg: #000000;
+  --sidebarBg: #2e2828;
+  --navBarBg: linear-gradient(to bottom, #2e2828, #1e1818);
+  --navButtonBorder: #1e1818;
+  --navButtonBg: var(--navBarBg);
+  --headerBg: #5c5656;
+  --headerBorderColor: #5c5656;
+  --footerBg: linear-gradient(to bottom, #4c4646, #4c4646);
+  --footerBorder: #cccccc;
+  --editorBorder: #0b345f;
+  --editorButtonBg: linear-gradient(to bottom, #373131, #1e1818);
+  --editorButtonHover: #666666;
+}
+
+.light {
+  --bg: #ffffff;
+  --bodyBg: #dddddd;
+  --sidebarBg: #eeffff;
+  --navBarBg: linear-gradient(to bottom, #3d3d3d, #222222);
+  --navButtonBorder: #222222;
+  --navButtonBg: var(--navBarBg);
+  --headerBg: #778888;
+  --headerBorderColor: #556666;
+  --footerBg: linear-gradient(to bottom, #eeffff, #eeffff);
+  --footerBorder: #cccccc;
+  --editorBorder: #ccffcc;
+  --editorButtonBg: linear-gradient(to bottom, #2468af, #dfeffc);
+  --editorButtonHover: #666666;
+}
+
+body {
+  background-color: var(--bodyBg);
+  background-repeat: repeat;
+  background-attachment: fixed;
+  background-size: auto;
+  color: #ffffff;
+  font-family: Verdana, Helvetica;
+  font-size: 12px;
+  margin: 0;
+  padding: 20px;
+}
+
+/* --- NAVIGATION BAR --- */
+.navBar {
+  background: var(--navBarBg);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 32px;
+  border-bottom: 2px solid var(--navButtonBorder);
+}
+.navBar div { display: flex; flex-direction: row; }
+
+.navBarButtonsGrid { display: flex; flex-direction: row; }
+
+.navBarButton {
+  padding: 6px;
+  background: var(--navButtonBg);
+  border-right: 1px solid var(--navButtonBorder);
+}
+.navBarButton button {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+.navBarButton img { height: 20px; width: 20px; filter: invert(1); }
+.navBarButton span {
+  color: white;
+  padding-left: 4px;
+  font-size: 12px;
+  font-family: Verdana, Helvetica;
+}
+.navBarButton:hover { background: var(--editorButtonHover); }
+
+.navBarThemeButtonGrid { display: flex; flex-direction: column; }
+
+.navBarThemeButton {
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid var(--navButtonBorder);
+}
+.navBarThemeButton button {
+  width: 100%; height: 100%;
+  display: flex; justify-content: center; align-items: center;
+}
+.navBarThemeButton:hover { background-color: var(--editorButtonHover); }
+.navBarThemeButton div {
+  width: 15px; height: 15px;
+  border-radius: 50%;
+  background-color: var(--button-color);
+  border: 1px solid var(--navButtonBorder);
+}
+
+/* --- HEADER --- */
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  background: var(--headerBg);
+  height: 148px;
+  width: 100%;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-top: 2px solid var(--headerBorderColor);
+  overflow: hidden;
+}
+
+/* --- FOOTER --- */
+.footer {
+  height: 150px;
+  width: 100%;
+  background: var(--footerBg);
+  border-radius: 0 0 5px 5px;
+  border: 1px solid var(--footerBorder);
+  border-top: 1px solid var(--footerBorder);
+}
+
+/* --- LAYOUT --- */
+.LayoutMain { display: flex; flex-direction: column; }
+.layoutGrid { display: flex; flex-direction: row; }
+.mainView { flex: 1; min-height: 1000px; background-color: var(--bg); }
+.sideBar { width: 230px; background-color: var(--sidebarBg); }
+
+/* --- EDITOR --- */
+.editor { padding: 5px; min-height: 1000px; }
+.ProseMirror {
+  flex-grow: 1;
+  min-height: 250px;
+  padding: 10px;
+}
+.ProseMirror:empty::before {
+  content: "Click to start typing...";
+  color: #aaa;
+  pointer-events: none;
+}
+.mainView-Editor { display: flex; flex-direction: column; padding: 10px; }
+.editor-Container {
+  border: 1px solid var(--editorBorder);
+  min-height: 800px;
+  resize: vertical;
+  overflow: auto;
+}
+
+/* --- TOOLBAR --- */
+.toolbar-button {
+  padding: 4px;
+  background: var(--navButtonBg);
+  border: 1px solid var(--editorBorder);
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+  transition: 0.2s;
+}
+.toolbar-button:hover,
+.toolbar-button-active { background: var(--editorButtonHover); }
+
+/* --- COLOUR MENU --- */
+.colour-menu {
+  display: grid;
+  grid-template-columns: repeat(6, 24px);
+  gap: 6px;
+  background-color: var(--toolbar-bg, #222);
+  border: 1px solid var(--toolbar-border, #444);
+  border-radius: 4px;
+  padding: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  z-index: 1000;
+}
+.colour-swatch {
+  width: 24px; height: 24px;
+  border: 1px solid #333;
+  cursor: pointer;
+}
+
+/* --- BUBBLE MENU --- */
+.bubble-menu {
+  display: flex;
+  justify-content: space-between;
+  width: 240px;
+  background: var(--navBarBg);
+  border: 2px solid var(--editorBorder);
+  border-radius: 7rem;
+  padding: 2px;
+}
+.bubble-button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: 0.2s;
+}
+.bubble-button:hover,
+.bubble-button-active { background: var(--editorButtonHover); }
+
+/* --- QUOTES --- */
+.custom-quote {
+  background: var(--quote-background);
+  border: 2px solid var(--quote-border);
+  font-weight: bold;
+  color: #ccc;
+  font-size: 0.9em;
+  border-radius: 5px;
+  padding-left: 10px;
+  margin: 2px;
+}
+.quoteHeader { font-weight: bold; margin-bottom: 5px; font-style: italic; }
+.quote-content { margin: 10px 0; }
+
+/* --- COLLAPSIBLE --- */
+.collapseBox {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 1em 0;
+  overflow: hidden;
+}
+.collapseBoxHead {
+  background: var(--collapse-closed-color);
+  padding: 0.5em 1em;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  font-weight: bold;
+}
+.collapseBoxContent { background: var(--bodyBg); padding: 1em; }
+.collapseBox.closed .collapseBoxContent { display: none; }
+
+/* --- FLOATING TOOLBAR --- */
+.floating-toolbar {
+  position: fixed;
+  bottom: 0; left: 0;
+  width: 100vw;
+  background-color: var(--toolbar-bg, #222);
+  color: var(--toolbar-text, #fff);
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  border-top: 1px solid var(--toolbar-border, #444);
+  z-index: 1000;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+}
+.floating-toolbar button,
+.floating-toolbar-toggle button {
+  background-color: var(--btn-bg, #333);
+  color: var(--btn-text, #fff);
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.floating-toolbar-toggle {
+  position: fixed;
+  bottom: 60px;
+  right: 20px;
+  z-index: 1001;
+}
