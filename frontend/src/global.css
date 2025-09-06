@@ -1,3 +1,6 @@
+/* =========================================
+THEME VARIABLES
+========================================= */
 :root {
   --bg: #1b446f;
   --bodyBg: #08192d;
@@ -15,7 +18,11 @@
   --button-color: #1b446f;
   --quote-background: linear-gradient(to bottom, #2468af, #134579);
   --quote-border: #10345a;
-  --collapse-closed-color: linear-gradient(to bottom, #13599f, #13599f);
+  --collapse-closed-color: linear-gradient(to bottom, #4389CF 0%, #13599F 100%);
+  --collapse-open-color: #235a8f;
+  --collapse-border: 1px solid #2369aF;
+  --collapse-icon-open: url('/icons/chevron-expand.png');
+  --collapse-icon-closed: url('/icons/chevron.png');
 }
 
 .dark {
@@ -50,6 +57,9 @@
   --editorButtonHover: #666666;
 }
 
+/* =========================================
+BASE
+========================================= */
 body {
   background-color: var(--bodyBg);
   background-repeat: repeat;
@@ -60,62 +70,90 @@ body {
   font-size: 12px;
   margin: 0;
   padding: 20px;
+  box-shadow: 0px 0px 8px black;
 }
 
-/* --- NAVIGATION BAR --- */
-.navBar {
+/* =========================================
+NAVIGATION BAR
+========================================= */
+.nav-bar {
   background: var(--navBarBg);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   height: 32px;
-  border-bottom: 2px solid var(--navButtonBorder);
+  width: auto;
+  border-bottom: 1px solid var(--navButtonBorder);
 }
-.navBar div { display: flex; flex-direction: row; }
 
-.navBarButtonsGrid { display: flex; flex-direction: row; }
+.nav-bar div {
+  display: flex;
+  flex-direction: row;
+}
 
-.navBarButton {
-  padding: 6px;
+.nav-bar-button {
+  display: flex;
+  flex-direction: row;
+  padding-right: 6px;
   background: var(--navButtonBg);
   border-right: 1px solid var(--navButtonBorder);
+  height: 100%
 }
-.navBarButton button {
+
+.nav-bar-button button {
   display: flex;
   align-items: center;
   flex-direction: row;
 }
-.navBarButton img { height: 20px; width: 20px; filter: invert(1); }
-.navBarButton span {
-  color: white;
+
+.nav-bar-button img {
+  width: 15px;
+  height: 15px;
+  filter: invert(1);
+}
+
+.nav-bar-button span {
+  color: #ffffff;
   padding-left: 4px;
   font-size: 12px;
   font-family: Verdana, Helvetica;
 }
-.navBarButton:hover { background: var(--editorButtonHover); }
 
-.navBarThemeButtonGrid { display: flex; flex-direction: column; }
+.nav-bar-button:hover {
+  background: var(--editorButtonHover);
+}
 
-.navBarThemeButton {
+.nav-bar-theme-button {
   min-width: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-left: 1px solid var(--navButtonBorder);
 }
-.navBarThemeButton button {
-  width: 100%; height: 100%;
-  display: flex; justify-content: center; align-items: center;
+
+.nav-bar-theme-button button {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  lign-items: center;
 }
-.navBarThemeButton:hover { background-color: var(--editorButtonHover); }
-.navBarThemeButton div {
-  width: 15px; height: 15px;
+
+.nav-bar-theme-button:hover {
+  background-color: var(--editorButtonHover);
+}
+
+.nav-bar-theme-button div {
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   background-color: var(--button-color);
   border: 1px solid var(--navButtonBorder);
 }
 
-/* --- HEADER --- */
+/* =========================================
+HEADER
+========================================= */
 .header {
   display: flex;
   align-items: flex-end;
@@ -129,7 +167,9 @@ body {
   overflow: hidden;
 }
 
-/* --- FOOTER --- */
+/* =========================================
+FOOTER
+========================================= */
 .footer {
   height: 150px;
   width: 100%;
@@ -139,45 +179,231 @@ body {
   border-top: 1px solid var(--footerBorder);
 }
 
-/* --- LAYOUT --- */
-.LayoutMain { display: flex; flex-direction: column; }
-.layoutGrid { display: flex; flex-direction: row; }
-.mainView { flex: 1; min-height: 1000px; background-color: var(--bg); }
-.sideBar { width: 230px; background-color: var(--sidebarBg); }
+/* =========================================
+LAYOUT
+========================================= */
+.layout-main {
+  display: flex;
+  flex-direction: column;
+}
 
-/* --- EDITOR --- */
-.editor { padding: 5px; min-height: 1000px; }
-.ProseMirror {
-  flex-grow: 1;
-  min-height: 250px;
+.layout-grid {
+  display: flex;
+  flex-direction: row;
+}
+
+.main-view {
+  position: relative;
+  width: 100%;
+  min-height: 1000px;
+  min-width: 659px;
+  background-color: var(--bg);
+  padding: 12px;
+  border: 1px solid var(--editorBorder);
+}
+
+.side-bar {
+  width: 210px;
+  min-width: 210px;
+  max-width: 210px;
+  height: 1200px;
+  padding: 10px;
+  background-color: var(--sidebarBg);
+  background-repeat: repeat-y;
+  background-position: right top;
+}
+
+/* =========================================
+EDITOR
+========================================= */
+.editor-container {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--editorBorder);
+  height: 100%;
+  padding: 1em 1.4em;
+  resize: vertical;
+  min-height: 200px;
+}
+
+.editor {
+  border: 1px solid var(--editorBorder);
+  min-height: 200px;
+  height: 100%;
+}
+
+.editor .ProseMirror {
+  padding-left: 1.4em;
+  padding-right: 1.4em;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #e7effa;
+}
+
+.ProseMirror input,
+.ProseMirror textarea {
+  font-family: inherit;
+  font-weight: 500;
+}
+
+.mainView-Editor {
+  display: flex;
+  flex-direction: column;
   padding: 10px;
 }
-.ProseMirror:empty::before {
-  content: "Click to start typing...";
-  color: #aaa;
-  pointer-events: none;
-}
-.mainView-Editor { display: flex; flex-direction: column; padding: 10px; }
-.editor-Container {
-  border: 1px solid var(--editorBorder);
-  min-height: 800px;
-  resize: vertical;
-  overflow: auto;
+
+.ProseMirror u,
+.ProseMirror span[style*="text-decoration: underline"] {
+  text-decoration-line: underline;
+  text-decoration-style: solid !important;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: from-font;
+  text-underline-offset: 2px;
+  text-decoration-skip-ink: none;
 }
 
-/* --- TOOLBAR --- */
-.toolbar-button {
+.ProseMirror * {
+  text-decoration-style: solid;
+}
+
+.ProseMirror sub {
+  font-variant-position: sub;
+  vertical-align: sub;
+}
+
+.ProseMirror sup {
+  font-variant-position: super;
+  vertical-align: super;
+}
+
+.ProseMirror abbr[title] {
+  text-decoration: none;
+  border-bottom: none;
+}
+
+.ProseMirror p {
+  margin: 0.55em 0;
+}
+
+.ProseMirror p:first-child {
+  margin-top: 0;
+}
+
+.ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+.ProseMirror strong {
+  font-weight: 700;
+}
+
+.ProseMirror em {
+  font-style: italic;
+}
+
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6 {
+  font-family: Verdana, Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  line-height: 1.25;
+  margin: 0.7em 0 0.45em;
+  color: #ffffff;
+}
+
+.ProseMirror h1 { font-size: 18px; }
+.ProseMirror h2 { font-size: 16px; }
+.ProseMirror h3 { font-size: 14px; }
+.ProseMirror h4 { font-size: 13px; }
+.ProseMirror h5 { font-size: 12px; }
+.ProseMirror h6 { font-size: 12px; font-weight: 600; }
+
+.ProseMirror ul,
+.ProseMirror ol {
+  margin: 0.55em 0 0.55em 2em;
+  padding: 0;
+}
+
+.ProseMirror li { margin: 0.25em 0; }
+
+.ProseMirror ul { list-style: disc; }
+.ProseMirror ol { list-style: decimal; }
+
+.ProseMirror code {
+  font-family: Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 11px;
+  background: rgba(255,255,255,0.06);
+  padding: 0 3px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.ProseMirror pre {
+  font-family: Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 11px;
+  line-height: 1.35;
+  background: #0b1a2a;
+  color: #e7effa;
+  border: 1px solid #0f2a4a;
+  border-radius: 4px;
+  padding: 8px 10px;
+  overflow: auto;
+  margin: 0.7em 0;
+}
+
+.ProseMirror hr {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin: 0.9em 0;
+}
+
+.ProseMirror a {
+  color: #9fd0ff;
+  text-decoration: underline;
+}
+
+.ProseMirror a:hover {
+  color: #cfe6ff;
+}
+
+/* =========================================
+EDITOR TOOLBAR
+========================================= */
+.editor-toolbar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.editor-toolbar-button {
   padding: 4px;
   background: var(--navButtonBg);
   border: 1px solid var(--editorBorder);
   border-bottom: none;
   border-radius: 5px 5px 0 0;
   transition: 0.2s;
+  max-width: 30px;
+  max-height: 30px;
 }
-.toolbar-button:hover,
-.toolbar-button-active { background: var(--editorButtonHover); }
 
-/* --- COLOUR MENU --- */
+.editor-toolbar-button:hover,
+.editor-toolbar-button-active {
+  background: var(--editorButtonHover);
+}
+
+.editor-toolbar-button img {
+  width: 100%;
+  height: 100%;
+  filter: invert();
+}
+
+/* =========================================
+COLOUR MENU (BASIC)
+========================================= */
 .colour-menu {
   display: grid;
   grid-template-columns: repeat(6, 24px);
@@ -186,97 +412,276 @@ body {
   border: 1px solid var(--toolbar-border, #444);
   border-radius: 4px;
   padding: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   z-index: 1000;
 }
+
 .colour-swatch {
-  width: 24px; height: 24px;
+  width: 24px;
+  height: 24px;
   border: 1px solid #333;
   cursor: pointer;
 }
 
-/* --- BUBBLE MENU --- */
-.bubble-menu {
-  display: flex;
-  justify-content: space-between;
-  width: 240px;
-  background: var(--navBarBg);
-  border: 2px solid var(--editorBorder);
-  border-radius: 7rem;
-  padding: 2px;
-}
-.bubble-button {
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 16px;
-  padding: 6px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: 0.2s;
-}
-.bubble-button:hover,
-.bubble-button-active { background: var(--editorButtonHover); }
-
-/* --- QUOTES --- */
-.custom-quote {
+/* =========================================
+QUOTES
+========================================= */
+.ProseMirror blockquote.indentable {
+  box-sizing: border-box;
+  margin-left: calc((var(--indent, 0) * 3em) - 3.3em);
+  margin-right: -3.3em;
+  margin-top: 0.6em;
+  margin-bottom: 0.6em;
+  width: auto;
+  padding: 8px 10px 10px;
   background: var(--quote-background);
-  border: 2px solid var(--quote-border);
-  font-weight: bold;
-  color: #ccc;
-  font-size: 0.9em;
-  border-radius: 5px;
-  padding-left: 10px;
-  margin: 2px;
-}
-.quoteHeader { font-weight: bold; margin-bottom: 5px; font-style: italic; }
-.quote-content { margin: 10px 0; }
-
-/* --- COLLAPSIBLE --- */
-.collapseBox {
-  border: 1px solid #ccc;
+  color: #e7effa;
+  border: 1px solid var(--quote-border);
   border-radius: 4px;
-  margin: 1em 0;
+  position: relative;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 1px rgba(0,0,0,0.35);
+}
+
+.ProseMirror blockquote.indentable::before {
+  content: "Quote:";
+  display: block;
+  font-weight: bold;
+  color: #cfe6ff;
+  font-style: italic;
+  margin-bottom: 0.35rem;
+  line-height: 1.1;
+  letter-spacing: 0.2px;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.35);
+}
+
+.ProseMirror blockquote.indentable .indent-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  cursor: ew-resize;
+  background: transparent;
+  transition: --quote-background 120ms ease;
+}
+
+.ProseMirror blockquote.indentable:hover .indent-handle,
+.ProseMirror blockquote.indentable.is-selected .indent-handle {
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0));
+}
+
+.ProseMirror blockquote.indentable,
+.ProseMirror blockquote.indentable .content {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/* =========================================
+COLLAPSIBLE
+========================================= */
+.ProseMirror .collapse.indentable {
+  position: relative;
+  margin: 0.75rem 0;
+  width: 100%;
+  border: var(--collapse-border);
+  background: var(--quote-background);
+  color: #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
   overflow: hidden;
 }
-.collapseBoxHead {
-  background: var(--collapse-closed-color);
-  padding: 0.5em 1em;
-  display: flex;
-  justify-content: space-between;
-  cursor: pointer;
-  font-weight: bold;
-}
-.collapseBoxContent { background: var(--bodyBg); padding: 1em; }
-.collapseBox.closed .collapseBoxContent { display: none; }
 
-/* --- FLOATING TOOLBAR --- */
-.floating-toolbar {
-  position: fixed;
-  bottom: 0; left: 0;
-  width: 100vw;
-  background-color: var(--toolbar-bg, #222);
-  color: var(--toolbar-text, #fff);
-  padding: 10px;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  border-top: 1px solid var(--toolbar-border, #444);
-  z-index: 1000;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+.ProseMirror .collapse.indentable .indent-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  cursor: ew-resize;
+  background: transparent;
+  transition: background-color 120ms ease;
+  user-select: none;
 }
-.floating-toolbar button,
-.floating-toolbar-toggle button {
-  background-color: var(--btn-bg, #333);
-  color: var(--btn-text, #fff);
+
+.ProseMirror .collapse.indentable:hover .indent-bar,
+.ProseMirror .collapse.indentable.is-selected .indent-bar {
+  background: linear-gradient(to right, rgba(255,255,255,0.18), rgba(255,255,255,0));
+}
+
+.ProseMirror .collapse .collapse-header{
+  border-bottom: var(--collapse-border);
+  color:#000;
+  text-shadow:0 1px 2px #fff;
+  box-shadow:0 1px 1px #03498F;
+  padding:6px 10px 6px 28px;
+  display:grid;
+  grid-template-columns:14px 1fr;
+  gap:6px;
+  width: 100%;
+  align-items:center;
+  cursor:pointer;
+  font-family: Verdana, Helvetica;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 1.2;
+  border-radius:5px 5px 0 0;
+  background: var(--collapse-open-color);
+  background-position:5px 6px, 0 0;
+  background-repeat:no-repeat, repeat;
+  background-size:14px 14px, auto;
+}
+
+.ProseMirror .collapse:not(.is-collapsed) .collapse-header{
+  background:
+  var(--collapse-icon-open) 5px 6px / 14px 14px no-repeat,
+  var(--collapse-open-color);
+}
+
+.ProseMirror .collapse.is-collapsed .collapse-header{
+  background:
+  var(--collapse-icon-closed) 5px 6px / 14px 14px no-repeat,
+  var(--collapse-closed-color);
+}
+
+.ProseMirror .collapse .collapse-header .caret{
+  display:none;
+}
+
+.ProseMirror .collapse .collapse-title {
+  background: transparent;
+  color: #000;
+  text-shadow: 0 1px 2px #fff;
   border: none;
-  padding: 6px 10px;
-  border-radius: 4px;
+  outline: none;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 1.2;
+  min-height: 16px;
+  /* FIX THIS */
+  width: 500px;
+  cursor: text;
+}
+
+.ProseMirror .collapse .collapse-body {
+  background: var(--collapse-open-color);
+  color: #e7effa;
+  padding: 8px 12px 12px 16px;
+  border-top: 1px solid rgba(0,0,0,0.15);
+}
+
+.ProseMirror .collapse .collapse {
+  background: var(--quote-background);
+  border-color: #4a4a4a;
+}
+
+/* =========================================
+COLOUR MENU (ADVANCED OVERRIDES)
+========================================= */
+.colour-menu {
+  position: fixed;
+  top: var(--cm-top);
+  left: var(--cm-left);
+  z-index: 1000;
+  background: #0f0f10;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  color: #e8e8e8;
+  user-select: none;
+}
+
+.colour-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 28px);
+  gap: 8px;
+}
+
+.colour-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #3b3b3b;
+  outline: 2px solid transparent;
+  background: var(--swatch-color);
+  display: grid;
+  place-items: center;
+  position: relative;
   cursor: pointer;
 }
-.floating-toolbar-toggle {
+
+.colour-swatch:hover {
+  outline-color: rgba(110, 168, 255, 0.55);
+}
+
+.colour-swatch.is-active {
+  outline-color: #6ea8ff;
+}
+
+.colour-contrast-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.colour-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.colour-action {
+  padding: 6px 10px;
+  background: var(--bg);
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+  color: #e8e8e8;
+  cursor: pointer;
+}
+
+.colour-action:hover {
+  background: #232323;
+}
+
+.colour-action.subtle {
+  color: #aaa;
+}
+
+/* =========================================
+TOAST
+========================================= */
+.app-toast {
   position: fixed;
-  bottom: 60px;
   right: 20px;
-  z-index: 1001;
+  bottom: 20px;
+  max-width: 60ch;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font: 13px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: #ffffff;
+  background: #1f2937;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 2000;
+}
+
+.app-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.app-toast.success {
+  background: #0f3a1f;
+  border-color: #22c55e33;
+}
+
+.app-toast.error {
+  background: #3a0f0f;
+  border-color: #ef444433;
 }

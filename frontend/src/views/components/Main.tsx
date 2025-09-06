@@ -6,8 +6,8 @@ interface ViewProps
 export default function MainView({children}: ViewProps)
 {
     return (
-        <div className="mainView">
-            {children}
+        <div className="main-view">
+                {children}
         </div>
     )
 }

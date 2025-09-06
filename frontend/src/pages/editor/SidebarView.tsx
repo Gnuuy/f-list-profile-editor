@@ -1,8 +1,17 @@
-export default function EditorSidebarView()
-{
-    return (
+import SidebarButton from "../../views/components/SidebarButton";
+import { useEditorEngine } from "../../context/EditorEngineContext";
+import { exportProfile } from "../../utilities/ExportProfile";
+
+export default function EditorSidebarView() {
+  const { getEditor } = useEditorEngine();
+
+  const handleExport = async () => {
+    await exportProfile(getEditor);
+  };
+
+  return (
         <div>
-            <h1>Hello yes, this is the editor sidebar</h1>
+            <SidebarButton title="Export" onClick={handleExport} />
         </div>
-    )
+  );
 }

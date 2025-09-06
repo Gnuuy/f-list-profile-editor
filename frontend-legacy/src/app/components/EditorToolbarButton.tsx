@@ -18,7 +18,7 @@ export default function ToolbarButton({title, isActive = false, imgPath, onClick
                 title={title}
                 onClick={(event) => onClick?.(event)}
                 >
-                <img src={imgPath} className="h-5 w-5 filter invert" />
+                <img src={imgPath} />
             </button>
         </div>
     )

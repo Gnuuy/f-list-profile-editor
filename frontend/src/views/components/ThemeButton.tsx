@@ -8,7 +8,7 @@ interface ButtonProps
 export default function ThemeButton({title, onClick, circleColor}: ButtonProps)
 {
     return (
-        <div className="navBarThemeButton">
+        <div className="nav-bar-theme-button">
             <button type='button' onClick={onClick} style={{ '--button-color': circleColor } as React.CSSProperties}>
                 <span>{title}</span>
                 <div />

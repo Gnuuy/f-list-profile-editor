@@ -1,20 +1,43 @@
-interface ButtonProps {
-    buttonText: string;
-    title?: string;
-    iconPath?: string;
-    onClick?: () => void;
-    disabled?: boolean;
+import { Link } from "wouter";
 
+interface ButtonProps {
+  buttonText: string;
+  iconPath: string;
+  disabled?: boolean;
+  href?: string;
 }
 
-export default function NavBarButton({ buttonText, title, iconPath, onClick, disabled }: ButtonProps) 
-{
+export default function NavBarButton({ buttonText, iconPath, disabled, href }: ButtonProps) {
+  const content = (
+    <>
+      <img src={iconPath} alt="" />
+      <span>{buttonText}</span>
+    </>
+  );
+
+  // 🔗 If it's a link
+  if (href) {
     return (
-      <div className="navBarButton">
-        <button type="button" title={title} onClick={onClick} disabled={disabled}>
-            <img src={iconPath} />
-            <span>{buttonText}</span>
-        </button>
-      </div>
+      <Link href={href}>
+        <a
+          className="nav-bar-button"
+          aria-disabled={disabled}
+          onClick={e => disabled && e.preventDefault()}
+        >
+          {content}
+        </a>
+      </Link>
     );
+  }
+
+  return (
+    <button
+      className="nav-bar-button"
+      type="button"
+      disabled={disabled}
+      title={disabled ? "Service is unavailable" : ""}
+    >
+      {content}
+    </button>
+  );
 }

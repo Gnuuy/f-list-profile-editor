@@ -6,7 +6,7 @@ interface ComponentProps
 export default function SideBar({children}: ComponentProps)
 {
     return (
-    <div className="sideBar">
+    <div className="side-bar">
         {children}
     </div>
     )
