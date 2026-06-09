@@ -115,7 +115,7 @@ export default function EditorToolbar() {
       </div>
 
       <div>
-        <EditorToolBarButton title="Toggle Editable" onClick={run(toggleEditable)} imgPath="/icons/editable.png" disabled={disabled} />
+        <EditorToolBarButton title="Toggle Editable" onClick={run(toggleEditable)} imgPath="/icons/edit.png" disabled={disabled} />
       </div>
     </div>
   );

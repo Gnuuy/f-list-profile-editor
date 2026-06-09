@@ -221,6 +221,7 @@ EDITOR
   flex-direction: column;
   border: 1px solid var(--editorBorder);
   height: 100%;
+  width: 100%;
   padding: 1em 1.4em;
   resize: vertical;
   min-height: 200px;
@@ -229,14 +230,15 @@ EDITOR
 .editor {
   border: 1px solid var(--editorBorder);
   min-height: 200px;
-  height: 100%;
+  max-width: 100%;
+  padding: 1em;
 }
 
 .editor .ProseMirror {
-  padding-left: 1.4em;
-  padding-right: 1.4em;
   font-size: 12px;
   line-height: 1.45;
+  height: 100%;
+  max-width: 100%;
   color: #e7effa;
 }
 
@@ -244,6 +246,10 @@ EDITOR
 .ProseMirror textarea {
   font-family: inherit;
   font-weight: 500;
+}
+
+.ProseMirror img {
+  max-width: 100%;
 }
 
 .mainView-Editor {
