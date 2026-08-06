@@ -1,33 +1,27 @@
 import type { Node as PMNode, Mark as PMMark } from '@tiptap/pm/model';
 
-const IMAGE_PLACEHOLDER = '[big][color=red]REPLACE ME WITH YOUR INLINE[/color][/big]';
+import { normalizeEiconName } from '../models/Eicon';
+import { F_LIST_COLORS, F_LIST_COLOR_NAMES } from '../models/FListColors';
 
-const PALETTE: Record<string, string> = {
-  red: '#d32f2f',
-  orange: '#f57c00',
-  yellow: '#fdd835',
-  green: '#2e7d32',
-  cyan: '#00acc1',
-  blue: '#1976d2',
-  purple: '#9c27b0',
-  pink: '#e91e63',
-  black: '#000000',
-  brown: '#795548',
-  white: '#ffffff',
-  grey: '#808080',
-};
-const PALETTE_NAMES = Object.keys(PALETTE);
+const INLINE_IMAGE_PLACEHOLDER = '[big][color=red]REPLACE ME WITH YOUR INLINE[/color][/big]';
+const EICON_PLACEHOLDER = '[big][color=red]REPLACE ME WITH YOUR EICON[/color][/big]';
 
 type MarkTok =
+  | { t: 'url'; v: string }
   | { t: 'color'; v: string }
+  | { t: 'big' }
+  | { t: 'small' }
   | { t: 'b' }
   | { t: 'i' }
   | { t: 'u' }
   | { t: 's' }
+  | { t: 'code' }
   | { t: 'sub' }
   | { t: 'sup' };
 
-const MARK_ORDER: MarkTok['t'][] = ['color', 'b', 'i', 'u', 's', 'sub', 'sup'];
+const MARK_ORDER: MarkTok['t'][] = [
+  'url', 'color', 'big', 'small', 'b', 'i', 'u', 's', 'code', 'sub', 'sup',
+];
 
 function marksToTokens(marks: ReadonlyArray<PMMark>): MarkTok[] {
   const out: MarkTok[] = [];
@@ -36,12 +30,21 @@ function marksToTokens(marks: ReadonlyArray<PMMark>): MarkTok[] {
       case 'textStyle': {
         const raw = (m.attrs?.color ?? '') as string;
         if (raw) out.push({ t: 'color', v: normalizeColor(raw) });
+        const fontSize = (m.attrs?.fontSize ?? '') as string;
+        if (fontSize === '1.25em') out.push({ t: 'big' });
+        if (fontSize === '0.875em') out.push({ t: 'small' });
+        break;
+      }
+      case 'link': {
+        const href = (m.attrs?.href ?? '') as string;
+        if (href) out.push({ t: 'url', v: href });
         break;
       }
       case 'bold': out.push({ t: 'b' }); break;
       case 'italic': out.push({ t: 'i' }); break;
       case 'underline': out.push({ t: 'u' }); break;
       case 'strike': out.push({ t: 's' }); break;
+      case 'code': out.push({ t: 'code' }); break;
       case 'subscript': out.push({ t: 'sub' }); break;
       case 'superscript': out.push({ t: 'sup' }); break;
       default: break;
@@ -52,26 +55,39 @@ function marksToTokens(marks: ReadonlyArray<PMMark>): MarkTok[] {
 }
 
 function tokEq(a: MarkTok, b: MarkTok): boolean {
-  return a.t === b.t && (a.t !== 'color' || a.v.toLowerCase() === (b as any).v?.toLowerCase());
+  if (a.t !== b.t) return false;
+  if (a.t === 'color' && b.t === 'color') {
+    return a.v.toLowerCase() === b.v.toLowerCase();
+  }
+  if (a.t === 'url' && b.t === 'url') return a.v === b.v;
+  return true;
 }
 function openTok(t: MarkTok): string {
   switch (t.t) {
+    case 'url': return `[url=${t.v}]`;
     case 'color': return `[color=${t.v}]`;
+    case 'big': return '[big]';
+    case 'small': return '[small]';
     case 'b': return '[b]';
     case 'i': return '[i]';
     case 'u': return '[u]';
     case 's': return '[s]';
+    case 'code': return '[code]';
     case 'sub': return '[sub]';
     case 'sup': return '[sup]';
   }
 }
 function closeTok(t: MarkTok): string {
   switch (t.t) {
+    case 'url': return '[/url]';
     case 'color': return '[/color]';
+    case 'big': return '[/big]';
+    case 'small': return '[/small]';
     case 'b': return '[/b]';
     case 'i': return '[/i]';
     case 'u': return '[/u]';
     case 's': return '[/s]';
+    case 'code': return '[/code]';
     case 'sub': return '[/sub]';
     case 'sup': return '[/sup]';
   }
@@ -79,12 +95,12 @@ function closeTok(t: MarkTok): string {
 
 function normalizeColor(input: string): string {
   const v = input.trim().toLowerCase();
-  if (v === 'gray') return 'grey';
-  if (PALETTE_NAMES.includes(v)) return v;
+  if (v === 'grey') return 'gray';
+  if ((F_LIST_COLOR_NAMES as readonly string[]).includes(v)) return v;
   if (v.startsWith('#')) {
     const hex = canonicalHex(v);
-    for (const name of PALETTE_NAMES) {
-      if (PALETTE[name] === hex) return name;
+    for (const name of F_LIST_COLOR_NAMES) {
+      if (F_LIST_COLORS[name] === hex) return name;
     }
     return hex;
   }
@@ -92,8 +108,8 @@ function normalizeColor(input: string): string {
     const rgb = parseRgb(v);
     if (rgb) {
       const hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
-      for (const name of PALETTE_NAMES) {
-        if (PALETTE[name] === hex) return name;
+      for (const name of F_LIST_COLOR_NAMES) {
+        if (F_LIST_COLORS[name] === hex) return name;
       }
       const nearest = nearestPaletteName(rgb[0], rgb[1], rgb[2]);
       return nearest;
@@ -122,8 +138,8 @@ function rgbToHex(r: number, g: number, b: number): string {
 }
 function nearestPaletteName(r: number, g: number, b: number): string {
   let best = 'red', bestD = Infinity;
-  for (const name of PALETTE_NAMES) {
-    const hex = PALETTE[name];
+  for (const name of F_LIST_COLOR_NAMES) {
+    const hex = F_LIST_COLORS[name];
     const rr = parseInt(hex.slice(1, 3), 16);
     const gg = parseInt(hex.slice(3, 5), 16);
     const bb = parseInt(hex.slice(5, 7), 16);
@@ -148,6 +164,17 @@ function wrapAlign(s: string, align?: string | null): string {
   }
 }
 
+function imagePlaceholder(node: PMNode): string {
+  return node.attrs?.placeholderKind === 'eicon'
+    ? EICON_PLACEHOLDER
+    : INLINE_IMAGE_PLACEHOLDER;
+}
+
+function eiconBBCode(node: PMNode): string {
+  const name = normalizeEiconName(String(node.attrs?.name ?? ''));
+  return name ? `[eicon]${name}[/eicon]` : EICON_PLACEHOLDER;
+}
+
 export function toBBCode(doc: PMNode): string {
   const out: string[] = [];
   let open: MarkTok[] = [];
@@ -170,7 +197,8 @@ export function toBBCode(doc: PMNode): string {
         return;
       }
       if (child.type.name === 'hardBreak') { out.push('\n'); return; }
-      if (child.type.name === 'image') { out.push(IMAGE_PLACEHOLDER); return; }
+      if (child.type.name === 'eicon') { out.push(eiconBBCode(child)); return; }
+      if (child.type.name === 'image') { out.push(imagePlaceholder(child)); return; }
       if (child.isInline) {
         switchTo(marksToTokens(child.marks));
         emitInlineFrom(child);
@@ -196,9 +224,9 @@ export function toBBCode(doc: PMNode): string {
     out.push('\n');
   };
 
-  const emitNode = (node: PMNode) => {
+  const emitNode = (node: PMNode, nextSibling: PMNode | null = null) => {
     switch (node.type.name) {
-      case 'doc': node.forEach(emitNode); break;
+      case 'doc': emitChildren(node); break;
       case 'paragraph': emitParagraph(node); break;
 
       case 'blockquote': {
@@ -214,9 +242,19 @@ export function toBBCode(doc: PMNode): string {
         flushCloseAll();
         const title = (node.attrs?.title || 'Details').toString();
         const inner = serializeContainerLocally(node);
-        const bb = `[collapse=${title}]${inner}[/collapse]\n`;
+        const joinsAdjacentCollapse = node.attrs?.joinNext === true
+          && nextSibling?.type.name === 'collapsible';
+        const bb = `[collapse=${title}]${inner}[/collapse]${joinsAdjacentCollapse ? '' : '\n'}`;
         const indent = Number(node.attrs?.indent ?? 0) || 0;
         out.push(wrapIndent(bb, indent));
+        break;
+      }
+
+      case 'indentedBlock': {
+        flushCloseAll();
+        const inner = serializeContainerLocally(node);
+        const indent = Math.max(1, Number(node.attrs?.indent ?? 1) || 1);
+        out.push(wrapIndent(inner, indent));
         break;
       }
 
@@ -254,22 +292,31 @@ export function toBBCode(doc: PMNode): string {
 
       case 'image':
         flushCloseAll();
-        out.push(IMAGE_PLACEHOLDER + '\n');
+        out.push(imagePlaceholder(node) + '\n');
+        break;
+
+      case 'eicon':
+        flushCloseAll();
+        out.push(eiconBBCode(node));
         break;
 
       default:
-        node.forEach(emitNode);
+        emitChildren(node);
         break;
     }
   };
 
+  const emitChildren = (parent: PMNode) => {
+    parent.forEach((child, _offset, index) => {
+      const nextSibling = index + 1 < parent.childCount
+        ? parent.child(index + 1)
+        : null;
+      emitNode(child, nextSibling);
+    });
+  };
+
   const serializeInlineOnly = (block: PMNode): string => {
-    const startLen = out.length;
-    const saved = open.slice();
-    emitInlineFrom(block);
-    const s = out.splice(startLen).join('');
-    open = saved;
-    return s;
+    return serializeParagraphInlineAlone(block);
   };
 
   const serializeParagraphInlineAlone = (para: PMNode): string => {
@@ -287,13 +334,15 @@ export function toBBCode(doc: PMNode): string {
     para.forEach(child => {
       if (child.isText) { localSwitch(marksToTokens(child.marks)); buf.push(child.text || ''); return; }
       if (child.type.name === 'hardBreak') { buf.push('\n'); return; }
-      if (child.type.name === 'image') { buf.push(IMAGE_PLACEHOLDER); return; }
+      if (child.type.name === 'eicon') { buf.push(eiconBBCode(child)); return; }
+      if (child.type.name === 'image') { buf.push(imagePlaceholder(child)); return; }
       if (child.isInline) {
         localSwitch(marksToTokens(child.marks));
         child.forEach(grand => {
           if (grand.isText) { localSwitch(marksToTokens(grand.marks)); buf.push(grand.text || ''); }
           else if (grand.type.name === 'hardBreak') buf.push('\n');
-          else if (grand.type.name === 'image') buf.push(IMAGE_PLACEHOLDER);
+          else if (grand.type.name === 'eicon') buf.push(eiconBBCode(grand));
+          else if (grand.type.name === 'image') buf.push(imagePlaceholder(grand));
         });
         return;
       }
@@ -308,11 +357,14 @@ export function toBBCode(doc: PMNode): string {
     const outerOpen = open.slice();
     const start = out.length;
     open = [];
-    container.forEach(child => {
+    container.forEach((child, _offset, index) => {
+      const nextSibling = index + 1 < container.childCount
+        ? container.child(index + 1)
+        : null;
       if (child.type.name === 'paragraph') {
         emitParagraph(child);
       } else {
-        emitNode(child);
+        emitNode(child, nextSibling);
       }
     });
     flushCloseAll();
@@ -329,7 +381,7 @@ export function toBBCode(doc: PMNode): string {
 function tidy(s: string): string {
   s = s.replace(/\n{3,}/g, '\n\n');
   s = s.replace(
-    /\n(?=(?:\s*\[(?:\/(?:color|b|i|u|s|sub|sup))\]\s*)+(?:$|\s*\[\/(?:quote|collapse|list(?:=1)?)\]))/g,
+    /\n(?=(?:\s*\[(?:\/(?:url|color|big|small|b|i|u|s|code|sub|sup))\]\s*)+(?:$|\s*\[\/(?:quote|collapse|indent|list(?:=1)?)\]))/g,
     ''
   );
   s = s.replace(/^\s+|\s+$/g, '');

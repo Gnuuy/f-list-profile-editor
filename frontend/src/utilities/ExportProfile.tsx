@@ -1,7 +1,7 @@
 import type { Editor } from '@tiptap/react';
 import { toBBCode } from './BBCodeParser';
-import { copyToClipboard } from './clipboard';
-import { toast } from './toast';
+import { copyToClipboard } from './Clipboard';
+import { toast } from './Toast';
 
 export async function exportProfile(getEditor: () => Editor | null) {
   try {

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" role="img" aria-labelledby="title description">
+  <title id="title">REPLACE ME</title>
+  <desc id="description">Placeholder for an unavailable F-list icon or eicon.</desc>
+  <rect width="50" height="50" rx="3" fill="#080810"/>
+  <rect x="1.5" y="1.5" width="47" height="47" rx="2" fill="none" stroke="#ff0000" stroke-width="3" stroke-dasharray="5 3"/>
+  <path d="M8 11h34v24H8z" fill="#191932" stroke="#ff0000"/>
+  <circle cx="17" cy="19" r="4" fill="#ff6600"/>
+  <path d="m10 32 9-8 6 5 5-5 10 8z" fill="#9933ff"/>
+  <text x="25" y="43.5" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="7" font-weight="700">REPLACE ME</text>
+</svg>

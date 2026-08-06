@@ -25,10 +25,10 @@ export const Hotkeys = Extension.create({
 
       // Quote (selection → quoteSelection; caret → add nested blockquote)
       'Alt-q': () => {
-        const ed: any = this.editor;
+        const ed = this.editor;
         const sel = this.editor.state.selection;
         this.editor.chain().focus();
-        if (!sel.empty && ed.commands?.quoteSelection) {
+        if (!sel.empty) {
           return ed.chain().quoteSelection().run();
         }
         return this.editor.chain().setBlockquote().run();
@@ -41,17 +41,17 @@ export const Hotkeys = Extension.create({
       'Mod-Shift--': () => this.editor.chain().focus().setHorizontalRule().run(),
 
       // Clear color (quick)
-      'Mod-Shift-c': () => (this.editor as any).chain().focus().unsetColor().run(),
+      'Mod-Shift-c': () => this.editor.chain().focus().unsetColor().run(),
 
       // Indent for quote/collapsible: Alt+Right/Left
       'Alt-Right': () => {
         const ed = this.editor;
         if (ed.isActive('blockquote')) {
-          const { indent = 0 } = ed.getAttributes('blockquote') as any;
+          const { indent = 0 } = ed.getAttributes('blockquote') as { indent?: number };
           return ed.chain().focus().updateAttributes('blockquote', { indent: clamp(indent + 1, 0, MAX_INDENT) }).run();
         }
         if (ed.isActive('collapsible')) {
-          const { indent = 0 } = ed.getAttributes('collapsible') as any;
+          const { indent = 0 } = ed.getAttributes('collapsible') as { indent?: number };
           return ed.chain().focus().updateAttributes('collapsible', { indent: clamp(indent + 1, 0, MAX_INDENT) }).run();
         }
         return false;
@@ -59,11 +59,11 @@ export const Hotkeys = Extension.create({
       'Alt-Left': () => {
         const ed = this.editor;
         if (ed.isActive('blockquote')) {
-          const { indent = 0 } = ed.getAttributes('blockquote') as any;
+          const { indent = 0 } = ed.getAttributes('blockquote') as { indent?: number };
           return ed.chain().focus().updateAttributes('blockquote', { indent: clamp(indent - 1, 0, MAX_INDENT) }).run();
         }
         if (ed.isActive('collapsible')) {
-          const { indent = 0 } = ed.getAttributes('collapsible') as any;
+          const { indent = 0 } = ed.getAttributes('collapsible') as { indent?: number };
           return ed.chain().focus().updateAttributes('collapsible', { indent: clamp(indent - 1, 0, MAX_INDENT) }).run();
         }
         return false;
@@ -71,12 +71,12 @@ export const Hotkeys = Extension.create({
 
       // Collapsible: toggle when inside one; insert a new one otherwise
       'Alt-c': () => {
-        const ed: any = this.editor;
+        const ed = this.editor;
         if (ed.isActive('collapsible')) {
-          const { collapsed = false } = ed.getAttributes('collapsible') as any;
+          const { collapsed = false } = ed.getAttributes('collapsible') as { collapsed?: boolean };
           return ed.chain().focus().updateAttributes('collapsible', { collapsed: !collapsed }).run();
         }
-        return ed.chain().focus().insertCollapse?.('Details').run() ?? false;
+        return ed.chain().focus().insertCollapse('Details').run();
       },
     };
   },

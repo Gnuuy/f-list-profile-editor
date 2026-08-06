@@ -8,13 +8,7 @@ interface ThemeContextProps {
 const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [theme, setTheme] = useState<string>('default');
-
-  useEffect(() => {
-    // Only run on the client
-    const storedTheme = localStorage.getItem('theme') || 'default';
-    setTheme(storedTheme);
-  }, []);
+  const [theme, setTheme] = useState<string>(() => localStorage.getItem('theme') || 'default');
 
   useEffect(() => {
     document.body.className = theme;

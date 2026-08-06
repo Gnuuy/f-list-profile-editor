@@ -1,15 +1,14 @@
 import EditorToolbar from "../../views/components/EditorToolbar";
 import { EditorInstance } from "../../views/components/EditorInstance";
-import { useEffect, useState } from "react";
 
 export default function EditorView()
 {
     return (
-        <>
+        <section className="f-list-profile-workspace" aria-label="F-list profile canvas">
             <EditorToolbar />
-            <div className="editor">
+            <div className="editor f-list-profile-canvas">
                 <EditorInstance />
             </div>
-        </>
+        </section>
     )
 }

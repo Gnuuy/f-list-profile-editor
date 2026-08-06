@@ -10,6 +10,13 @@ export const AlignableImage = Image.extend({
         parseHTML: el => el.getAttribute('data-align') ?? 'left',
         renderHTML: attrs => ({ 'data-align': attrs.align }),
       },
+      placeholderKind: {
+        default: null,
+        parseHTML: el => el.getAttribute('data-placeholder-kind'),
+        renderHTML: attrs => attrs.placeholderKind
+          ? { 'data-placeholder-kind': attrs.placeholderKind }
+          : {},
+      },
     };
   },
 });

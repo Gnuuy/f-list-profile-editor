@@ -25,15 +25,13 @@ function IndentableBlockquoteView(props: NodeViewProps) {
     const el = rootRef.current!;
     const rect = el.getBoundingClientRect();
 
-    // step size: 3em in pixels, based on computed font-size of the quote
-    const fontSize = parseFloat(getComputedStyle(el).fontSize) || 16;
-    const stepPx = 3 * fontSize;
-
     const startX = e.clientX;
     const startIndent = indent;
 
     // Optional dynamic cap so you can't indent past container width too much
     const parentWidth = el.parentElement?.getBoundingClientRect().width ?? rect.width;
+    const fontSize = parseFloat(getComputedStyle(el).fontSize) || 16;
+    const stepPx = 3 * fontSize;
     const approxMaxSteps = Math.max(0, Math.floor((parentWidth - 96) / stepPx)); // keep ~96px min content room
     const hardMax = Math.max(0, Math.min(MAX_INDENT_STEPS, approxMaxSteps));
 
@@ -58,11 +56,11 @@ function IndentableBlockquoteView(props: NodeViewProps) {
   return (
     <NodeViewWrapper
       as="blockquote"
-      ref={rootRef as any}
+      ref={rootRef}
       className={`blockquote indentable${selected ? ' is-selected' : ''}`}
       data-indent={indent}
       // expose CSS var too, if you prefer using --indent:
-      style={{ ['--indent' as any]: String(indent) }}
+      style={{ '--indent': String(indent) } as React.CSSProperties}
       // prevent the whole node from being dragged by the browser
       draggable={false}
     >
@@ -72,7 +70,7 @@ function IndentableBlockquoteView(props: NodeViewProps) {
         onMouseDown={startDrag}
         role="separator"
         aria-label="Drag to change indent"
-        title="Drag to change indent (3em steps)"
+        title="Drag to change indent (F-list 3em steps)"
       />
       {/* the actual editable content of the quote */}
       <NodeViewContent className="content" />
@@ -96,7 +94,7 @@ export const IndentableBlockquote = Blockquote.extend({
   },
 
   addNodeView() {
-    // render as a real <blockquote> so your existing CSS (Quote:) still applies
+    // Render as a real <blockquote> so the profile preview uses F-list's box styling.
     return ReactNodeViewRenderer(IndentableBlockquoteView, { as: 'blockquote' });
   },
 });
