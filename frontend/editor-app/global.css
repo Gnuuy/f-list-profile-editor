@@ -1,0 +1,3019 @@
+/* =========================================
+THEME VARIABLES
+========================================= */
+:root {
+  /* F-list's body and outer wrapper produce a 20px effective page inset. */
+  --f-list-page-inset: 20px;
+  --f-list-page-min-width: 867px;
+  --f-list-content-min-width: 491px;
+  --f-list-tabs-padding: 0.2em;
+  --f-list-panel-padding-block: 1em;
+  --f-list-panel-padding-inline: 1.4em;
+  --bg: #1b446f;
+  --bodyBg: #08192d;
+  --sidebarBg: #0b345f;
+  --navBarBg: linear-gradient(to bottom, #1c4a72, #194064);
+  --navButtonBorder: #0b345f;
+  --navButtonBg: linear-gradient(to bottom, #1c4a72, #194064);
+  --headerBg: #001122;
+  --headerBorderColor: #0f1f2e;
+  --footerBg: linear-gradient(to bottom, #2468af, #134478);
+  --footerBorder: #0b345f;
+  --editorBorder: #0b345f;
+  --editorButtonBg: linear-gradient(to bottom, #1c4a72, #194064);
+  --editorButtonHover: #235a8f;
+  --button-color: #1b446f;
+  /* The active F-list profile tab overrides the page's #bbbbcc body text. */
+  --profile-text: #ffffff;
+  --quote-text: #cccccc;
+  --quote-background: linear-gradient(to bottom, #2468af, #134478);
+  --quote-border: #0b345f;
+  --collapse-closed-color: linear-gradient(to bottom, #4389CF 0%, #13599F 100%);
+  --collapse-open-color: #235a8f;
+  --collapse-border: 1px solid #2369aF;
+  --collapse-icon-expanded: url('/icons/chevron.png');
+  --collapse-icon-collapsed: url('/icons/chevron-expand.png');
+  --page-edge-shadow: 0 0 8px #000000;
+}
+
+.dark {
+  /* F-list's dark theme sets profile text in its tab panel (#tabs .ui-widget-content). */
+  --profile-text: #999999;
+  --bg: #1e1818;
+  --bodyBg: #000000;
+  --editorBg: #2e2828;
+  --sidebarBg: #2e2828;
+  --navBarBg: linear-gradient(to bottom, #2d2727, #1e1a1a);
+  --navButtonBorder: #1e1818;
+  --navButtonBg: var(--navBarBg);
+  --navButtonHover: #5c5656;
+  --headerBg: #5c5656;
+  --headerBorderColor: #5c5656;
+  --footerBg: #4c4646;
+  --footerBorder: #5c5656;
+  --editorBorder: #0b345f;
+  --editorButtonBg: linear-gradient(to bottom, #383232, #1e1818);
+  --editorToolbarButtonBg: var(--editorButtonBg);
+  --editorButtonHover: linear-gradient(to bottom, #3e3e3e 0%, #3e3e3e 50%, #2e2e2e 50%, #444444 100%);
+  --quote-background: #2e2828;
+  --quote-border: #3e3838;
+  --collapse-closed-color: #4c4646;
+  --collapse-open-color: #4c4646;
+  --collapse-border: 1px solid #4c4646;
+  --hr-color: #0e0808;
+  --popup-bg: #2e2828;
+  --popup-inset-bg: #1e1818;
+  --popup-overlay-bg: rgba(30, 24, 24, 0.88);
+  --popup-border: #5c5656;
+  --popup-inset-border: #4c4646;
+  --popup-overlay-border: rgba(154, 148, 148, 0.65);
+  --popup-text: #eeeeee;
+  --popup-muted-text: #c8c2c2;
+  --popup-faint-text: #9a9494;
+  --popup-link: #eeeeee;
+  --popup-button-bg: var(--editorButtonBg);
+  --popup-primary-bg: #4c4646;
+  --popup-hover-bg: #4c4646;
+  --popup-active-bg: #5c5656;
+  --popup-active-border: #7a7474;
+  --popup-focus: #9a9494;
+  --popup-focus-ring: rgba(154, 148, 148, 0.25);
+}
+
+.light {
+  --profile-text: #bbbbcc;
+  --bg: #ffffff;
+  --bodyBg: #dddddd;
+  --sidebarBg: #eeffff;
+  --navBarBg: linear-gradient(to bottom, #3d3d3d, #222222);
+  --navButtonBorder: #222222;
+  --navButtonBg: var(--navBarBg);
+  --headerBg: #778888;
+  --headerBorderColor: #556666;
+  --footerBg: linear-gradient(to bottom, #eeffff, #eeffff);
+  --footerBorder: #cccccc;
+  --editorBorder: #ccffcc;
+  --editorButtonBg: linear-gradient(to bottom, #2468af, #dfeffc);
+  --editorButtonHover: #666666;
+}
+
+/* =========================================
+BASE
+========================================= */
+html {
+  min-height: 100%;
+}
+
+body {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  background-color: var(--bodyBg);
+  background-repeat: repeat;
+  background-attachment: fixed;
+  background-size: auto;
+  color: #ffffff;
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 12px;
+  margin: 0;
+  padding: var(--f-list-page-inset);
+}
+
+#root {
+  min-height: calc(100dvh - var(--f-list-page-inset) - var(--f-list-page-inset));
+}
+
+/* =========================================
+NAVIGATION BAR
+========================================= */
+.nav-bar {
+  box-sizing: border-box;
+  background: var(--navBarBg);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 32px;
+  width: auto;
+  padding-left: 10px;
+  border-bottom: 1px solid var(--navButtonBorder);
+}
+
+.nav-bar div {
+  display: flex;
+  flex-direction: row;
+}
+
+.nav-bar-button {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  height: 100%;
+  margin: 0;
+  padding: 0 8px;
+  color: #ffffff;
+  font: 400 12px/1 Verdana, Helvetica, sans-serif;
+  text-decoration: none;
+  background: var(--navButtonBg);
+  border: 0;
+  border-right: 1px solid var(--navButtonBorder);
+  cursor: pointer;
+}
+
+.nav-bar-button img {
+  flex: 0 0 15px;
+  width: 15px;
+  height: 15px;
+  filter: invert(1);
+}
+
+.nav-bar-button span {
+  color: #ffffff;
+  font-size: 12px;
+  font-family: Verdana, Helvetica, sans-serif;
+  line-height: 1;
+}
+
+.nav-bar-button:hover,
+.nav-bar-button:focus-visible {
+  background: var(--navButtonHover, var(--editorButtonHover));
+}
+
+.nav-bar-button:disabled,
+.nav-bar-button[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.nav-bar-theme-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 68px;
+  height: 100%;
+  border-left: 1px solid var(--navButtonBorder);
+}
+
+.nav-bar-theme-button button {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 0;
+  padding: 0 8px;
+  color: #ffffff;
+  font: 400 12px/1 Verdana, Helvetica, sans-serif;
+  background: var(--navButtonBg);
+  border: 0;
+  cursor: pointer;
+}
+
+.nav-bar-theme-button button:hover,
+.nav-bar-theme-button button:focus-visible,
+.nav-bar-theme-button button.is-selected {
+  background: var(--navButtonHover, var(--editorButtonHover));
+}
+
+.nav-bar-theme-button .theme-colour-swatch {
+  box-sizing: border-box;
+  flex: 0 0 15px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: var(--button-color);
+  border: 1px solid var(--navButtonBorder);
+}
+
+/* =========================================
+HEADER
+========================================= */
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  background: var(--headerBg);
+  height: 148px;
+  width: auto;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border: 1px solid var(--headerBorderColor);
+  border-bottom: 0;
+  overflow: hidden;
+}
+
+.header-meta {
+  padding-right: 14px;
+  text-align: right;
+}
+
+/* =========================================
+FOOTER
+========================================= */
+.footer {
+  box-sizing: border-box;
+  height: 150px;
+  width: auto;
+  padding: 10px;
+  background: var(--footerBg);
+  border-radius: 0 0 5px 5px;
+  border: 1px solid var(--footerBorder);
+}
+
+/* =========================================
+LAYOUT
+========================================= */
+.layout-main {
+  display: flex;
+  flex-direction: column;
+  min-width: var(--f-list-page-min-width);
+  min-height: calc(100dvh - var(--f-list-page-inset) - var(--f-list-page-inset));
+  margin-bottom: 20px;
+  box-shadow: var(--page-edge-shadow);
+}
+
+.layout-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  flex: 1 0 auto;
+  align-items: stretch;
+  width: 100%;
+}
+
+.main-view {
+  box-sizing: border-box;
+  position: relative;
+  flex: 1 1 0;
+  width: auto;
+  max-width: none;
+  min-height: 0;
+  min-width: var(--f-list-content-min-width);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  padding: 10px;
+}
+
+.side-bar {
+  /* F-list's 210px is the content width; its 10px gutters sit outside it. */
+  box-sizing: content-box;
+  flex: 0 0 210px;
+  width: 210px;
+  min-width: 0;
+  max-width: 210px;
+  padding: 10px;
+  background-color: var(--sidebarBg);
+  background-repeat: repeat-y;
+  background-position: right top;
+  border-left: 1px solid var(--navButtonBorder);
+  word-break: break-word;
+}
+
+.editor-sidebar-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.editor-sidebar-actions > button {
+  width: 100%;
+  padding: 8px 10px;
+  color: #ffffff;
+  font: 600 12px/1.2 Verdana, Helvetica, sans-serif;
+  text-align: left;
+  background: var(--editorButtonBg);
+  border: 1px solid var(--navButtonBorder);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.editor-sidebar-actions > button:hover,
+.editor-sidebar-actions > button:focus-visible {
+  background: var(--editorButtonHover);
+}
+
+/* =========================================
+EDITOR
+========================================= */
+.editor-container {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--editorBorder);
+  height: 100%;
+  width: 100%;
+  padding: 1em 1.4em;
+  resize: vertical;
+  min-height: 200px;
+}
+
+.f-list-profile-workspace {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  padding: var(--f-list-tabs-padding);
+}
+
+.editor {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  /* F-list's profile tab panel has a thin square outline around the content. */
+  border: 1px solid var(--editorBorder);
+  border-radius: 0;
+  min-height: 200px;
+  width: 100%;
+  max-width: 100%;
+  padding: var(--f-list-panel-padding-block) var(--f-list-panel-padding-inline);
+}
+
+.f-list-profile-canvas > div {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.f-list-profile-canvas {
+  background: var(--editorBg, var(--bg));
+  color: var(--profile-text);
+}
+
+.f-list-profile-canvas .ProseMirror {
+  box-sizing: border-box;
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: normal;
+  flex: 1 1 auto;
+  min-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  color: var(--profile-text);
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.ProseMirror input,
+.ProseMirror textarea {
+  font-family: inherit;
+  font-weight: 500;
+}
+
+.ProseMirror img {
+  max-width: 100%;
+}
+
+.ProseMirror img[data-placeholder-kind="inline"] {
+  /* F-list wraps every [img] inline in a block-level div. Keep the image node
+     editable, but give it the same before/after line break in the canvas. */
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin-right: auto;
+  /* On F-list the image sits on the text baseline inside that div, so the
+     line's 3px descender shows under it. Padding, unlike a margin, keeps
+     that space when the paragraph's own margin follows. */
+  padding-bottom: 3px;
+  vertical-align: baseline;
+}
+
+/* ProseMirror adds a caret line after an image that ends a paragraph. F-list
+   shows nothing there, as the image's div already ends the line. */
+.ProseMirror img[data-placeholder-kind="inline"] + img.ProseMirror-separator,
+.ProseMirror img[data-placeholder-kind="inline"] + img.ProseMirror-separator + br.ProseMirror-trailingBreak,
+.ProseMirror img[data-placeholder-kind="inline"] + br.ProseMirror-trailingBreak {
+  display: none !important;
+}
+
+.ProseMirror img[data-placeholder-kind="inline"][data-align="center"],
+.ProseMirror [style*="text-align: center"] > img[data-placeholder-kind="inline"] {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.ProseMirror img[data-placeholder-kind="inline"][data-align="right"],
+.ProseMirror [style*="text-align: right"] > img[data-placeholder-kind="inline"] {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+.ProseMirror img[data-placeholder-kind="icon"] {
+  display: inline;
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  height: 50px;
+  min-height: 50px;
+  max-height: 50px;
+  object-fit: cover;
+  /* F-list anchors character avatars to the surrounding text baseline. */
+  vertical-align: baseline;
+}
+
+.ProseMirror .eicon-node {
+  display: inline-block;
+  width: 50px;
+  min-width: 50px;
+  height: 50px;
+  line-height: 0;
+  /* Keep eicons on the same bottom text baseline as character avatars. */
+  vertical-align: baseline;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.ProseMirror .eicon-node:active {
+  cursor: grabbing;
+}
+
+.ProseMirror .eicon-image,
+.ProseMirror img[data-eicon-name] {
+  display: block;
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+  height: 50px;
+  min-height: 50px;
+  max-height: 50px;
+  object-fit: cover;
+}
+
+.ProseMirror .eicon-node.is-selected {
+  outline: 2px solid #9bc9f5;
+  outline-offset: 1px;
+}
+
+.ProseMirror [data-indent-block] {
+  box-sizing: border-box;
+  padding-left: calc(var(--import-indent, 1) * 3em);
+}
+
+.mainView-Editor {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.ProseMirror u,
+.ProseMirror span[style*="text-decoration: underline"] {
+  text-decoration-line: underline;
+  text-decoration-style: solid !important;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: from-font;
+  text-underline-offset: 2px;
+  text-decoration-skip-ink: none;
+}
+
+.ProseMirror * {
+  text-decoration-style: solid;
+}
+
+.ProseMirror sub,
+.ProseMirror sup {
+  position: relative;
+  font-size: 75%;
+  line-height: 0;
+  vertical-align: baseline;
+}
+
+.ProseMirror sup {
+  top: -0.5em;
+}
+
+.ProseMirror sub {
+  bottom: -0.25em;
+}
+
+.ProseMirror abbr[title] {
+  text-decoration: none;
+  border-bottom: none;
+}
+
+.ProseMirror p {
+  margin: 0;
+}
+
+/* A physical newline after an alignment tag becomes a real <br> after that
+   display block on F-list. Raw left-aligned text also records the newline for
+   exact export, but its trailing <br> is visually absorbed by a following
+   block and must not receive this extra margin. */
+.ProseMirror p[style*="text-align"][data-f-list-break-after="true"] {
+  margin-bottom: 15px;
+}
+
+/* Adjacent vertical margins collapse, but F-list's blank line sits between
+   them: the 15px line plus the HR's own 6px margin. */
+.ProseMirror p[style*="text-align"][data-f-list-break-after="true"]:has(+ hr) {
+  margin-bottom: 21px;
+}
+
+.ProseMirror strong {
+  font-weight: 700;
+}
+
+.ProseMirror em {
+  font-style: italic;
+}
+
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6 {
+  font-family: inherit;
+  font-weight: bold;
+  line-height: 1.2;
+  margin: 0 0 0.5rem;
+  color: inherit;
+}
+
+.ProseMirror h1 { font-size: 2.5rem; }
+.ProseMirror h2 { font-size: 2rem; }
+.ProseMirror h3 { font-size: 1.75rem; }
+.ProseMirror h4 { font-size: 1.5rem; }
+.ProseMirror h5 { font-size: 1.25rem; }
+.ProseMirror h6 { font-size: 1rem; }
+
+.ProseMirror ul,
+.ProseMirror ol {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  padding-left: 40px;
+}
+
+.ProseMirror li { margin: 0; }
+
+.ProseMirror ul { list-style: disc; }
+.ProseMirror ol { list-style: decimal; }
+
+.ProseMirror code {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 87.5%;
+  color: inherit;
+  background: rgba(255,255,255,0.06);
+  padding: 0 3px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 3px;
+}
+
+.ProseMirror pre {
+  display: block;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 87.5%;
+  line-height: inherit;
+  background: #0b1a2a;
+  color: #e7effa;
+  border: 1px solid #0f2a4a;
+  border-radius: 4px;
+  padding: 8px 10px;
+  overflow: auto;
+  margin: 0 0 1rem;
+}
+
+.ProseMirror hr {
+  box-sizing: content-box;
+  height: 0;
+  overflow: hidden;
+  color: var(--hr-color, #082d44);
+  background-color: var(--hr-color, #082d44);
+  border: 1px solid var(--hr-color, #082d44);
+  margin: 6px 0;
+}
+
+/* [hr] and a newline: the HR's 6px margin, then a 15px blank line. */
+.ProseMirror hr[data-f-list-break-after="true"] {
+  margin-bottom: 21px;
+}
+
+/* The next HR's 6px top margin sits below that line instead of collapsing. */
+.ProseMirror hr[data-f-list-break-after="true"]:has(+ hr) {
+  margin-bottom: 27px;
+}
+
+.ProseMirror a {
+  color: #98d9ff;
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: from-font;
+  text-underline-offset: 1px;
+}
+
+.ProseMirror a:hover {
+  color: #1ba9e3;
+}
+
+/* F-list prefixes profile URLs with a link glyph and appends the destination
+   host in square brackets. Both are presentation only and stay out of BBCode. */
+.ProseMirror a[data-link-host]::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+  background-color: #ffffff;
+  -webkit-mask: url('/icons/profile-link.svg') center / contain no-repeat;
+  mask: url('/icons/profile-link.svg') center / contain no-repeat;
+  vertical-align: -2px;
+}
+
+.ProseMirror a[data-link-host]::after {
+  content: " [" attr(data-link-host) "]";
+  display: inline-block;
+  margin-left: 2px;
+  color: #ffffff;
+  text-decoration: none;
+  text-shadow: #000 0 1px 2px;
+}
+
+/* Link has a higher ProseMirror mark priority than TextStyle, so [small] and
+   [big] render as a descendant span around the label. F-list also applies
+   that size to its generated [hostname] support text. */
+.ProseMirror a[data-link-host]:has(span[style*="font-size: 0.8em"])::after {
+  font-size: 0.8em;
+}
+
+.ProseMirror a[data-link-host]:has(span[style*="font-size: 1.4em"])::after {
+  font-size: 1.4em;
+}
+
+.ProseMirror span[style*="color"] {
+  text-shadow: #000 0 1px 2px;
+}
+
+/* F-list treats [color=white] as its own .whitefont style. In particular,
+   links inside it remain white instead of taking the normal link colour. */
+.ProseMirror span[style*="color: #ffffff" i],
+.ProseMirror span[style*="color: rgb(255, 255, 255)" i],
+.ProseMirror span[style*="color: white" i],
+.ProseMirror span[style*="color: #ffffff" i] a,
+.ProseMirror span[style*="color: rgb(255, 255, 255)" i] a,
+.ProseMirror span[style*="color: white" i] a {
+  color: #ffffff !important;
+  text-shadow: #000 0 1px 2px;
+}
+
+.ProseMirror span[style*="color: #000000"],
+.ProseMirror span[style*="color: rgb(0, 0, 0)"] {
+  text-shadow: #777 0 1px 2px, #9e9e9e 0 0 2px;
+}
+
+/* F-list's dark theme shows [color=black] as grey with a dark two-layer
+   shadow. Covers dropdown titles coloured black as well as text. */
+.dark .ProseMirror [style*="color: #000000"],
+.dark .ProseMirror [style*="color: rgb(0, 0, 0)"] {
+  color: #888888 !important;
+  text-shadow: #161313 0 1px 2px, #1f1b1b 0 0 2px;
+}
+
+/* =========================================
+EDITOR TOOLBAR
+========================================= */
+.editor-toolbar {
+  --toolbar-button-size: 30px;
+  --toolbar-icon-size: 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: flex-end;
+  min-height: var(--toolbar-button-size);
+}
+
+.editor-toolbar-anchor {
+  min-height: 30px;
+  padding: var(--f-list-tabs-padding) var(--f-list-tabs-padding) 0;
+}
+
+.editor-toolbar.is-floating {
+  box-sizing: border-box;
+  position: fixed;
+  left: 50%;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  z-index: 950;
+  grid-template-columns: auto auto auto;
+  gap: 10px;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  padding: 6px;
+  overflow-x: auto;
+  background: var(--popup-bg, #082d44);
+  border: 1px solid var(--popup-border, #2369af);
+  border-radius: 7px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.62);
+  transform: translateX(-50%);
+  animation: floating-toolbar-in 140ms ease-out;
+  overscroll-behavior-inline: contain;
+}
+
+.editor-toolbar.is-floating .editor-toolbar-button {
+  border: 1px solid var(--editorBorder);
+  border-radius: 4px;
+}
+
+@keyframes floating-toolbar-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.editor-toolbar-group {
+  display: flex;
+  align-items: stretch;
+  height: var(--toolbar-button-size);
+  line-height: 0;
+}
+
+.editor-toolbar-group[aria-label="Formatting tools"] {
+  justify-self: start;
+}
+
+.editor-toolbar-group[aria-label="Text alignment"] {
+  justify-self: center;
+}
+
+.editor-toolbar-group[aria-label="Editor controls"] {
+  justify-self: end;
+}
+
+.unicode-font-control {
+  box-sizing: border-box;
+  display: inline-flex;
+  height: var(--toolbar-button-size);
+  line-height: normal;
+}
+
+.unicode-font-select {
+  appearance: auto;
+  box-sizing: border-box;
+  width: 154px;
+  height: var(--toolbar-button-size);
+  margin: 0;
+  padding: 0 24px 0 8px;
+  background: var(--editorToolbarButtonBg, var(--navButtonBg));
+  color: #ffffff;
+  border: 1px solid var(--editorBorder);
+  border-right: 0;
+  border-bottom: 0;
+  border-radius: 5px 0 0 0;
+  font: 600 11px/1 Verdana, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.unicode-font-select:hover,
+.unicode-font-select:focus-visible {
+  background: var(--editorButtonHover);
+  outline: none;
+}
+
+.unicode-font-select:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.unicode-font-select option {
+  background: var(--popup-bg, #194064);
+  color: #ffffff;
+}
+
+.editor-toolbar.is-floating .unicode-font-select {
+  border: 1px solid var(--editorBorder);
+  border-right: 0;
+  border-radius: 4px 0 0 4px;
+}
+
+.editor-toolbar-group[aria-label="Editor controls"] .editor-toolbar-button {
+  border-radius: 0;
+}
+
+.editor-toolbar-group[aria-label="Editor controls"] .editor-toolbar-button:last-child {
+  border-radius: 0 5px 0 0;
+}
+
+.editor-toolbar.is-floating .editor-toolbar-group[aria-label="Editor controls"] .editor-toolbar-button {
+  border-radius: 0;
+}
+
+.editor-toolbar.is-floating .editor-toolbar-group[aria-label="Editor controls"] .editor-toolbar-button:last-child {
+  border-radius: 0 4px 4px 0;
+}
+
+.editor-toolbar-button {
+  appearance: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 var(--toolbar-button-size);
+  width: var(--toolbar-button-size);
+  min-width: var(--toolbar-button-size);
+  max-width: var(--toolbar-button-size);
+  height: var(--toolbar-button-size);
+  min-height: var(--toolbar-button-size);
+  max-height: var(--toolbar-button-size);
+  margin: 0;
+  padding: 0;
+  background: var(--editorToolbarButtonBg, var(--navButtonBg));
+  border: 1px solid var(--editorBorder);
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+  transition: 0.2s;
+  vertical-align: top;
+}
+
+.editor-toolbar-button:hover,
+.editor-toolbar-button-active {
+  background: var(--editorButtonHover);
+}
+
+.editor-toolbar-button-icon {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  flex: 0 0 var(--toolbar-icon-size);
+  width: var(--toolbar-icon-size);
+  height: var(--toolbar-icon-size);
+  line-height: 0;
+  pointer-events: none;
+}
+
+.editor-toolbar-button-icon > svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  color: #ffffff;
+  stroke-width: 2.1;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45));
+}
+
+.editor-toolbar-button img {
+  display: block;
+  width: var(--toolbar-icon-size);
+  height: var(--toolbar-icon-size);
+  max-width: var(--toolbar-icon-size);
+  max-height: var(--toolbar-icon-size);
+  object-fit: contain;
+  object-position: center;
+  filter: invert();
+}
+
+.editor-toolbar-button-glyph {
+  display: grid;
+  place-items: center;
+  width: var(--toolbar-icon-size);
+  height: var(--toolbar-icon-size);
+  color: #ffffff;
+  font: 700 18px/1 Verdana, Helvetica, sans-serif;
+  text-shadow: 0 1px 2px #000000;
+}
+
+.editor-toolbar-button[title^="Big text"] .editor-toolbar-button-glyph,
+.editor-toolbar-button[title^="Small text"] .editor-toolbar-button-glyph {
+  font-size: 12px;
+  letter-spacing: -1px;
+}
+
+/* =========================================
+QUOTES
+========================================= */
+.ProseMirror blockquote.indentable {
+  box-sizing: border-box;
+  position: relative;
+  width: auto;
+  margin: 2px;
+  margin-left: calc(2px + var(--indent, 0) * 3em);
+  padding: 10px;
+  background: var(--quote-background);
+  color: var(--quote-text);
+  border: 1px solid var(--quote-border);
+  border-radius: 5px;
+  font-style: italic;
+  box-shadow: #111 0 0 1px;
+}
+
+/* F-list's dark theme doesn't colour quotes either: they show the [color]
+   around them (kept in --quote-colour), or the text colour around them. */
+.dark .ProseMirror blockquote.indentable {
+  color: var(--quote-colour, inherit);
+}
+
+/* A nested quote only uses its own colour, not its parent's. */
+.ProseMirror blockquote.indentable > .content {
+  --quote-colour: initial;
+}
+
+/* Nothing on F-list resets a [color]'s text shadow inside a quote, in any theme. */
+.ProseMirror blockquote.indentable[data-color] {
+  text-shadow: #000 0 1px 2px;
+}
+
+.ProseMirror blockquote.indentable[data-color="#000000"] {
+  text-shadow: #777 0 1px 2px, #9e9e9e 0 0 2px;
+}
+
+.dark .ProseMirror blockquote.indentable[data-color="#000000"] {
+  color: #888888;
+  text-shadow: #161313 0 1px 2px, #1f1b1b 0 0 2px;
+}
+
+.ProseMirror blockquote.indentable > .QuoteHeader {
+  position: relative;
+  display: flex;
+  align-items: center;
+  /* One 15px line, like F-list's header. The actions button is positioned
+     over it, so it needs no extra height. */
+  min-height: 15px;
+  margin-bottom: 5px;
+  padding-right: 24px;
+  font-weight: bold;
+}
+
+.ProseMirror blockquote.indentable .indent-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  cursor: ew-resize;
+  background: transparent;
+  transition: background-color 120ms ease;
+}
+
+/* A newline after [/indent] is a <br> after that block on F-list: one blank line. */
+.ProseMirror div[data-indent-block][data-f-list-break-after="true"] {
+  margin-bottom: 15px;
+}
+
+.ProseMirror div[data-indent-block][data-f-list-break-after="true"]:has(+ hr) {
+  margin-bottom: 21px;
+}
+
+.ProseMirror blockquote.indentable[data-f-list-break-after="true"] {
+  margin-bottom: 17px;
+}
+
+/* The blank line sits above the HR's 6px margin instead of collapsing into it. */
+.ProseMirror .node-blockquote:has(+ hr) > blockquote.indentable[data-f-list-break-after="true"] {
+  margin-bottom: 23px;
+}
+
+/* A quote's 2px top margin also stays below a blank line. */
+.ProseMirror p[style*="text-align"][data-f-list-break-after="true"]:has(+ .node-blockquote),
+.ProseMirror div[data-indent-block][data-f-list-break-after="true"]:has(+ .node-blockquote),
+.ProseMirror .node-collapsible:has(+ .node-blockquote) > .collapse-indent-wrapper[data-f-list-break-after="true"] {
+  margin-bottom: 17px;
+}
+
+.ProseMirror .node-blockquote:has(+ .node-blockquote) > blockquote.indentable[data-f-list-break-after="true"] {
+  margin-bottom: 19px;
+}
+
+.ProseMirror hr[data-f-list-break-after="true"]:has(+ .node-blockquote) {
+  margin-bottom: 23px;
+}
+
+.ProseMirror blockquote.indentable:hover .indent-handle,
+.ProseMirror blockquote.indentable.is-selected .indent-handle {
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0));
+}
+
+.ProseMirror[contenteditable="false"] blockquote.indentable .indent-handle {
+  display: none;
+}
+
+.ProseMirror blockquote.indentable,
+.ProseMirror blockquote.indentable .content {
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* =========================================
+COLLAPSIBLE
+========================================= */
+.ProseMirror .collapse-indent-wrapper {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* A newline after [/collapse] is one 15px blank line on F-list. */
+.ProseMirror .collapse-indent-wrapper.has-separated-next,
+.ProseMirror .collapse-indent-wrapper[data-f-list-break-after="true"] {
+  margin-bottom: 15px;
+}
+
+/* That line sits above the HR's 6px margin instead of collapsing into it. */
+.ProseMirror .node-collapsible:has(+ hr) > .collapse-indent-wrapper[data-f-list-break-after="true"] {
+  margin-bottom: 21px;
+}
+
+.ProseMirror .collapse.indentable {
+  box-sizing: border-box;
+  position: relative;
+  margin: 0;
+  min-height: 15px;
+  width: 100%;
+  max-width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.ProseMirror .collapse.indentable:not(.is-collapsed) {
+  background-color: var(--collapse-open-color);
+  color: #eeeeee;
+  border: var(--collapse-border);
+  border-radius: 5px;
+  padding-bottom: 4px;
+  overflow: hidden;
+}
+
+.ProseMirror .collapse.indentable.has-actions-open {
+  overflow: visible;
+}
+
+.ProseMirror .collapse.indentable .indent-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  cursor: ew-resize;
+  background: transparent;
+  transition: background-color 120ms ease;
+  user-select: none;
+  touch-action: none;
+  z-index: 2;
+}
+
+.ProseMirror .collapse.indentable:hover .indent-bar,
+.ProseMirror .collapse.indentable.is-selected .indent-bar {
+  background: linear-gradient(to right, rgba(255,255,255,0.18), rgba(255,255,255,0));
+}
+
+.ProseMirror .collapse > .collapse-header {
+  box-sizing: border-box;
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 10px;
+  padding: 3px 0 4px 25px;
+  border: var(--collapse-border);
+  border-radius: 5px;
+  color: #000;
+  text-shadow: 0 1px 2px #fff;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 1.2em;
+  line-height: normal;
+  background: var(--collapse-open-color);
+  background-position: 5px 5px, 0 0;
+  background-repeat: no-repeat, repeat;
+  transition: color 200ms ease, text-shadow 200ms ease;
+  box-shadow: #03498f 0 1px 1px;
+}
+
+.ProseMirror .collapse:not(.is-collapsed) > .collapse-header {
+  background:
+    var(--collapse-icon-expanded) 5px 5px no-repeat,
+    var(--collapse-open-color);
+  color: #eeeeee;
+  padding-bottom: 0;
+  text-shadow: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.ProseMirror .collapse:not(.is-collapsed)
+  > .collapse-header
+  > .collapse-header-text {
+  text-shadow: none;
+}
+
+.ProseMirror .collapse.is-collapsed > .collapse-header {
+  background:
+    var(--collapse-icon-collapsed) 5px 5px no-repeat,
+    var(--collapse-closed-color);
+}
+
+/* F-list keeps a nested dropdown's closed label light, even though a closed
+   root dropdown uses the base dark label. Scope this to true descendants so
+   an open parent cannot leak its own header state into the child. */
+.ProseMirror .collapse .collapse.is-collapsed > .collapse-header {
+  color: #eeeeee;
+  text-shadow: #fff 0 1px 2px;
+}
+
+/* F-list's dark theme gives dropdowns no text colour of their own, open or
+   closed: titles and contents show the profile text colour, or the colour
+   around the dropdown. Closed labels, root and nested, look like open ones.
+   The has-custom-colour inheritance rule below is more specific, so BBCode
+   colours still reach nested dropdown labels. */
+.dark .ProseMirror .collapse.indentable:not(.is-collapsed),
+.dark .ProseMirror .collapse:not(.is-collapsed) > .collapse-header {
+  color: inherit;
+}
+
+.dark .ProseMirror .collapse.is-collapsed > .collapse-header {
+  color: inherit;
+  text-shadow: inherit;
+  box-shadow: none;
+}
+
+/* The dark theme doesn't reset a [color]'s text shadow either, so everything
+   in a coloured dropdown keeps it, titles included. [color=black] keeps the
+   shadow of its own rule. */
+.dark .ProseMirror .collapse.has-custom-colour:not([style*="color: rgb(0, 0, 0)"]) {
+  text-shadow: #000 0 1px 2px;
+}
+
+.dark .ProseMirror .collapse:not(.is-collapsed) > .collapse-header,
+.dark .ProseMirror .collapse:not(.is-collapsed) > .collapse-header > .collapse-header-text {
+  text-shadow: inherit;
+}
+
+/* [color=white] text keeps a faint dark shadow on F-list in every theme,
+   including closed dropdown titles that are white themselves or inherit white
+   from their dropdown. */
+.ProseMirror .collapse.is-collapsed:is([style*="color: #ffffff" i], [style*="color: rgb(255, 255, 255)"]) > .collapse-header,
+.ProseMirror .collapse:is([style*="color: #ffffff" i], [style*="color: rgb(255, 255, 255)"])
+  .collapse.is-collapsed:not(.has-custom-colour) > .collapse-header {
+  text-shadow: #000 0 1px 2px;
+}
+
+/* An outer BBCode colour wraps the whole dropdown. Nested dropdowns without
+   an explicit colour inherit it just like F-list; their normal open/closed
+   label colours must not mask that inherited wrapper. */
+.ProseMirror .collapse.has-custom-colour .collapse:not(.has-custom-colour),
+.ProseMirror .collapse.has-custom-colour
+  .collapse:not(.has-custom-colour)
+  > .collapse-header {
+  color: inherit;
+}
+
+.ProseMirror .collapse .collapse-header .caret {
+  display: none;
+}
+
+.ProseMirror .collapse .collapse-header-text {
+  box-sizing: border-box;
+  min-height: 15px;
+  width: 100%;
+  padding-right: 24px;
+  cursor: pointer;
+}
+
+.ProseMirror .collapse .collapse-title {
+  appearance: none;
+  box-sizing: border-box;
+  display: block;
+  background: transparent;
+  color: inherit;
+  text-shadow: inherit;
+  border: none;
+  outline: none;
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  font-style: inherit;
+  font-weight: bold;
+  font-size: inherit;
+  line-height: inherit;
+  min-height: 15px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  cursor: text;
+}
+
+.ProseMirror[contenteditable="false"] .collapse.indentable .indent-bar {
+  display: none;
+}
+
+/* Shared editor-only action menu for quote and dropdown headers. */
+.ProseMirror .structural-block-actions {
+  position: absolute;
+  top: 50%;
+  right: 3px;
+  z-index: 8;
+  width: 18px;
+  height: 18px;
+  color: #eeeeee;
+  text-align: left;
+  text-shadow: none;
+  transform: translateY(-50%);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 120ms ease, visibility 0s linear 120ms;
+}
+
+.ProseMirror .collapse > .collapse-header:hover > .structural-block-actions,
+.ProseMirror blockquote.indentable > .QuoteHeader:hover > .structural-block-actions,
+.ProseMirror .structural-block-actions.is-open,
+.ProseMirror .structural-block-actions:has(.structural-block-actions-trigger:focus-visible) {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+
+.ProseMirror[contenteditable="false"] .structural-block-actions {
+  display: none;
+}
+
+.ProseMirror .structural-block-actions-trigger {
+  appearance: none;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  color: #eeeeee;
+  background: var(--popup-overlay-bg, rgba(8, 45, 68, 0.88));
+  border: 1px solid var(--popup-border, #3977ae);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.ProseMirror .structural-block-actions-trigger:hover,
+.ProseMirror .structural-block-actions-trigger:focus-visible,
+.ProseMirror .structural-block-actions.is-open .structural-block-actions-trigger {
+  background: var(--popup-active-bg, #235a8f);
+  border-color: var(--popup-focus, #82c6f0);
+  outline: none;
+}
+
+.ProseMirror .structural-block-actions-trigger svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.4;
+}
+
+.ProseMirror .structural-block-action-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+  width: max-content;
+  min-width: 132px;
+  padding: 3px;
+  color: #eeeeee;
+  background: var(--popup-bg, #164a75);
+  border: 1px solid var(--popup-border, #3977ae);
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.48);
+}
+
+.ProseMirror .structural-block-action-item {
+  appearance: none;
+  min-height: 22px;
+  margin: 0;
+  padding: 3px 7px;
+  color: #eeeeee;
+  background: var(--popup-button-bg, #194a72);
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font: 600 10px/14px Arial, Helvetica, sans-serif;
+  text-align: left;
+  text-shadow: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ProseMirror .structural-block-action-item:hover:not(:disabled),
+.ProseMirror .structural-block-action-item:focus-visible,
+.ProseMirror .structural-block-action-item.is-active {
+  background: var(--popup-active-bg, #235a8f);
+  border-color: var(--popup-focus, #82c6f0);
+  outline: none;
+}
+
+.ProseMirror .structural-block-action-item.is-danger:hover:not(:disabled),
+.ProseMirror .structural-block-action-item.is-danger:focus-visible {
+  background: #8b2e3f;
+  border-color: #d77886;
+}
+
+.ProseMirror .structural-block-action-item:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.ProseMirror .collapse > .collapse-body-transition {
+  display: grid;
+  grid-template-rows: 1fr;
+  background-color: var(--collapse-open-color);
+  visibility: visible;
+  transition: grid-template-rows 200ms ease;
+}
+
+.ProseMirror .collapse.is-collapsed > .collapse-body-transition {
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows 200ms ease,
+    visibility 0s linear 200ms;
+}
+
+.ProseMirror .collapse > .collapse-body-transition > .collapse-body-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.ProseMirror .collapse > .collapse-body-transition > .collapse-body-clip > .collapse-body {
+  box-sizing: border-box;
+  background: transparent;
+  color: inherit;
+  /* On F-list CollapseBlock is inside a header with 25px left padding. Our
+     body is a sibling, so reproduce that inherited inset explicitly. */
+  margin: 10px 10px 10px 25px;
+  padding: 0;
+  width: auto;
+  max-width: none;
+  font-size: 12px;
+  font-weight: normal;
+  line-height: normal;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ProseMirror .collapse > .collapse-header,
+  .ProseMirror .collapse > .collapse-body-transition,
+  .ProseMirror .collapse.is-collapsed > .collapse-body-transition {
+    transition: none;
+  }
+}
+
+/* =========================================
+COLOUR MENU
+========================================= */
+.colour-menu {
+  box-sizing: border-box;
+  position: fixed;
+  top: var(--cm-top);
+  left: var(--cm-left);
+  z-index: 1000;
+  width: min(266px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
+  padding: 10px;
+  color: #eeeeee;
+  background: var(--popup-bg, #0b345f);
+  border: 1px solid var(--popup-border, #2369af);
+  border-radius: 5px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  font: 12px/1.2 Verdana, Helvetica, sans-serif;
+  user-select: none;
+}
+
+.colour-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.colour-menu-header strong {
+  display: block;
+  font-size: 13px;
+}
+
+.colour-menu-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.colour-menu-close {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  color: #eeeeee;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font: 20px/20px Verdana, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.colour-menu-close:hover {
+  background: var(--popup-active-bg, #235a8f);
+  border-color: var(--popup-active-border, #3977ae);
+}
+
+.colour-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 34px);
+  gap: 6px;
+}
+
+.colour-option {
+  box-sizing: border-box;
+  position: relative;
+  display: block;
+  width: 34px;
+  height: 34px;
+  padding: 3px;
+  background: var(--popup-inset-bg, #102f4a);
+  border: 1px solid var(--popup-inset-border, #315b80);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.colour-option:hover {
+  background: var(--popup-hover-bg, #194a72);
+  border-color: var(--popup-active-border, #72b9f4);
+}
+
+.colour-option:focus-visible,
+.colour-menu-close:focus-visible,
+.colour-action:focus-visible {
+  outline: 2px solid var(--popup-focus, #82c6f0);
+  outline-offset: 1px;
+}
+
+.colour-option.is-active {
+  background: var(--popup-active-bg, #235a8f);
+  border-color: var(--popup-focus, #82c6f0);
+}
+
+.colour-option-chip {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--swatch-color);
+  border: 1px solid rgba(0, 0, 0, 0.65);
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.colour-option[data-colour-name="white"] .colour-option-chip {
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.22),
+    0 0 0 1px var(--popup-overlay-border, rgba(130, 198, 240, 0.65));
+}
+
+.horizontal-rule-menu {
+  width: min(238px, calc(100vw - 24px));
+}
+
+.link-menu {
+  width: min(310px, calc(100vw - 24px));
+  overflow: visible;
+  user-select: auto;
+}
+
+.link-menu-form,
+.link-menu-field {
+  display: grid;
+}
+
+.link-menu-form {
+  gap: 9px;
+}
+
+.link-menu-field {
+  gap: 4px;
+  color: #eeeeee;
+  font-weight: 600;
+}
+
+.link-menu-field input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 31px;
+  padding: 5px 8px;
+  color: #ffffff;
+  background: var(--popup-inset-bg, #102f4a);
+  border: 1px solid var(--popup-inset-border, #315b80);
+  border-radius: 4px;
+  font: 12px/1.2 Verdana, Helvetica, sans-serif;
+}
+
+.link-menu-field input::placeholder {
+  color: var(--popup-faint-text, #9bb7c8);
+}
+
+.link-menu-field input:focus {
+  border-color: var(--popup-focus, #82c6f0);
+  outline: 2px solid var(--popup-focus-ring, rgba(130, 198, 240, 0.25));
+}
+
+.link-menu-error {
+  margin: 0;
+  padding: 6px 8px;
+  color: #ffe1e1;
+  background: #5a1f2a;
+  border: 1px solid #a84c5d;
+  border-radius: 4px;
+  font-weight: normal;
+}
+
+.link-menu-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+  margin-top: 1px;
+}
+
+.link-menu-button {
+  min-width: 72px;
+  height: 30px;
+  padding: 0 12px;
+  color: #ffffff;
+  background: var(--popup-button-bg, #194a72);
+  border: 1px solid var(--popup-border, #3977ae);
+  border-radius: 4px;
+  font: 600 12px/1 Verdana, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.link-menu-button:hover,
+.link-menu-button:focus-visible {
+  background: var(--popup-active-bg, #235a8f);
+  border-color: var(--popup-focus, #82c6f0);
+}
+
+.link-menu-button:focus-visible {
+  outline: 2px solid var(--popup-focus, #82c6f0);
+  outline-offset: 1px;
+}
+
+.link-menu-button.is-secondary {
+  margin-right: auto;
+  background: var(--popup-inset-bg, #102f4a);
+}
+
+.reset-dialog {
+  width: min(440px, calc(100vw - 24px));
+}
+
+.reset-dialog .reset-confirm {
+  background: #8a2837;
+  border-color: #bd5263;
+}
+
+.reset-dialog .reset-confirm:hover,
+.reset-dialog .reset-confirm:focus-visible {
+  background: #a73547;
+  border-color: #f08394;
+}
+
+.horizontal-rule-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.horizontal-rule-option {
+  box-sizing: border-box;
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  padding: 7px;
+  color: #eeeeee;
+  background: var(--popup-inset-bg, #102f4a);
+  border: 1px solid var(--popup-inset-border, #315b80);
+  border-radius: 4px;
+  cursor: pointer;
+  font: 12px/1.2 Verdana, Helvetica, sans-serif;
+}
+
+.horizontal-rule-option:hover {
+  background: var(--popup-hover-bg, #194a72);
+  border-color: var(--popup-active-border, #72b9f4);
+}
+
+.horizontal-rule-option:focus-visible {
+  outline: 2px solid var(--popup-focus, #82c6f0);
+  outline-offset: 1px;
+}
+
+.horizontal-rule-preview {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 50px;
+  padding: 8px;
+  overflow: hidden;
+  color: #ffffff;
+  background: var(--popup-active-bg, #235a8f);
+  border: 1px solid var(--popup-inset-bg, #082d44);
+  border-radius: 3px;
+  text-align: left;
+}
+
+.horizontal-rule-preview-line {
+  display: block;
+  flex: 0 0 2px;
+  width: 100%;
+  height: 2px;
+  background: var(--hr-color, #082d44);
+}
+
+.horizontal-rule-preview-text {
+  display: block;
+  font-size: 10px;
+  line-height: 12px;
+}
+
+.horizontal-rule-preview.is-spaced .horizontal-rule-preview-text {
+  margin-top: 15px;
+}
+
+.horizontal-rule-preview.is-tight .horizontal-rule-preview-text {
+  margin-top: 2px;
+}
+
+.horizontal-rule-option-label {
+  display: block;
+  font-weight: bold;
+  text-align: center;
+}
+
+.colour-option-check {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-weight: bold;
+  text-shadow: 0 1px 3px #000000, 0 0 2px #000000;
+  pointer-events: none;
+}
+
+.colour-action {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  color: #eeeeee;
+  background: var(--popup-button-bg, #194a72);
+  border: 1px solid var(--popup-border, #3977ae);
+  border-radius: 3px;
+  font: 700 16px/1 Verdana, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.colour-action:hover {
+  background: var(--popup-active-bg, #235a8f);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editor-toolbar.is-floating {
+    animation: none;
+  }
+}
+
+/* =========================================
+EICON MENU
+========================================= */
+.eicon-menu {
+  box-sizing: border-box;
+  position: fixed;
+  top: var(--em-top);
+  left: var(--em-left);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  width: min(430px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  padding: 10px;
+  color: #eeeeee;
+  background: var(--popup-bg, #0b345f);
+  border: 1px solid var(--popup-border, #2369af);
+  border-radius: 5px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  font: 12px/1.2 Verdana, Helvetica, sans-serif;
+  user-select: none;
+}
+
+.eicon-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--popup-inset-border, #315b80);
+}
+
+.eicon-menu-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.eicon-menu-title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  color: #ffffff;
+  background: var(--popup-active-bg, #235a8f);
+  border: 1px solid var(--popup-active-border, #3977ae);
+  border-radius: 50%;
+  font: 700 19px/1 Verdana, Helvetica, sans-serif;
+}
+
+.eicon-menu-header strong {
+  display: block;
+  font-size: 14px;
+  text-transform: capitalize;
+}
+
+.eicon-menu-header span {
+  display: block;
+  margin-top: 3px;
+  color: var(--popup-muted-text, #bcd0e2);
+}
+
+.eicon-menu-close {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  color: #eeeeee;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font: 20px/20px Verdana, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.eicon-menu-close:hover {
+  background: var(--popup-active-bg, #235a8f);
+  border-color: var(--popup-active-border, #3977ae);
+}
+
+.eicon-section-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 8px;
+  padding: 3px;
+  background: var(--popup-inset-bg, #082d44);
+  border: 1px solid var(--popup-inset-border, #315b80);
+  border-radius: 5px;
+}
+
+.eicon-section-tab {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+  height: 31px;
+  padding: 4px 7px;
+  color: var(--popup-muted-text, #bcd0e2);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font: 600 11px/1 Verdana, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.eicon-section-tab:hover {
+  color: #ffffff;
+  background: var(--popup-hover-bg, #194a72);
+  border-color: var(--popup-border, #3977ae);
+}
+
+.eicon-section-tab.is-active {
+  color: #ffffff;
+  background: var(--popup-active-bg, #235a8f);
+  border-color: var(--popup-focus, #72b9f4);
+}
+
+.eicon-section-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  color: var(--popup-text, #dceeff);
+  background: var(--popup-bg, #0b345f);
+  border-radius: 8px;
+  font-size: 9px;
+  line-height: 1;
+}
+
+.eicon-history-icon {
+  font: 700 17px/1 Arial, Helvetica, sans-serif;
+}
+
+.eicon-pin-icon {
+  position: relative;
+  display: block;
+  width: 10px;
+  height: 13px;
+  color: currentColor;
+}
+
+.eicon-pin-icon::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 8px;
+  height: 6px;
+  background: currentColor;
+  border-radius: 2px 2px 1px 1px;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.22);
+}
+
+.eicon-pin-icon::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 4px;
+  width: 2px;
+  height: 7px;
+  background: currentColor;
+  clip-path: polygon(0 0, 100% 0, 100% 72%, 50% 100%, 0 72%);
+}
+
+.eicon-search-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.eicon-search {
+  box-sizing: border-box;
+  width: 100%;
+  height: 34px;
+  padding: 6px 9px;
+  color: #eeeeee;
+  background: var(--popup-inset-bg, #102f4a);
+  border: 1px solid var(--popup-inset-border, #315b80);
+  border-radius: 4px;
+  font: inherit;
+}
+
+.eicon-search::placeholder {
+  color: var(--popup-faint-text, #8fa9c0);
+}
+
+.eicon-search:focus {
+  border-color: var(--popup-focus, #82c6f0);
+  box-shadow: 0 0 0 1px var(--popup-focus, #82c6f0);
+  outline: none;
+}
+
+.eicon-menu-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 17px;
+  padding: 7px 0;
+  color: var(--popup-muted-text, #bcd0e2);
+}
+
+.eicon-menu-status button {
+  padding: 5px 9px;
+  color: #eeeeee;
+  background: var(--popup-button-bg, #194a72);
+  border: 1px solid var(--popup-border, #3977ae);
+  border-radius: 4px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.eicon-menu-status button:hover {
+  background: var(--popup-active-bg, #235a8f);
+}
+
+.eicon-results {
+  display: grid;
+  flex: 0 1 374px;
+  grid-template-columns: repeat(7, 50px);
+  grid-auto-rows: 50px;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 0;
+  max-height: 374px;
+  padding: 2px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: var(--popup-inset-bg, #082d44);
+  border: 1px solid var(--popup-inset-border, #315b80);
+  border-radius: 4px;
+  scrollbar-color: var(--popup-border, #3977ae) var(--popup-inset-bg, #082d44);
+  scrollbar-gutter: stable;
+}
+
+.eicon-tile {
+  box-sizing: border-box;
+  position: relative;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  background: var(--popup-bg, #102f4a);
+  border-radius: 3px;
+}
+
+.eicon-option {
+  box-sizing: border-box;
+  display: block;
+  width: 50px;
+  height: 50px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.eicon-option:hover {
+  border-color: var(--popup-focus, #72b9f4);
+  box-shadow: inset 0 0 0 1px var(--popup-focus, #72b9f4);
+}
+
+.eicon-option img {
+  display: block;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.eicon-favourite-toggle {
+  box-sizing: border-box;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  color: var(--popup-text, #d9e6f2);
+  background: var(--popup-overlay-bg, rgba(8, 45, 68, 0.88));
+  border: 1px solid var(--popup-overlay-border, rgba(114, 185, 244, 0.65));
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 100ms ease, color 100ms ease, background-color 100ms ease;
+}
+
+.eicon-tile:hover .eicon-favourite-toggle,
+.eicon-tile:focus-within .eicon-favourite-toggle,
+.eicon-favourite-toggle.is-active {
+  opacity: 1;
+}
+
+.eicon-favourite-toggle:hover,
+.eicon-favourite-toggle.is-active {
+  color: var(--popup-text, #82c6f0);
+  background: var(--popup-active-bg, #0b345f);
+  border-color: var(--popup-focus, #82c6f0);
+}
+
+.eicon-option:focus-visible,
+.eicon-favourite-toggle:focus-visible,
+.eicon-section-tab:focus-visible,
+.eicon-menu-close:focus-visible,
+.eicon-menu-status button:focus-visible {
+  outline: 2px solid var(--popup-focus, #82c6f0);
+  outline-offset: 1px;
+}
+
+.eicon-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 92px;
+  padding: 18px;
+  color: var(--popup-faint-text, #8fa9c0);
+  background: var(--popup-inset-bg, #082d44);
+  border: 1px dashed var(--popup-inset-border, #315b80);
+  border-radius: 4px;
+  text-align: center;
+}
+
+.eicon-menu-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  padding-top: 8px;
+  color: var(--popup-muted-text, #bcd0e2);
+  border-top: 1px solid var(--popup-inset-border, #315b80);
+  font-size: 10px;
+}
+
+.eicon-menu-footer a {
+  color: var(--popup-link, #9fd0ff);
+}
+
+@media (hover: none) {
+  .eicon-favourite-toggle {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 455px) {
+  .eicon-menu {
+    width: calc(100vw - 24px);
+  }
+
+  .eicon-section-tab {
+    padding-inline: 4px;
+    font-size: 10px;
+  }
+
+  .eicon-results {
+    grid-template-columns: repeat(7, minmax(0, 50px));
+    gap: 2px;
+  }
+
+  .eicon-menu-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+}
+
+/* =========================================
+CHARACTER ICON MENU
+========================================= */
+.character-icon-menu {
+  box-sizing: border-box;
+  position: fixed;
+  top: var(--cim-top);
+  left: var(--cim-left);
+  z-index: 1000;
+  width: min(390px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
+  padding: 10px;
+  color: #eeeeee;
+  background: var(--popup-bg, #0b345f);
+  border: 1px solid var(--popup-border, #2369af);
+  border-radius: 5px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  font: 12px/1.2 Verdana, Helvetica, sans-serif;
+}
+
+.character-icon-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--popup-inset-border, #315b80);
+}
+
+.character-icon-menu-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.character-icon-menu-symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  color: #ffffff;
+  background: var(--popup-active-bg, #235a8f);
+  border: 1px solid var(--popup-active-border, #3977ae);
+  border-radius: 50%;
+  font: 700 18px/1 Georgia, serif;
+}
+
+.character-icon-menu-heading strong {
+  display: block;
+  font-size: 14px;
+}
+
+.character-icon-menu-heading div > span {
+  display: block;
+  margin-top: 3px;
+  color: var(--popup-muted-text, #bcd0e2);
+}
+
+.character-icon-menu-close {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  color: #eeeeee;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font: 20px/20px Verdana, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.character-icon-menu-close:hover {
+  background: var(--popup-active-bg, #235a8f);
+  border-color: var(--popup-active-border, #3977ae);
+}
+
+.character-icon-search-form label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--popup-text, #dce7f1);
+  font-weight: 600;
+}
+
+.character-icon-search-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 7px;
+}
+
+.character-icon-search-row input {
+  box-sizing: border-box;
+  min-width: 0;
+  height: 34px;
+  padding: 6px 9px;
+  color: #eeeeee;
+  background: var(--popup-inset-bg, #102f4a);
+  border: 1px solid var(--popup-inset-border, #315b80);
+  border-radius: 4px;
+  font: inherit;
+}
+
+.character-icon-search-row input::placeholder {
+  color: var(--popup-faint-text, #8fa9c0);
+}
+
+.character-icon-search-row button,
+.character-icon-insert {
+  min-height: 34px;
+  padding: 6px 11px;
+  color: #eeeeee;
+  background: var(--popup-button-bg, #194a72);
+  border: 1px solid var(--popup-border, #3977ae);
+  border-radius: 4px;
+  font: 600 11px/1 Verdana, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.character-icon-search-row button:hover:not(:disabled),
+.character-icon-insert:hover:not(:disabled) {
+  background: var(--popup-active-bg, #235a8f);
+  border-color: var(--popup-active-border, #72b9f4);
+}
+
+.character-icon-search-row button:disabled,
+.character-icon-insert:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.character-icon-search-row input:focus,
+.character-icon-search-row button:focus-visible,
+.character-icon-insert:focus-visible,
+.character-icon-menu-close:focus-visible {
+  border-color: var(--popup-focus, #82c6f0);
+  box-shadow: 0 0 0 1px var(--popup-focus, #82c6f0);
+  outline: none;
+}
+
+.character-icon-status {
+  min-height: 17px;
+  padding: 7px 0;
+  color: var(--popup-muted-text, #bcd0e2);
+}
+
+.character-icon-status [role="alert"] {
+  color: #ffb8b8;
+}
+
+.character-icon-result {
+  display: grid;
+  grid-template-columns: 50px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px;
+  background: var(--popup-inset-bg, #082d44);
+  border: 1px solid var(--popup-inset-border, #315b80);
+  border-radius: 4px;
+}
+
+.character-icon-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  color: var(--popup-faint-text, #8fa9c0);
+  background: var(--popup-bg, #102f4a);
+  border-radius: 3px;
+  font-size: 20px;
+}
+
+.character-icon-preview img {
+  display: block;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.character-icon-result-copy {
+  min-width: 0;
+}
+
+.character-icon-result-copy strong,
+.character-icon-result-copy code,
+.character-icon-result-copy a {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.character-icon-result-copy strong {
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.character-icon-result-copy code {
+  color: var(--popup-muted-text, #bcd0e2);
+  font: 10px/1.3 Consolas, monospace;
+}
+
+.character-icon-result-copy a {
+  margin-top: 4px;
+  color: var(--popup-link, #9fd0ff);
+  font-size: 10px;
+}
+
+.character-icon-menu-footer {
+  margin-top: 8px;
+  padding-top: 8px;
+  color: var(--popup-muted-text, #bcd0e2);
+  border-top: 1px solid var(--popup-inset-border, #315b80);
+  font-size: 10px;
+}
+
+.character-icon-menu-footer code {
+  color: var(--popup-text, #dceeff);
+}
+
+@media (max-width: 420px) {
+  .character-icon-result {
+    grid-template-columns: 50px minmax(0, 1fr);
+  }
+
+  .character-icon-insert {
+    grid-column: 1 / -1;
+  }
+}
+
+/* =========================================
+TOAST
+========================================= */
+.app-toast {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  max-width: 60ch;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font: 13px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: #ffffff;
+  background: #1f2937;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 2000;
+}
+
+.app-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.app-toast.success {
+  background: #0f3a1f;
+  border-color: #22c55e33;
+}
+
+.app-toast.error {
+  background: #3a0f0f;
+  border-color: #ef444433;
+}
+
+/* =========================================
+IMPORT DIALOG
+========================================= */
+.import-dialog {
+  width: min(760px, calc(100vw - 40px));
+  padding: 0;
+  color: #e7effa;
+  background: var(--popup-bg, #10283f);
+  border: 1px solid var(--popup-border, #3977ae);
+  border-radius: 8px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+}
+
+.import-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.import-dialog-form {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+}
+
+.import-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.import-dialog h2 {
+  margin: 0 0 5px;
+  font-size: 18px;
+}
+
+.import-dialog p {
+  margin: 0;
+  color: var(--popup-muted-text, #bcd0e2);
+}
+
+.import-dialog label {
+  font-weight: 700;
+}
+
+.import-dialog-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  border: 1px solid var(--popup-inset-border, #315b80);
+  border-radius: 5px;
+}
+
+.import-dialog-tabs button {
+  min-height: 36px;
+  margin: 0;
+  padding: 7px 12px;
+  color: var(--popup-muted-text, #bcd0e2);
+  background: var(--popup-inset-bg, #0b345f);
+  border: 0;
+  border-right: 1px solid var(--popup-inset-border, #315b80);
+  font: 700 12px/1 Verdana, Helvetica, sans-serif;
+  cursor: pointer;
+}
+
+.import-dialog-tabs button:last-child {
+  border-right: 0;
+}
+
+.import-dialog-tabs button:hover,
+.import-dialog-tabs button.is-active {
+  color: #ffffff;
+  background: var(--popup-active-bg, #235a8f);
+}
+
+.import-dialog-panel {
+  display: grid;
+  gap: 8px;
+}
+
+.import-dialog input[type="url"],
+.import-dialog input[type="text"] {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  color: #edf6ff;
+  background: var(--popup-inset-bg, #071a2c);
+  border: 1px solid var(--popup-inset-border, #315b80);
+  border-radius: 5px;
+  font: 13px/1.4 Consolas, "Liberation Mono", monospace;
+}
+
+.import-dialog textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 320px;
+  padding: 12px;
+  resize: vertical;
+  color: #edf6ff;
+  background: var(--popup-inset-bg, #071a2c);
+  border: 1px solid var(--popup-inset-border, #315b80);
+  border-radius: 5px;
+  font: 13px/1.5 Consolas, "Liberation Mono", monospace;
+}
+
+.import-dialog textarea:focus,
+.import-dialog input[type="url"]:focus,
+.import-dialog input[type="text"]:focus,
+.import-dialog-tabs button:focus-visible {
+  outline: 2px solid var(--popup-focus, #72b9f4);
+  outline-offset: 1px;
+}
+
+.import-dialog-close {
+  padding: 0 5px;
+  color: #e7effa;
+  background: transparent;
+  border: 0;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.import-dialog-note {
+  font-size: 11px;
+}
+
+.import-dialog-error {
+  padding: 9px 10px;
+  color: #ffd9d9 !important;
+  background: #3a0f0f;
+  border: 1px solid #a84a4a;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.import-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.import-dialog-actions button {
+  min-width: 80px;
+  padding: 8px 14px;
+  color: #ffffff;
+  background: var(--popup-button-bg, #233f59);
+  border: 1px solid var(--popup-border, #4a6d8c);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.import-dialog-actions button.primary {
+  background: var(--popup-primary-bg, #1f6fae);
+  border-color: var(--popup-active-border, #5ba3dc);
+}
+
+.reset-dialog .import-dialog-actions button.reset-confirm {
+  background: #8a2837;
+  border-color: #bd5263;
+}
+
+.reset-dialog .import-dialog-actions button.reset-confirm:hover,
+.reset-dialog .import-dialog-actions button.reset-confirm:focus-visible {
+  background: #a73547;
+  border-color: #f08394;
+}
+
+.import-dialog-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.feedback-dialog textarea {
+  min-height: 180px;
+  font: 12px/1.5 Verdana, Helvetica, sans-serif;
+}
+
+@media (max-width: 720px) {
+  .import-dialog {
+    width: calc(100vw - 20px);
+  }
+
+  .import-dialog-form {
+    padding: 14px;
+  }
+
+  .import-dialog textarea {
+    min-height: 240px;
+  }
+}
+
+/* =========================================
+BUBBLE MENU AND BLOCK DRAG HANDLE
+========================================= */
+.editor-bubble-menu {
+  --toolbar-button-size: 28px;
+  --toolbar-icon-size: 18px;
+  z-index: 960;
+  display: flex;
+  gap: 3px;
+  padding: 4px;
+  background: var(--popup-bg, #082d44);
+  border: 1px solid var(--popup-border, #2369af);
+  border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+}
+
+.editor-bubble-menu .editor-toolbar-button {
+  border: 1px solid var(--editorBorder);
+  border-radius: 4px;
+}
+
+/* Sits just left of the block under the pointer, at any nesting level. */
+.block-drag-handle {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 22px;
+  padding: 0;
+  color: #ffffff;
+  background: var(--popup-active-bg, #235a8f);
+  border: 1px solid var(--popup-active-border, #72b9f4);
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  cursor: grab;
+}
+
+.block-drag-handle:hover,
+.block-drag-handle:focus-visible {
+  background: var(--popup-focus, #3977ae);
+  outline: none;
+}
+
+.block-drag-handle svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Shows exactly which block the grip will move. */
+.block-drag-outline {
+  position: absolute;
+  z-index: 2;
+  box-sizing: border-box;
+  border: 2px dashed var(--popup-focus, #82c6f0);
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+.block-drop-indicator {
+  position: fixed;
+  z-index: 1000;
+  height: 3px;
+  background: var(--popup-focus, #82c6f0);
+  border-radius: 2px;
+  box-shadow: 0 0 6px var(--popup-focus, #82c6f0);
+  pointer-events: none;
+}
+
+.block-drop-indicator[hidden] {
+  display: none;
+}
+
+.ProseMirror .is-drag-source {
+  opacity: 0.4;
+}
+
+html.is-dragging-block,
+html.is-dragging-block * {
+  cursor: grabbing !important;
+  user-select: none;
+}
+
+.editor[data-block-drag="on"] .ProseMirror blockquote.indentable > .QuoteHeader {
+  cursor: grab;
+}
+
+/* =========================================
+FAQ
+========================================= */
+/* Same text style as profile content in the editor canvas. */
+.faq-content {
+  color: var(--profile-text);
+  font: 400 12px/normal Verdana, Helvetica, sans-serif;
+}
+
+.faq-content h1 {
+  margin: 0 0 14px;
+  font-size: 1.4em;
+  font-weight: 700;
+}
+
+.faq-content h2 {
+  margin: 18px 0 6px;
+  font-size: 1.2em;
+  font-weight: 700;
+}
+
+.faq-content p {
+  margin: 0 0 8px;
+}
+
+.faq-content a {
+  color: #98d9ff;
+  text-decoration: underline;
+  text-underline-offset: 1px;
+}
+
+.faq-content a:hover {
+  color: #1ba9e3;
+}
+
+.faq-shortcuts {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+
+.faq-shortcuts li {
+  margin: 3px 0;
+}
+
+.faq-content kbd {
+  display: inline-block;
+  min-width: 1.2em;
+  padding: 0 4px;
+  color: var(--popup-text, #dceeff);
+  font: 11px/1.5 Verdana, Helvetica, sans-serif;
+  text-align: center;
+  background: var(--popup-inset-bg, #082d44);
+  border: 1px solid var(--popup-border, #3977ae);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+}
+
+/* Character icons link to their F-list profiles, like an F-list [icon]. */
+.faq-contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 4px 0 10px;
+}
+
+.faq-contact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.faq-contact img {
+  display: block;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.faq-contact:hover img,
+.faq-contact:focus-visible img {
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
+}
+
+/* Changelog versions look like the editor's F-list dropdowns in every theme. */
+.faq-changelog {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 4px 0 10px;
+}
+
+.faq-changelog-entry > summary {
+  display: block;
+  padding: 3px 0 4px 25px;
+  color: #000;
+  font-size: 1.2em;
+  font-weight: 700;
+  text-shadow: 0 1px 2px #fff;
+  list-style: none;
+  background:
+    var(--collapse-icon-collapsed) 5px 5px no-repeat,
+    var(--collapse-closed-color);
+  border: var(--collapse-border);
+  border-radius: 5px;
+  box-shadow: #03498f 0 1px 1px;
+  cursor: pointer;
+}
+
+.faq-changelog-entry > summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-changelog-entry[open] {
+  color: #eeeeee;
+  background-color: var(--collapse-open-color);
+}
+
+.faq-changelog-entry[open] > summary {
+  padding-bottom: 0;
+  color: inherit;
+  text-shadow: none;
+  background:
+    var(--collapse-icon-expanded) 5px 5px no-repeat,
+    var(--collapse-open-color);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.faq-changelog-entry ul {
+  margin: 10px 10px 10px 25px;
+  padding-left: 18px;
+}
+
+.faq-changelog-entry li {
+  margin: 3px 0;
+}
+
+/* F-list's dark theme gives dropdowns the normal text colour, open or closed. */
+.dark .faq-changelog-entry[open],
+.dark .faq-changelog-entry > summary {
+  color: inherit;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+/* =========================================
+PROFILES
+========================================= */
+.profile-drafts-status {
+  margin: 0;
+  padding: 20px;
+  color: var(--popup-muted-text, #bcd0e2);
+}
+
+.current-draft {
+  display: grid;
+  gap: 3px;
+  margin-bottom: 4px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--navButtonBorder);
+  border-radius: 4px;
+}
+
+.current-draft-label {
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.current-draft-name {
+  overflow-wrap: anywhere;
+}
+
+.current-draft-character {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.current-draft-link {
+  justify-self: start;
+  margin-top: 3px;
+  color: inherit;
+  font-size: 11px;
+}
+
+.profiles-view {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.profiles-view h1 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.profiles-intro {
+  margin: 0;
+  color: var(--popup-muted-text, #bcd0e2);
+}
+
+.profiles-warning {
+  margin: 0;
+  padding: 9px 10px;
+  color: #ffd9d9;
+  background: #3a0f0f;
+  border: 1px solid #a84a4a;
+  border-radius: 4px;
+}
+
+.profile-group {
+  overflow: hidden;
+  background: var(--popup-bg, #0b345f);
+  border: 1px solid var(--popup-border, #2369af);
+  border-radius: 5px;
+}
+
+.profile-group-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--popup-inset-border, #315b80);
+}
+
+.profile-group-avatar {
+  flex: 0 0 40px;
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+.profile-group-header h2 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.profile-group-header a {
+  color: inherit;
+}
+
+.profile-group-count {
+  margin-left: auto;
+  color: var(--popup-muted-text, #bcd0e2);
+  font-size: 11px;
+}
+
+.profile-draft-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.profile-draft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+}
+
+.profile-draft + .profile-draft {
+  border-top: 1px solid var(--popup-inset-border, #315b80);
+}
+
+.profile-draft.is-active {
+  background: var(--popup-inset-bg, #082d44);
+}
+
+.profile-draft-open {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 3px;
+  min-width: 0;
+  padding: 4px 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.profile-draft-name {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-draft-open:hover .profile-draft-name,
+.profile-draft-open:focus-visible .profile-draft-name {
+  text-decoration: underline;
+}
+
+.profile-draft-open:focus-visible {
+  outline: 2px solid var(--popup-focus, #82c6f0);
+  outline-offset: 2px;
+}
+
+.profile-draft-meta {
+  color: var(--popup-muted-text, #bcd0e2);
+  font-size: 11px;
+}
+
+.profile-draft-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+}
+
+.profile-draft-actions button {
+  padding: 4px 9px;
+  color: #ffffff;
+  font: 600 11px/1.2 Verdana, Helvetica, sans-serif;
+  background: var(--popup-button-bg, #194a72);
+  border: 1px solid var(--popup-border, #3977ae);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.profile-draft-actions button:hover,
+.profile-draft-actions button:focus-visible {
+  background: var(--popup-active-bg, #235a8f);
+}
+
+.profile-draft-actions button:focus-visible {
+  outline: 2px solid var(--popup-focus, #82c6f0);
+  outline-offset: 1px;
+}
+
+.profile-draft-actions button.is-danger:hover,
+.profile-draft-actions button.is-danger:focus-visible {
+  background: #8a2837;
+  border-color: #bd5263;
+}
+
+.profiles-sidebar-note {
+  margin: 4px 0 0;
+  font-size: 11px;
+  opacity: 0.8;
+}

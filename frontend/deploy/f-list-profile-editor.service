@@ -1,0 +1,32 @@
+# Runs the editor on 127.0.0.1:4173, reachable only through Caddy (deploy/Caddyfile).
+# Copy to /etc/systemd/system/, then run
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now f-list-profile-editor
+
+[Unit]
+Description=F-list Profile Editor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=profile-editor
+Group=profile-editor
+# The folder with package.json. Change this if the app lives somewhere else.
+WorkingDirectory=/opt/f-list-profile-editor
+# If Node was installed with nvm, replace /usr/bin/env npm with the full path
+# from `which npm`.
+ExecStart=/usr/bin/env npm start -- --hostname 127.0.0.1 --port 4173
+Environment=NODE_ENV=production
+# Feedback is kept outside the app folder, so redeploying never touches it.
+# systemd creates /var/lib/f-list-profile-editor for the service user.
+StateDirectory=f-list-profile-editor
+Environment=FEEDBACK_FILE=/var/lib/f-list-profile-editor/feedback.txt
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

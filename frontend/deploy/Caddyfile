@@ -1,0 +1,17 @@
+# HTTPS for the editor. Copy to /etc/caddy/Caddyfile, then run
+#   sudo systemctl reload caddy
+#
+# Caddy gets and renews the certificate for these names on its own, and sends
+# http:// visitors to https://. There is deliberately no `log` directive:
+# without one Caddy keeps no access logs, so nothing records who visits or who
+# sends feedback.
+
+funnyeditor.site {
+	reverse_proxy 127.0.0.1:4173
+}
+
+# Sends www visitors to the main address. It needs its own DNS record; delete
+# this block if you don't add one.
+www.funnyeditor.site {
+	redir https://funnyeditor.site{uri} permanent
+}
