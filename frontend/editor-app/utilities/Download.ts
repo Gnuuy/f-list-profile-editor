@@ -1,5 +1,5 @@
-export function downloadTextFile(text: string, filename: string, type = 'application/json') {
-  const url = URL.createObjectURL(new Blob([text], { type }));
+export function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
   link.download = filename;
@@ -8,4 +8,8 @@ export function downloadTextFile(text: string, filename: string, type = 'applica
   link.remove();
   // Revoking straight away can cancel the download in some browsers.
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+export function downloadTextFile(text: string, filename: string, type = 'application/json') {
+  downloadBlob(new Blob([text], { type }), filename);
 }

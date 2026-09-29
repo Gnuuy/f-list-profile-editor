@@ -15,6 +15,7 @@ export default function NavBar() {
         <NavBarButton buttonText="Editor"     iconPath="/icons/edit.png"  href="/" />
         <NavBarButton buttonText="FAQ"        iconPath="/icons/faq.png"   href="/faq" />
         <NavBarButton buttonText="Profiles"   iconPath="/icons/faq.png"   href="/profiles" />
+        <NavBarButton buttonText="Image Converter" iconPath="/icons/image.png" href="/image-converter" />
         <NavBarButton buttonText="Feedback"   iconPath="/icons/faq.png"   onClick={() => setFeedbackOpen(true)} />
       </div>
       <div>

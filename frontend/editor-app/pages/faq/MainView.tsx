@@ -35,6 +35,15 @@ const SHORTCUTS: Array<[string[], string]> = [
 // Newest first. A short summary of what changed for people using the editor.
 const CHANGELOG: Array<{ version: string; changes: string[] }> = [
     {
+        version: "0.5.0",
+        changes: [
+            "New Image Converter tab: it resizes images to fit F-list's upload limits, at most 8000 × 8000 pixels and under 8 MB, and saves them as PNG with any transparency kept.",
+            "It can also enlarge smaller images until their longer side is 8000 pixels, keeping their shape.",
+            "Images are converted in your browser and never uploaded.",
+            "The FAQ explains why pasted inline images become placeholders, and the keyboard shortcuts are in a dropdown.",
+        ],
+    },
+    {
         version: "0.4.2",
         changes: [
             "Reset is now New draft: it starts a new draft and leaves the one you're editing alone.",
@@ -93,7 +102,7 @@ export default function FaqMainView() {
                     <h1>Frequently Asked Questions:</h1>
 
                     <h2>What kind of data do you track?</h2>
-                    <p>None. Profile content is not uploaded by the editor. Your drafts are saved in your own browser, never on our server, so use Back up drafts on the Profiles page if you want a copy. If you send feedback, only the text you write is saved.</p>
+                    <p>None. Profile content is not uploaded by the editor. Your drafts are saved in your own browser, never on our server, so use Back up drafts on the Profiles page if you want a copy. The Image Converter works in your browser too, so your images are never uploaded. If you send feedback, only the text you write is saved.</p>
                     <p>
                         If you&apos;re interested in seeing the source code for this website,{" "}
                         <a href="https://github.com/Gnuuy/f-list-profile-editor" target="_blank" rel="noreferrer">go here</a>.
@@ -103,21 +112,30 @@ export default function FaqMainView() {
                     <p>I have a background as a fullstack software engineer, but I mainly work with backend systems, so I made this to practise frontend development.</p>
                     <p>The other reason is that my own profile&apos;s BBCode is too dense and unwieldy to make changes to. Small changes would lead to cascading errors. Had enough, made an editor and decided to share it.</p>
 
+                    <h2>Why are some inline images replaced with placeholders?</h2>
+                    <p>Inline images only show when you import a profile by character name or profile link. The editor then reads the inline images listed on that character&apos;s public profile page.</p>
+                    <p>BBCode you paste in doesn&apos;t come with that list. An [img] tag only holds a number, and F-list&apos;s public API doesn&apos;t allow looking inline images up without logging in to an F-list account. I don&apos;t want to add a login system to this site, so those images show as REPLACE ME placeholders and export as a red REPLACE ME WITH YOUR INLINE line. To keep your inline images, import your profile by name, or put your [img] tags back in place of the placeholders after exporting.</p>
+
                     <h2>Keyboard shortcuts</h2>
                     <p>On a Mac, use Cmd instead of Ctrl and Option instead of Alt.</p>
-                    <ul className="faq-shortcuts">
-                        {SHORTCUTS.map(([combos, action]) => (
-                            <li key={action}>
-                                {combos.map((combo, index) => (
-                                    <span key={combo}>
-                                        {index > 0 && " or "}
-                                        <KeyCombo combo={combo} />
-                                    </span>
+                    <div className="faq-dropdowns">
+                        <details className="faq-dropdown">
+                            <summary>All shortcuts</summary>
+                            <ul className="faq-shortcuts">
+                                {SHORTCUTS.map(([combos, action]) => (
+                                    <li key={action}>
+                                        {combos.map((combo, index) => (
+                                            <span key={combo}>
+                                                {index > 0 && " or "}
+                                                <KeyCombo combo={combo} />
+                                            </span>
+                                        ))}
+                                        {" "}: {action}
+                                    </li>
                                 ))}
-                                {" "}: {action}
-                            </li>
-                        ))}
-                    </ul>
+                            </ul>
+                        </details>
+                    </div>
 
                     <h2>Found a bug or want a feature?</h2>
                     <p>Use the Feedback button in the top bar. Only your message is saved, nothing else: not who you are and not where it came from. That also means I can&apos;t reply to you, so put everything in the message.</p>
@@ -136,9 +154,9 @@ export default function FaqMainView() {
                     <p>Absolutely not.</p>
 
                     <h2>Changelog</h2>
-                    <div className="faq-changelog">
+                    <div className="faq-dropdowns">
                         {CHANGELOG.map(({ version, changes }) => (
-                            <details key={version} className="faq-changelog-entry">
+                            <details key={version} className="faq-dropdown">
                                 <summary>Version {version}</summary>
                                 <ul>
                                     {changes.map(change => <li key={change}>{change}</li>)}

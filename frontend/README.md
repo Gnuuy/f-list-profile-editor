@@ -1,4 +1,4 @@
-# F-list Profile Editor v0.4.2
+# F-list Profile Editor v0.5.0
 
 A WYSIWYG profile editor that imports and exports readable F-list BBCode.
 

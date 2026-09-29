@@ -2757,15 +2757,15 @@ FAQ
   outline-offset: 1px;
 }
 
-/* Changelog versions look like the editor's F-list dropdowns in every theme. */
-.faq-changelog {
+/* FAQ dropdowns (the shortcut list, changelog versions) look like the editor's F-list dropdowns in every theme. */
+.faq-dropdowns {
   display: flex;
   flex-direction: column;
   gap: 4px;
   margin: 4px 0 10px;
 }
 
-.faq-changelog-entry > summary {
+.faq-dropdown > summary {
   display: block;
   padding: 3px 0 4px 25px;
   color: #000;
@@ -2782,16 +2782,16 @@ FAQ
   cursor: pointer;
 }
 
-.faq-changelog-entry > summary::-webkit-details-marker {
+.faq-dropdown > summary::-webkit-details-marker {
   display: none;
 }
 
-.faq-changelog-entry[open] {
+.faq-dropdown[open] {
   color: #eeeeee;
   background-color: var(--collapse-open-color);
 }
 
-.faq-changelog-entry[open] > summary {
+.faq-dropdown[open] > summary {
   padding-bottom: 0;
   color: inherit;
   text-shadow: none;
@@ -2803,18 +2803,18 @@ FAQ
   box-shadow: none;
 }
 
-.faq-changelog-entry ul {
+.faq-dropdown ul {
   margin: 10px 10px 10px 25px;
   padding-left: 18px;
 }
 
-.faq-changelog-entry li {
+.faq-dropdown li {
   margin: 3px 0;
 }
 
 /* F-list's dark theme gives dropdowns the normal text colour, open or closed. */
-.dark .faq-changelog-entry[open],
-.dark .faq-changelog-entry > summary {
+.dark .faq-dropdown[open],
+.dark .faq-dropdown > summary {
   color: inherit;
   text-shadow: none;
   box-shadow: none;
@@ -2862,18 +2862,21 @@ PROFILES
   font-size: 11px;
 }
 
-.profiles-view {
+.profiles-view,
+.image-converter-view {
   display: grid;
   align-content: start;
   gap: 14px;
 }
 
-.profiles-view h1 {
+.profiles-view h1,
+.image-converter-view h1 {
   margin: 0 0 6px;
   font-size: 18px;
 }
 
-.profiles-intro {
+.profiles-intro,
+.image-converter-intro {
   margin: 0;
   color: var(--popup-muted-text, #bcd0e2);
 }
@@ -2887,14 +2890,16 @@ PROFILES
   border-radius: 4px;
 }
 
-.profile-group {
+.profile-group,
+.image-converter-results {
   overflow: hidden;
   background: var(--popup-bg, #0b345f);
   border: 1px solid var(--popup-border, #2369af);
   border-radius: 5px;
 }
 
-.profile-group-header {
+.profile-group-header,
+.image-converter-results-header {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -2908,7 +2913,8 @@ PROFILES
   object-fit: cover;
 }
 
-.profile-group-header h2 {
+.profile-group-header h2,
+.image-converter-results-header h2 {
   margin: 0;
   font-size: 14px;
 }
@@ -2923,20 +2929,23 @@ PROFILES
   font-size: 11px;
 }
 
-.profile-draft-list {
+.profile-draft-list,
+.image-converter-list {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.profile-draft {
+.profile-draft,
+.image-converter-item {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 6px 10px;
 }
 
-.profile-draft + .profile-draft {
+.profile-draft + .profile-draft,
+.image-converter-item + .image-converter-item {
   border-top: 1px solid var(--popup-inset-border, #315b80);
 }
 
@@ -2975,18 +2984,22 @@ PROFILES
   outline-offset: 2px;
 }
 
-.profile-draft-meta {
+.profile-draft-meta,
+.image-converter-status {
   color: var(--popup-muted-text, #bcd0e2);
   font-size: 11px;
 }
 
-.profile-draft-actions {
+.profile-draft-actions,
+.image-converter-actions {
   display: flex;
   flex: 0 0 auto;
   gap: 6px;
 }
 
-.profile-draft-actions button {
+.profile-draft-actions button,
+.image-converter-actions button,
+.image-converter-drop button {
   padding: 4px 9px;
   color: #ffffff;
   font: 600 11px/1.2 Verdana, Helvetica, sans-serif;
@@ -2997,11 +3010,17 @@ PROFILES
 }
 
 .profile-draft-actions button:hover,
-.profile-draft-actions button:focus-visible {
+.profile-draft-actions button:focus-visible,
+.image-converter-actions button:hover,
+.image-converter-actions button:focus-visible,
+.image-converter-drop button:hover,
+.image-converter-drop button:focus-visible {
   background: var(--popup-active-bg, #235a8f);
 }
 
-.profile-draft-actions button:focus-visible {
+.profile-draft-actions button:focus-visible,
+.image-converter-actions button:focus-visible,
+.image-converter-drop button:focus-visible {
   outline: 2px solid var(--popup-focus, #82c6f0);
   outline-offset: 1px;
 }
@@ -3012,8 +3031,91 @@ PROFILES
   border-color: #bd5263;
 }
 
-.profiles-sidebar-note {
+.profiles-sidebar-note,
+.image-converter-note {
   margin: 4px 0 0;
   font-size: 11px;
   opacity: 0.8;
+}
+
+/* =========================================
+IMAGE CONVERTER
+========================================= */
+/* Laid out like the Profiles page, which shares most of these rules above. */
+.image-converter-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.image-converter-option input {
+  margin: 1px 0 0;
+}
+
+.image-converter-drop {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 28px 16px;
+  color: var(--popup-muted-text, #bcd0e2);
+  text-align: center;
+  background: var(--popup-bg, #0b345f);
+  border: 2px dashed var(--popup-border, #2369af);
+  border-radius: 5px;
+}
+
+.image-converter-drop.is-dragging {
+  background: var(--popup-inset-bg, #082d44);
+  border-color: var(--popup-focus, #82c6f0);
+}
+
+.image-converter-drop p {
+  margin: 0;
+}
+
+.image-converter-drop button {
+  padding: 6px 14px;
+  font-size: 12px;
+}
+
+.image-converter-hint {
+  font-size: 11px;
+}
+
+.image-converter-results-header .image-converter-actions {
+  margin-left: auto;
+}
+
+.image-converter-preview {
+  display: grid;
+  flex: 0 0 48px;
+  place-items: center;
+  height: 48px;
+  background: var(--popup-inset-bg, #082d44);
+  border-radius: 3px;
+}
+
+.image-converter-preview img {
+  max-width: 48px;
+  max-height: 48px;
+  object-fit: contain;
+}
+
+.image-converter-details {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 3px;
+  min-width: 0;
+}
+
+.image-converter-name {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.image-converter-item.is-error .image-converter-status {
+  color: #ff9d9d;
 }
