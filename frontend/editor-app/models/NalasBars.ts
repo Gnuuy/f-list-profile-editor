@@ -24,6 +24,8 @@ export type Bar = {
   jolt: number;
   /** How much the bar sways and tilts, 0–100. */
   wobble: number;
+  /** Whether the top of the bar cracks when the white hits it. */
+  crack: boolean;
   /** How many patterns follow the first: 0 plays one pattern over and over. */
   variations: number;
   /** At least `variations + 1` patterns. Extra ones are kept for when variations go back up. */
@@ -51,6 +53,7 @@ const defaultBar = (label: string, bpm: number): Bar => ({
   label,
   jolt: 50,
   wobble: 50,
+  crack: false,
   variations: 0,
   patterns: [{ ...DEFAULT_PATTERN, rise: bpm, fall: bpm }],
 });
@@ -124,9 +127,25 @@ export type BarPose = {
   tilt: number;
   scaleX: number;
   scaleY: number;
+  /** Cracks at the top of the bar after the white hits it, or null. */
+  crack: Crack | null;
 };
 
+export type Crack = {
+  /** Picks this impact's crack shape. */
+  seed: number;
+  /** How far the cracks have spread, 0–1. */
+  spread: number;
+  /** How visible they still are, 0–1. */
+  fade: number;
+};
+
+// How quickly cracks spread from the point of impact.
+const CRACK_SPREAD_SECONDS = 0.08;
+
 type Cycle = {
+  /** Counts the bar's cycles, for picking a crack shape. */
+  number: number;
   start: number;
   riseSeconds: number;
   fallSeconds: number;
@@ -170,6 +189,7 @@ export function createBarMotion(bar: Bar, { index = 0, randomness = 0 } = {}): B
     const pattern = patterns[patternIndex];
     const stretch = 1 + spread * (randomFor(seed, number) * 2 - 1);
     return {
+      number,
       start,
       riseSeconds: strokeSeconds(pattern.rise) * stretch,
       fallSeconds: strokeSeconds(pattern.fall) * stretch,
@@ -206,11 +226,17 @@ export function createBarMotion(bar: Bar, { index = 0, randomness = 0 } = {}): B
         cycle: cycleAt(number, cycle.start + cycle.riseSeconds + cycle.fallSeconds, patternIndex, cycle.bottom),
       };
     }
-    return poseInCycle(state.cycle, time - state.cycle.start, jolt, wobble);
+    return poseInCycle(state.cycle, time - state.cycle.start, jolt, wobble, bar.crack ? seed : null);
   };
 }
 
-function poseInCycle(cycle: Cycle, local: number, joltStrength: number, wobbleStrength: number): BarPose {
+function poseInCycle(
+  cycle: Cycle,
+  local: number,
+  joltStrength: number,
+  wobbleStrength: number,
+  crackSeed: number | null,
+): BarPose {
   const { riseSeconds, fallSeconds, from, top, bottom, pattern } = cycle;
   const rising = local < riseSeconds;
   const fill = rising
@@ -237,5 +263,24 @@ function poseInCycle(cycle: Cycle, local: number, joltStrength: number, wobbleSt
     tilt: wobble === 0 ? 0 : Math.sin(angle * 3) * wobble * 2,
     scaleX: 1 + jolt * 0.26,
     scaleY: 1 - jolt * 0.2,
+    crack: rising || crackSeed === null ? null : crackAfterImpact(cycle, local - riseSeconds, crackSeed),
+  };
+}
+
+/**
+ * Cracks spread from the top as the white hits it, then fade while it falls,
+ * gone well before it rises again. The white has to reach the top: from a Max
+ * of 90 they start to show, at 100 fully. Each impact cracks differently.
+ */
+function crackAfterImpact(cycle: Cycle, sinceImpact: number, seed: number): Crack | null {
+  const hit = Math.max(0, Math.min(1, (cycle.top - 0.9) / 0.1)) * movement(cycle.top - cycle.from);
+  const falling = sinceImpact / cycle.fallSeconds;
+  const fading = Math.max(0, Math.min(1, (falling - 0.4) / 0.5));
+  const fade = hit * (1 - fading * fading * (3 - 2 * fading));
+  if (fade <= 0) return null;
+  return {
+    seed: Math.floor(randomFor(seed ^ 0x5bd1e995, cycle.number) * 4294967296),
+    spread: Math.min(1, sinceImpact / CRACK_SPREAD_SECONDS),
+    fade,
   };
 }

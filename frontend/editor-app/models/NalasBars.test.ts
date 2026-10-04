@@ -20,6 +20,7 @@ const bar = (patterns: Partial<Pattern>[], extra: Partial<Bar> = {}): Bar => ({
   label: '',
   jolt: 0,
   wobble: 0,
+  crack: false,
   variations: patterns.length - 1,
   patterns: patterns.map(pattern => ({ ...DEFAULT_PATTERN, ...pattern })),
   ...extra,
@@ -177,5 +178,37 @@ describe('limits', () => {
     expect(clampSpeed(5000)).toBe(5000);
     expect(clampEase(-300)).toBe(-100);
     expect(clampRandomness(80)).toBe(50);
+  });
+});
+
+describe('cracks', () => {
+  // One second a cycle: rising for half a second, then the impact at 0.5 s.
+  const cracking = (changes: Partial<Pattern> = {}, crack = true) => createBarMotion(bar([{ rise: 60, fall: 60, ...changes }], { crack }));
+
+  it('cracks the top as the white hits it, spreading then fading while it falls', () => {
+    const motion = cracking();
+    expect(motion(0.3).crack).toBeNull();
+    const fresh = motion(0.51)!.crack!;
+    expect(fresh.fade).toBeCloseTo(1, 9);
+    expect(fresh.spread).toBeCloseTo(0.125, 6);
+    expect(motion(0.6).crack!.spread).toBe(1);
+    expect(motion(0.6).crack!.fade).toBeCloseTo(1, 9);
+    expect(motion(0.85).crack!.fade).toBeLessThan(0.6);
+    // Gone before the white rises again.
+    expect(motion(0.97).crack).toBeNull();
+  });
+
+  it('cracks differently each time, the same way every time', () => {
+    const seeds = [0.6, 1.6, 2.6].map(time => cracking()(time).crack!.seed);
+    expect(new Set(seeds).size).toBe(3);
+    expect([0.6, 1.6, 2.6].map(time => cracking()(time).crack!.seed)).toEqual(seeds);
+  });
+
+  it('only cracks when switched on and the white reaches the top', () => {
+    expect(cracking({}, false)(0.6).crack).toBeNull();
+    expect(cracking({ max: 85 })(0.6).crack).toBeNull();
+    expect(cracking({ max: 95 })(0.6).crack!.fade).toBeCloseTo(0.5, 6);
+    // A pause at the top doesn't keep cracking.
+    expect(cracking({ max: 100, min: 100 })(0.6).crack).toBeNull();
   });
 });

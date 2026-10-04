@@ -42,7 +42,7 @@ const PATTERN_SEPARATOR = '~';
 
 /**
  * The setup as a link's query, for example
- * `bars=2&label=Fast&label=Slow&jolt=50,0&wobble=20,50&b1=4,120,120,100,0,100,100,100,100~2,30,30,100,0,0,0,0,0&b2=…&random=10&bg=1b1d20`.
+ * `bars=2&label=Fast&label=Slow&jolt=50,0&wobble=20,50&crack=1,0&b1=4,120,120,100,0,100,100,100,100~2,30,30,100,0,0,0,0,0&b2=…&random=10&bg=1b1d20`.
  * Only the bars shown are written. Each `bN` holds that bar's patterns, separated by `~`.
  */
 export function setupToQuery({ count, bars, randomness, background }: BarsSetup): string {
@@ -52,6 +52,7 @@ export function setupToQuery({ count, bars, randomness, background }: BarsSetup)
     ...shown.map(bar => `label=${encodeURIComponent(bar.label)}`),
     `jolt=${shown.map(bar => bar.jolt).join(',')}`,
     `wobble=${shown.map(bar => bar.wobble).join(',')}`,
+    `crack=${shown.map(bar => (bar.crack ? 1 : 0)).join(',')}`,
     ...shown.map((bar, index) => `b${index + 1}=${activePatterns(bar)
       .map(pattern => PATTERN_FIELDS.map(([key]) => pattern[key]).join(','))
       .join(PATTERN_SEPARATOR)}`),
@@ -84,6 +85,7 @@ export function setupFromQuery(search: string): BarsSetup {
   const list = (key: string) => (params.get(key) ?? '').split(',');
   const jolts = list('jolt');
   const wobbles = list('wobble');
+  const cracks = list('crack');
   // Links from before patterns had one speed, max and min per bar, and one
   // wobble that covered the jolt as well.
   const oldBpms = list('bpm');
@@ -110,6 +112,7 @@ export function setupFromQuery(search: string): BarsSetup {
       label: labels[index] === undefined ? bar.label : labels[index].slice(0, MAX_LABEL_LENGTH),
       jolt: oldLink ? wobble : read(jolts[index], clampPercent, bar.jolt),
       wobble,
+      crack: cracks[index]?.trim() === '1',
       variations: patterns.length - 1,
       patterns,
     };

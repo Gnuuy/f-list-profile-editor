@@ -211,6 +211,14 @@ export default function NalasBarsMainView() {
                         clamp={clampPercent}
                         onChange={value => changeBar(barIndex, old => ({ ...old, wobble: value }))}
                     />
+                    <label className="nalas-toggle">
+                        <input
+                            type="checkbox"
+                            checked={bar.crack}
+                            onChange={event => changeBar(barIndex, old => ({ ...old, crack: event.target.checked }))}
+                        />
+                        Crack on impact
+                    </label>
                     <SliderField
                         caption="Variations"
                         value={bar.variations}
@@ -221,8 +229,9 @@ export default function NalasBarsMainView() {
                     />
                 </div>
                 <p className="nalas-bars-hint">
-                    Jolt is the hop and squash as the white hits the top; Wobble is the sway and tilt. Variations add
-                    more patterns for this bar to loop through.
+                    Jolt is the hop and squash as the white hits the top; Wobble is the sway and tilt. Crack on impact
+                    cracks the top of the bar each time the white hits it, which needs a Max of 90 or more. Variations
+                    add more patterns for this bar to loop through.
                 </p>
 
                 {bar.variations > 0 && (

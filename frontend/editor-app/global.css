@@ -3275,6 +3275,20 @@ NALA'S BARS
   opacity: 0.75;
 }
 
+.nalas-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.nalas-toggle input {
+  margin: 0;
+  accent-color: var(--popup-focus, #82c6f0);
+  cursor: pointer;
+}
+
 /* A slider with its caption before it and an exact value after. */
 .nalas-slider {
   display: grid;
