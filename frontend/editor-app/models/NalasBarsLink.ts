@@ -27,8 +27,10 @@ export const DEFAULT_SETUP: BarsSetup = {
   background: DEFAULT_BACKGROUND,
 };
 
-// A pattern in a link: its numbers in this order, separated by commas.
-const PATTERN_FIELDS: ReadonlyArray<[keyof Pattern, (value: number) => number]> = [
+// A pattern in a link: these numbers in this order, then 1 or 0 for Crack on
+// impact and for Broken, then Break after impact, all separated by commas.
+type PatternNumber = Exclude<keyof Pattern, 'crack' | 'broken' | 'impacts'>;
+const PATTERN_NUMBERS: ReadonlyArray<[PatternNumber, (value: number) => number]> = [
   ['repeats', clampRepeats],
   ['rise', clampSpeed],
   ['fall', clampSpeed],
@@ -38,14 +40,20 @@ const PATTERN_FIELDS: ReadonlyArray<[keyof Pattern, (value: number) => number]> 
   ['riseEnd', clampEase],
   ['fallStart', clampEase],
   ['fallEnd', clampEase],
+  ['jolt', clampPercent],
+  ['wobble', clampPercent],
 ];
 const PATTERN_SEPARATOR = '~';
 // Links from before patterns always eased in and out of each stroke.
 const OLD_LINK_PATTERN: Pattern = { ...DEFAULT_PATTERN, riseStart: 100, riseEnd: 100, fallStart: 100, fallEnd: 100 };
 
+function patternToText(pattern: Pattern): string {
+  return [...PATTERN_NUMBERS.map(([key]) => pattern[key]), pattern.crack ? 1 : 0, pattern.broken ? 1 : 0, pattern.impacts].join(',');
+}
+
 /**
  * The setup as a link's query, for example
- * `bars=2&label=Fast&label=Slow&jolt=50,0&wobble=20,50&crack=1,0&broken=0,1&impacts=1,3&b1=4,120,120,100,0,100,100,100,100~2,30,30,100,0,0,0,0,0&b2=…&random=10&bg=1b1d20`.
+ * `bars=2&label=Fast&label=Slow&b1=4,120,120,100,0,100,100,100,100,50,20,1,1,3~2,30,30,100,0,0,0,0,0,0,50,0,0,1&b2=…&random=10&bg=1b1d20`.
  * Only the bars shown are written. Each `bN` holds that bar's patterns, separated by `~`.
  */
 export function setupToQuery({ count, bars, randomness, background }: BarsSetup): string {
@@ -53,14 +61,7 @@ export function setupToQuery({ count, bars, randomness, background }: BarsSetup)
   return [
     `bars=${shown.length}`,
     ...shown.map(bar => `label=${encodeURIComponent(bar.label)}`),
-    `jolt=${shown.map(bar => bar.jolt).join(',')}`,
-    `wobble=${shown.map(bar => bar.wobble).join(',')}`,
-    `crack=${shown.map(bar => (bar.crack ? 1 : 0)).join(',')}`,
-    `broken=${shown.map(bar => (bar.broken ? 1 : 0)).join(',')}`,
-    `impacts=${shown.map(bar => bar.impacts).join(',')}`,
-    ...shown.map((bar, index) => `b${index + 1}=${activePatterns(bar)
-      .map(pattern => PATTERN_FIELDS.map(([key]) => pattern[key]).join(','))
-      .join(PATTERN_SEPARATOR)}`),
+    ...shown.map((bar, index) => `b${index + 1}=${activePatterns(bar).map(patternToText).join(PATTERN_SEPARATOR)}`),
     `random=${randomness}`,
     `bg=${background.replace(/^#/, '').toLowerCase()}`,
   ].join('&');
@@ -72,13 +73,22 @@ function read(value: string | undefined, clamp: (value: number) => number, fallb
   return text && Number.isFinite(Number(text)) ? clamp(Number(text)) : fallback;
 }
 
+function readFlag(value: string | undefined, fallback: boolean): boolean {
+  const text = value?.trim();
+  return text === '1' || (text !== '0' && fallback);
+}
+
 function patternsFrom(text: string, fallback: Pattern): Pattern[] {
   return text.split(PATTERN_SEPARATOR).slice(0, MAX_VARIATIONS + 1).map(entry => {
     const values = entry.split(',');
     const pattern = { ...fallback };
-    PATTERN_FIELDS.forEach(([key, clamp], index) => {
+    PATTERN_NUMBERS.forEach(([key, clamp], index) => {
       pattern[key] = read(values[index], clamp, fallback[key]);
     });
+    const after = PATTERN_NUMBERS.length;
+    pattern.crack = readFlag(values[after], fallback.crack);
+    pattern.broken = readFlag(values[after + 1], fallback.broken);
+    pattern.impacts = read(values[after + 2], clampImpacts, fallback.impacts);
     return pattern;
   });
 }
@@ -90,6 +100,8 @@ export function setupFromQuery(search: string): BarsSetup {
   const list = (key: string) => (params.get(key) ?? '').split(',');
   const jolts = list('jolt');
   const wobbles = list('wobble');
+  // Links from before patterns had their own jolt, wobble, cracking and
+  // breaking had them for the whole bar.
   const cracks = list('crack');
   const breaks = list('broken');
   const impacts = list('impacts');
@@ -101,29 +113,32 @@ export function setupFromQuery(search: string): BarsSetup {
   const oldLink = !params.has('jolt');
 
   const bars = DEFAULT_BARS.map((bar, index): Bar => {
-    const wobble = read(wobbles[index], clampPercent, bar.wobble);
+    const whole = bar.patterns[0];
+    const wobble = read(wobbles[index], clampPercent, whole.wobble);
+    const forWholeBar = {
+      jolt: oldLink ? wobble : read(jolts[index], clampPercent, whole.jolt),
+      wobble,
+      crack: readFlag(cracks[index], whole.crack),
+      broken: readFlag(breaks[index], whole.broken),
+      impacts: read(impacts[index], clampImpacts, whole.impacts),
+    };
     const encoded = params.get(`b${index + 1}`);
     let patterns: Pattern[];
     if (encoded) {
-      patterns = patternsFrom(encoded, bar.patterns[0]);
+      patterns = patternsFrom(encoded, { ...whole, ...forWholeBar });
     } else if ([oldBpms, oldMaxes, oldMins].some(values => values[index]?.trim())) {
       const bpm = read(oldBpms[index], value => Math.max(0, value), bar.patterns[0].rise);
       const max = read(oldMaxes[index], clampPercent, bar.patterns[0].max);
       const min = read(oldMins[index], clampPercent, bar.patterns[0].min);
       // 0 BPM stood still at its max.
       patterns = [bpm === 0
-        ? { ...OLD_LINK_PATTERN, max, min: max }
-        : { ...OLD_LINK_PATTERN, rise: clampSpeed(bpm), fall: clampSpeed(bpm), max, min }];
+        ? { ...OLD_LINK_PATTERN, max, min: max, ...forWholeBar }
+        : { ...OLD_LINK_PATTERN, rise: clampSpeed(bpm), fall: clampSpeed(bpm), max, min, ...forWholeBar }];
     } else {
-      patterns = bar.patterns.map(pattern => ({ ...pattern }));
+      patterns = bar.patterns.map(pattern => ({ ...pattern, ...forWholeBar }));
     }
     return {
       label: labels[index] === undefined ? bar.label : labels[index].slice(0, MAX_LABEL_LENGTH),
-      jolt: oldLink ? wobble : read(jolts[index], clampPercent, bar.jolt),
-      wobble,
-      crack: cracks[index]?.trim() === '1',
-      broken: breaks[index]?.trim() === '1',
-      impacts: read(impacts[index], clampImpacts, bar.impacts),
       variations: patterns.length - 1,
       patterns,
     };

@@ -18,16 +18,11 @@ import type { Bar, BarPose, Pattern } from './NalasBars';
 
 const STEADY = { riseStart: 0, riseEnd: 0, fallStart: 0, fallEnd: 0 };
 
-const bar = (patterns: Partial<Pattern>[], extra: Partial<Bar> = {}): Bar => ({
+/** A bar with these patterns, still unless they say otherwise. `everyPattern` applies to all of them. */
+const bar = (patterns: Partial<Pattern>[], everyPattern: Partial<Pattern> = {}): Bar => ({
   label: '',
-  jolt: 0,
-  wobble: 0,
-  crack: false,
-  broken: false,
-  impacts: 1,
   variations: patterns.length - 1,
-  patterns: patterns.map(pattern => ({ ...DEFAULT_PATTERN, ...pattern })),
-  ...extra,
+  patterns: patterns.map(pattern => ({ ...DEFAULT_PATTERN, jolt: 0, wobble: 0, ...everyPattern, ...pattern })),
 });
 
 /** Samples a bar every hundredth of a second. */
@@ -122,7 +117,7 @@ describe('bar motion', () => {
   });
 
   it('keeps the jolt and the wobble apart', () => {
-    const at = (extra: Partial<Bar>) => createBarMotion(bar([{ rise: 60, fall: 60 }], extra))(0.52);
+    const at = (extra: Partial<Pattern>) => createBarMotion(bar([{ rise: 60, fall: 60 }], extra))(0.52);
     const joltOnly = at({ jolt: 100, wobble: 0 });
     expect(joltOnly.lift).toBeGreaterThan(0);
     expect(joltOnly.scaleX).toBeGreaterThan(1);
@@ -134,6 +129,19 @@ describe('bar motion', () => {
 
     // Half the setting is half the movement.
     expect(at({ jolt: 50 }).lift).toBeCloseTo(joltOnly.lift / 2, 9);
+  });
+
+  it('jolts and wobbles as much as each pattern says, changing over smoothly', () => {
+    // One second a cycle: a jolting pattern, then a wobbling one.
+    const motion = createBarMotion(bar([{ rise: 60, fall: 60, jolt: 100 }, { rise: 60, fall: 60, wobble: 100 }]));
+    expect(motion(0.52).lift).toBeGreaterThan(0);
+    expect(motion(0.52)).toMatchObject({ sway: 0, tilt: 0 });
+    expect(motion(1.52)).toMatchObject({ lift: 0, scaleX: 1 });
+    expect(Math.abs(motion(1.52).sway)).toBeGreaterThan(0);
+    // Both settle at the end of a cycle, so the change of pattern doesn't jump.
+    for (const key of ['lift', 'sway', 'tilt'] as const) {
+      expect(Math.abs(motion(0.999)[key] - motion(1.001)[key])).toBeLessThan(0.05);
+    }
   });
 
   it('varies each cycle by up to the randomness, the same way every time', () => {
@@ -202,7 +210,7 @@ describe('limits', () => {
 
 describe('cracks', () => {
   // One second a cycle: rising for half a second, then the impact at 0.5 s.
-  const cracking = (changes: Partial<Pattern> = {}, crack = true) => createBarMotion(bar([{ rise: 60, fall: 60, ...changes }], { crack }));
+  const cracking = (changes: Partial<Pattern> = {}, crack = true) => createBarMotion(bar([{ rise: 60, fall: 60, crack, ...changes }]));
 
   it('cracks the top as the white hits it, spreading then fading while it falls', () => {
     const motion = cracking();
@@ -229,6 +237,14 @@ describe('cracks', () => {
     expect(cracking({ max: 95 })(0.6).crack!.fade).toBeCloseTo(0.5, 6);
     // A pause at the top doesn't keep cracking.
     expect(cracking({ max: 100, min: 100 })(0.6).crack).toBeNull();
+  });
+
+  it('only cracks during patterns that have it on', () => {
+    // One second a cycle, impacts at 0.5 s: cracking, then not, then cracking again.
+    const motion = createBarMotion(bar([{ rise: 60, fall: 60, crack: true }, { rise: 60, fall: 60 }]));
+    expect(motion(0.6).crack).not.toBeNull();
+    expect(motion(1.6).crack).toBeNull();
+    expect(motion(2.6).crack).not.toBeNull();
   });
 });
 
@@ -261,9 +277,24 @@ describe('breaking', () => {
     // Slams at 0.25, 0.75, 1.25 … s. Switched on at 2 s, the second slam after that is at 2.75 s.
     const target = bar([{ rise: 120, fall: 120 }], { broken: true, impacts: 2 });
     expect(createBarMotion(target)(0.8).broken).not.toBeNull();
-    const fromTwo = createBarMotion(target, { countSlamsFrom: 2 });
+    const fromTwo = createBarMotion(target, { countSlamsFrom: [2] });
     expect(fromTwo(2.7).broken).toBeNull();
     expect(fromTwo(2.8)!.broken!.since).toBeCloseTo(0.05, 6);
+  });
+
+  it('only counts slams in patterns with Broken on, each towards its own Break after impact', () => {
+    // Half a second a cycle, slamming 0.25 s in: pattern 1 twice, then pattern 2
+    // once. Pattern 2 slams at 1.25, 2.75 and 4.25 s.
+    const target = bar([{ rise: 120, fall: 120, repeats: 2 }, { rise: 120, fall: 120, broken: true, impacts: 2 }]);
+    const motion = createBarMotion(target);
+    // Pattern 1's slams don't count, so it doesn't break at 0.75 s.
+    expect(motion(2.7).broken).toBeNull();
+    expect(motion(2.8)!.broken!.since).toBeCloseTo(0.05, 6);
+
+    // Pattern 2 switched on at 2 s: its slams at 2.75 and 4.25 s count.
+    const fromTwo = createBarMotion(target, { countSlamsFrom: [0, 2] });
+    expect(fromTwo(4.2).broken).toBeNull();
+    expect(fromTwo(4.3)!.broken!.since).toBeCloseTo(0.05, 6);
   });
 
   it('counts a rise from 90 to 100 as a slam', () => {
