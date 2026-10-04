@@ -109,6 +109,12 @@ export function withVariations(bar: Bar, variations: number): Bar {
   return { ...bar, variations: count, patterns };
 }
 
+/** The bar playing just one of its patterns over and over, for trying it out while editing it. */
+export function onlyPattern(bar: Bar, patternIndex: number): Bar {
+  const patterns = activePatterns(bar);
+  return { ...bar, variations: 0, patterns: [patterns[Math.max(0, Math.min(patterns.length - 1, patternIndex))]] };
+}
+
 /** How long a stroke takes at a speed: half a beat at that BPM. */
 export function strokeSeconds(speed: number): number {
   return 30 / clampSpeed(speed);

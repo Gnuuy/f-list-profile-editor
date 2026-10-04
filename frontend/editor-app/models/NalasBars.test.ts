@@ -9,6 +9,7 @@ import {
   clampSpeed,
   createBarMotion,
   DEFAULT_PATTERN,
+  onlyPattern,
   strokeProgress,
   strokeSeconds,
   withVariations,
@@ -171,6 +172,19 @@ describe('variations', () => {
     const back = withVariations(withVariations(edited, 0), 2);
     expect(activePatterns(withVariations(edited, 0))).toHaveLength(1);
     expect(back.patterns[2].rise).toBe(10);
+  });
+
+  it('can play just one pattern over and over', () => {
+    const two = bar([{ rise: 60, fall: 60, max: 100, ...STEADY }, { rise: 120, fall: 120, max: 50, ...STEADY }]);
+    expect(Math.max(...sample(two, 4).map(pose => pose.fill))).toBeCloseTo(1, 5);
+
+    // Pattern 2 alone: half-second cycles that only fill halfway.
+    const solo = sample(onlyPattern(two, 1), 4);
+    expect(Math.max(...solo.map(pose => pose.fill))).toBeCloseTo(0.5, 5);
+    expect(tops(solo)).toBe(8);
+    expect(onlyPattern(two, 9).patterns).toEqual([two.patterns[1]]);
+    // The bar itself keeps all its patterns.
+    expect(activePatterns(two)).toHaveLength(2);
   });
 });
 

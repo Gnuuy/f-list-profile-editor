@@ -3265,6 +3265,15 @@ NALA'S BARS
   font-size: 11px;
 }
 
+/* The pattern tabs, with the option to play only the one being edited beside them. */
+.nalas-bars-pattern-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
 .nalas-bars-patterns {
   display: flex;
   flex-wrap: wrap;

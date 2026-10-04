@@ -18,6 +18,7 @@ import {
     MAX_VARIATIONS,
     MIN_BAR_COUNT,
     MIN_SPEED,
+    onlyPattern,
     withVariations,
 } from "../../models/NalasBars";
 import type { Bar, Pattern } from "../../models/NalasBars";
@@ -59,6 +60,8 @@ export default function NalasBarsMainView() {
     const [selectedBar, setSelectedBar] = useState(0);
     const [selectedPattern, setSelectedPattern] = useState(0);
     const [running, setRunning] = useState(true);
+    // Whether the bar being edited plays only the pattern being edited, instead of all its patterns in turn.
+    const [onlyEditedPattern, setOnlyEditedPattern] = useState(false);
     // How far the animation has played, in seconds.
     const timeRef = useRef(0);
     // When each bar's Broken was switched on: slams only count from then. A
@@ -68,15 +71,18 @@ export default function NalasBarsMainView() {
 
     const { count, bars: allBars, randomness, background } = setup;
     const bars = useMemo(() => allBars.slice(0, count), [allBars, count]);
-    const motions = useMemo(
-        () => bars.map((bar, index) => createBarMotion(bar, { index, randomness, countSlamsFrom: countSlamsFrom[index] })),
-        [bars, randomness, countSlamsFrom],
-    );
-
     const barIndex = Math.min(selectedBar, count - 1);
     const bar = allBars[barIndex];
     const patternIndex = Math.min(selectedPattern, bar.variations);
     const pattern = bar.patterns[patternIndex];
+
+    const motions = useMemo(
+        () => bars.map((b, index) => {
+            const played = onlyEditedPattern && index === barIndex ? onlyPattern(b, patternIndex) : b;
+            return createBarMotion(played, { index, randomness, countSlamsFrom: countSlamsFrom[index] });
+        }),
+        [bars, randomness, countSlamsFrom, onlyEditedPattern, barIndex, patternIndex],
+    );
 
     // The animation loop reads the latest settings without restarting.
     const scene = useRef({ bars, motions, background, running });
@@ -267,19 +273,29 @@ export default function NalasBarsMainView() {
                 </p>
 
                 {bar.variations > 0 && (
-                    <div className="nalas-bars-patterns" role="tablist" aria-label="Patterns">
-                        {activePatterns(bar).map((p, index) => (
-                            <button
-                                key={index}
-                                type="button"
-                                role="tab"
-                                aria-selected={index === patternIndex}
-                                className={index === patternIndex ? "is-selected" : undefined}
-                                onClick={() => setSelectedPattern(index)}
-                            >
-                                Pattern {index + 1} <span>×{p.repeats}</span>
-                            </button>
-                        ))}
+                    <div className="nalas-bars-pattern-picker">
+                        <div className="nalas-bars-patterns" role="tablist" aria-label="Patterns">
+                            {activePatterns(bar).map((p, index) => (
+                                <button
+                                    key={index}
+                                    type="button"
+                                    role="tab"
+                                    aria-selected={index === patternIndex}
+                                    className={index === patternIndex ? "is-selected" : undefined}
+                                    onClick={() => setSelectedPattern(index)}
+                                >
+                                    Pattern {index + 1} <span>×{p.repeats}</span>
+                                </button>
+                            ))}
+                        </div>
+                        <label className="nalas-toggle">
+                            <input
+                                type="checkbox"
+                                checked={onlyEditedPattern}
+                                onChange={event => setOnlyEditedPattern(event.target.checked)}
+                            />
+                            Only play this pattern
+                        </label>
                     </div>
                 )}
 
@@ -290,6 +306,7 @@ export default function NalasBarsMainView() {
                     <p className="nalas-bars-hint">
                         Easing: left accelerates, right dampens (100 eases in from a standstill), the middle is a steady
                         speed. Set Min and Max the same to pause.
+                        {bar.variations > 0 && " Only play this pattern loops the one you're editing, so changes show straight away; untick it to run all the patterns in turn. It isn't saved in the link."}
                     </p>
                 </div>
             </section>
