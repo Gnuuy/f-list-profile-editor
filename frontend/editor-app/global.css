@@ -3139,18 +3139,21 @@ NALA'S BARS
   font-size: 18px;
 }
 
-.nalas-bars-intro,
-.nalas-bars-status {
+.nalas-bars-intro {
   margin: 0;
   color: var(--popup-muted-text, #bcd0e2);
 }
 
+/* As wide as the bars shown, centred in the page. */
 .nalas-bars-stage {
   display: grid;
   gap: 8px;
+  justify-self: center;
+  width: var(--nalas-bars-stage-width);
+  max-width: 100%;
 }
 
-/* Drawn exactly like the GIF, at twice the size, and shown at half that. */
+/* Drawn at twice the size and shown at half that, so it stays sharp. */
 .nalas-bars-canvas {
   display: block;
   width: 100%;
@@ -3161,7 +3164,7 @@ NALA'S BARS
 
 .nalas-bars-controls {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--nalas-bars-count), minmax(0, 1fr));
   gap: var(--nalas-bars-gap);
   padding: 0 var(--nalas-bars-padding);
 }
@@ -3173,7 +3176,8 @@ NALA'S BARS
 }
 
 .nalas-bars-column input,
-.nalas-bars-background input {
+.nalas-bars-option input,
+.nalas-bars-option select {
   box-sizing: border-box;
   color: var(--popup-text, #dceeff);
   font: 12px Verdana, Helvetica, sans-serif;
@@ -3237,13 +3241,18 @@ NALA'S BARS
   opacity: 0.6;
 }
 
-.nalas-bars-background {
+.nalas-bars-option {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.nalas-bars-background input {
+.nalas-bars-option select {
+  height: 24px;
+  padding: 0 4px;
+}
+
+.nalas-bars-option input[type="color"] {
   width: 36px;
   height: 24px;
   padding: 1px;

@@ -18,19 +18,18 @@ const BORDER_COLOUR = '#3b3f45';
 const FILL_COLOUR = '#ffffff';
 const LABEL_FONT = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
-export const DEFAULT_BACKGROUND = '#1b1d20';
-/** The flat colours the bars are drawn in, besides the background. */
-export const BARS_COLOURS = [LABEL_COLOUR, TRACK_COLOUR, BORDER_COLOUR, FILL_COLOUR];
-
-// Sizes above are at 1×; the GIF and preview are drawn at twice that.
+// Sizes above are at 1×; the bars are drawn at twice that, so they stay sharp on high-resolution screens.
 export const BARS_SCALE = 2;
 
-export const BARS_WIDTH = PADDING * 2 + COLUMN_WIDTH * 4 + COLUMN_GAP * 3;
+/** The width for this many bars, at 1×. */
+export function barsWidth(count: number): number {
+  return PADDING * 2 + COLUMN_WIDTH * count + COLUMN_GAP * (count - 1);
+}
 export const BARS_HEIGHT = PADDING * 2 + LABEL_HEIGHT + LABEL_GAP + SHELL_HEIGHT;
 /** Where the columns sit, so controls can line up under them. */
 export const BARS_LAYOUT = { padding: PADDING, columnGap: COLUMN_GAP, columnWidth: COLUMN_WIDTH };
 
-/** Draws the labels and bars, with each bar in its pose, filling a canvas `BARS_SCALE` times the 1× size. */
+/** Draws the labels and bars, with each bar in its pose, filling a canvas `BARS_SCALE` times `barsWidth(bars.length)` wide. */
 export function drawBars(
   context: CanvasRenderingContext2D,
   bars: readonly Bar[],
@@ -39,7 +38,7 @@ export function drawBars(
 ) {
   context.setTransform(BARS_SCALE, 0, 0, BARS_SCALE, 0, 0);
   context.fillStyle = background;
-  context.fillRect(0, 0, BARS_WIDTH, BARS_HEIGHT);
+  context.fillRect(0, 0, barsWidth(bars.length), BARS_HEIGHT);
 
   bars.forEach((bar, index) => {
     const centre = PADDING + index * (COLUMN_WIDTH + COLUMN_GAP) + COLUMN_WIDTH / 2;
