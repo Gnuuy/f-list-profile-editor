@@ -6,7 +6,7 @@ export default function NalasBarsSidebarView() {
                 into the start.
             </p>
             <p className="nalas-bars-note">
-                Slow bars make longer loops, and longer loops make bigger GIFs.
+                Bars at very different BPMs can make longer loops, and longer loops make bigger GIFs.
             </p>
         </div>
     );

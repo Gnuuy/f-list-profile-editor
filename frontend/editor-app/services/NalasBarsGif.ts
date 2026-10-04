@@ -21,7 +21,7 @@ export async function exportBarsGif(
   background: string,
   onProgress?: (done: number, total: number) => void,
 ): Promise<Blob> {
-  const plan = planLoop(bars.map(bar => bar.speed));
+  const plan = planLoop(bars);
   const canvas = document.createElement('canvas');
   canvas.width = WIDTH;
   canvas.height = HEIGHT;

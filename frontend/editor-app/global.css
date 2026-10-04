@@ -3195,6 +3195,20 @@ NALA'S BARS
   padding: 4px 6px;
 }
 
+/* A small caption beside each number, so they can't be mixed up. */
+.nalas-bars-field {
+  display: grid;
+  grid-template-columns: 44px 72px;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  text-align: right;
+}
+
+.nalas-bars-field span {
+  color: var(--popup-muted-text, #bcd0e2);
+}
+
 .nalas-bars-actions {
   display: flex;
   flex-wrap: wrap;
