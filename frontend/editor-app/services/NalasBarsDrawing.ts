@@ -1,0 +1,95 @@
+import type { Bar, BarPose } from '../models/NalasBars';
+
+// Sizes and colours from the bouncing bars prototype.
+const PADDING = 20;
+const COLUMN_GAP = 24;
+const COLUMN_WIDTH = 161;
+const LABEL_HEIGHT = 24;
+const LABEL_FONT_SIZE = 16;
+const LABEL_GAP = 12;
+const SHELL_HEIGHT = 280;
+const TRACK_WIDTH = 52;
+const TRACK_HEIGHT = 260;
+const TRACK_BORDER = 1;
+
+const LABEL_COLOUR = '#f2f2f2';
+const TRACK_COLOUR = '#24272b';
+const BORDER_COLOUR = '#3b3f45';
+const FILL_COLOUR = '#ffffff';
+const LABEL_FONT = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+
+export const DEFAULT_BACKGROUND = '#1b1d20';
+/** The flat colours the bars are drawn in, besides the background. */
+export const BARS_COLOURS = [LABEL_COLOUR, TRACK_COLOUR, BORDER_COLOUR, FILL_COLOUR];
+
+export const BARS_WIDTH = PADDING * 2 + COLUMN_WIDTH * 4 + COLUMN_GAP * 3;
+export const BARS_HEIGHT = PADDING * 2 + LABEL_HEIGHT + LABEL_GAP + SHELL_HEIGHT;
+/** Where the columns sit, so controls can line up under them. */
+export const BARS_LAYOUT = { padding: PADDING, columnGap: COLUMN_GAP, columnWidth: COLUMN_WIDTH };
+
+/** Draws the labels and bars, with each bar in its pose, filling the whole canvas. */
+export function drawBars(
+  context: CanvasRenderingContext2D,
+  bars: readonly Bar[],
+  poses: readonly BarPose[],
+  background: string,
+) {
+  context.setTransform(1, 0, 0, 1, 0, 0);
+  context.fillStyle = background;
+  context.fillRect(0, 0, BARS_WIDTH, BARS_HEIGHT);
+
+  bars.forEach((bar, index) => {
+    const centre = PADDING + index * (COLUMN_WIDTH + COLUMN_GAP) + COLUMN_WIDTH / 2;
+    drawLabel(context, bar.label, centre, PADDING + LABEL_HEIGHT / 2);
+    drawTrack(context, poses[index], centre, PADDING + LABEL_HEIGHT + LABEL_GAP + SHELL_HEIGHT);
+  });
+}
+
+function drawLabel(context: CanvasRenderingContext2D, label: string, centre: number, middle: number) {
+  if (!label) return;
+  context.fillStyle = LABEL_COLOUR;
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  // Long labels shrink to fit their column.
+  let size = LABEL_FONT_SIZE;
+  context.font = `600 ${size}px ${LABEL_FONT}`;
+  const width = context.measureText(label).width;
+  if (width > COLUMN_WIDTH) {
+    size = Math.max(8, Math.floor((size * COLUMN_WIDTH) / width));
+    context.font = `600 ${size}px ${LABEL_FONT}`;
+  }
+  context.fillText(label, centre, middle);
+}
+
+function drawTrack(context: CanvasRenderingContext2D, pose: BarPose, centre: number, bottom: number) {
+  context.save();
+  // The prototype's transform, around the bottom centre of the bar.
+  context.translate(centre, bottom);
+  context.translate(pose.sway, -pose.lift);
+  context.rotate((pose.tilt * Math.PI) / 180);
+  context.scale(pose.scaleX, pose.scaleY);
+
+  const left = -TRACK_WIDTH / 2;
+  const top = -TRACK_HEIGHT;
+  context.fillStyle = BORDER_COLOUR;
+  context.beginPath();
+  context.roundRect(left, top, TRACK_WIDTH, TRACK_HEIGHT, TRACK_WIDTH / 2);
+  context.fill();
+
+  const inner = {
+    left: left + TRACK_BORDER,
+    top: top + TRACK_BORDER,
+    width: TRACK_WIDTH - TRACK_BORDER * 2,
+    height: TRACK_HEIGHT - TRACK_BORDER * 2,
+  };
+  context.beginPath();
+  context.roundRect(inner.left, inner.top, inner.width, inner.height, inner.width / 2);
+  context.fillStyle = TRACK_COLOUR;
+  context.fill();
+  context.clip();
+
+  const fillHeight = pose.fill * inner.height;
+  context.fillStyle = FILL_COLOUR;
+  context.fillRect(inner.left, inner.top + inner.height - fillHeight, inner.width, fillHeight);
+  context.restore();
+}

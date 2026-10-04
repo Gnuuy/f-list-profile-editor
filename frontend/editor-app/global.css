@@ -3119,3 +3119,124 @@ IMAGE CONVERTER
 .image-converter-item.is-error .image-converter-status {
   color: #ff9d9d;
 }
+
+/* =========================================
+NALA'S BARS
+========================================= */
+/* One column as wide as the bars, centred in the section. */
+.nalas-bars-view {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  width: var(--nalas-bars-width);
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.nalas-bars-view h1 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.nalas-bars-intro,
+.nalas-bars-status {
+  margin: 0;
+  color: var(--popup-muted-text, #bcd0e2);
+}
+
+.nalas-bars-stage {
+  display: grid;
+  gap: 8px;
+}
+
+/* Shown at its real size: the preview is exactly what the GIF looks like. */
+.nalas-bars-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+.nalas-bars-controls {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--nalas-bars-gap);
+  padding: 0 var(--nalas-bars-padding);
+}
+
+.nalas-bars-column {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+}
+
+.nalas-bars-column input,
+.nalas-bars-background input {
+  box-sizing: border-box;
+  color: var(--popup-text, #dceeff);
+  font: 12px Verdana, Helvetica, sans-serif;
+  text-align: center;
+  background: var(--popup-inset-bg, #082d44);
+  border: 1px solid var(--popup-border, #3977ae);
+  border-radius: 4px;
+}
+
+.nalas-bars-column input[type="text"] {
+  width: 100%;
+  max-width: 130px;
+  padding: 5px 6px;
+  font-weight: 700;
+}
+
+.nalas-bars-column input[type="number"] {
+  width: 72px;
+  padding: 4px 6px;
+}
+
+.nalas-bars-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.nalas-bars-actions button {
+  padding: 6px 14px;
+  color: #ffffff;
+  font: 600 12px/1.2 Verdana, Helvetica, sans-serif;
+  background: var(--popup-button-bg, #194a72);
+  border: 1px solid var(--popup-border, #3977ae);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.nalas-bars-actions button:hover,
+.nalas-bars-actions button:focus-visible {
+  background: var(--popup-active-bg, #235a8f);
+}
+
+.nalas-bars-actions button:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.nalas-bars-background {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nalas-bars-background input {
+  width: 36px;
+  height: 24px;
+  padding: 1px;
+  cursor: pointer;
+}
+
+.nalas-bars-note {
+  margin: 0;
+  font-size: 11px;
+  opacity: 0.8;
+}
