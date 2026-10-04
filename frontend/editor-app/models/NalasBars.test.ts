@@ -4,6 +4,7 @@ import {
   activePatterns,
   clampBarCount,
   clampEase,
+  clampImpacts,
   clampRandomness,
   clampSpeed,
   createBarMotion,
@@ -180,6 +181,8 @@ describe('limits', () => {
     expect(clampSpeed(5000)).toBe(5000);
     expect(clampEase(-300)).toBe(-100);
     expect(clampRandomness(80)).toBe(50);
+    // Impacts have no upper limit, but are whole and at least 1.
+    expect([0, 2.6, 5000, 1e9, Number.NaN].map(clampImpacts)).toEqual([1, 3, 5000, 1e9, 1]);
   });
 });
 

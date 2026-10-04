@@ -3314,6 +3314,24 @@ NALA'S BARS
   padding: 3px 4px;
 }
 
+/* A typed-only setting, lined up with the sliders' captions. */
+.nalas-number-field {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.nalas-number-field label {
+  color: var(--popup-muted-text, #bcd0e2);
+}
+
+.nalas-number-field .nalas-slider-number {
+  width: 90px;
+}
+
 .nalas-bars-actions .nalas-slider {
   grid-template-columns: auto 120px 52px;
   font-size: 12px;

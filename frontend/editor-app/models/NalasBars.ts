@@ -40,7 +40,6 @@ export const MAX_VARIATIONS = 9;
 export const MIN_SPEED = 1;
 export const MAX_REPEATS = 99;
 export const MAX_RANDOMNESS = 50;
-export const MAX_IMPACTS = 999;
 
 export const DEFAULT_PATTERN: Pattern = {
   repeats: 1,
@@ -92,7 +91,8 @@ export function clampWhole(low: number, high: number, fallback: number) {
 export const clampBarCount = clampWhole(MIN_BAR_COUNT, MAX_BAR_COUNT, MAX_BAR_COUNT);
 export const clampRepeats = clampWhole(1, MAX_REPEATS, 1);
 export const clampVariations = clampWhole(0, MAX_VARIATIONS, 0);
-export const clampImpacts = clampWhole(1, MAX_IMPACTS, 1);
+/** Any whole number of impacts from 1 up. */
+export const clampImpacts = clampWhole(1, Infinity, 1);
 
 /** The patterns a bar plays, in order. */
 export function activePatterns(bar: Bar): Pattern[] {

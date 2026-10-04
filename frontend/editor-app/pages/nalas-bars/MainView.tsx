@@ -26,7 +26,7 @@ import type { BarsSetup } from "../../models/NalasBarsLink";
 import { BARS_HEIGHT, BARS_LAYOUT, BARS_SCALE, barsWidth, drawBars } from "../../services/NalasBarsDrawing";
 import { copyToClipboard } from "../../utilities/Clipboard";
 import { toast } from "../../utilities/Toast";
-import { SliderField } from "./SliderField";
+import { NumberField, SliderField } from "./SliderField";
 
 type PatternSlider = {
     key: keyof Pattern;
@@ -250,11 +250,10 @@ export default function NalasBarsMainView() {
                         Broken
                     </label>
                     {bar.broken && (
-                        <SliderField
-                            caption="Impacts"
+                        <NumberField
+                            caption="Break after impact"
                             value={bar.impacts}
                             min={1}
-                            max={20}
                             clamp={clampImpacts}
                             onChange={value => changeBar(barIndex, old => ({ ...old, impacts: value }))}
                         />
@@ -263,8 +262,8 @@ export default function NalasBarsMainView() {
                 <p className="nalas-bars-hint">
                     Jolt is the hop and squash as the white hits the top; Wobble is the sway and tilt. Crack on impact
                     cracks the top of the bar each time the white hits it, which needs a Max of 90 or more. Broken
-                    makes the top break off and fly away once the white has slammed into it that many Impacts with a
-                    Rise speed above {BREAK_SPEED}. Variations add more patterns for this bar to loop through.
+                    makes the top break off and fly away once the white has slammed into it as many times as Break after
+                    impact says, with a Rise speed above {BREAK_SPEED}. Variations add more patterns for this bar to loop through.
                 </p>
 
                 {bar.variations > 0 && (
