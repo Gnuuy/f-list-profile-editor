@@ -1,65 +1,127 @@
-import { clampBarCount, clampBpm, clampPercent, clampWobble, DEFAULT_BARS, MAX_BAR_COUNT } from './NalasBars';
-import type { Bar } from './NalasBars';
+import {
+  activePatterns,
+  clampBarCount,
+  clampEase,
+  clampPercent,
+  clampRandomness,
+  clampRepeats,
+  clampSpeed,
+  DEFAULT_BARS,
+  DEFAULT_PATTERN,
+  MAX_BAR_COUNT,
+  MAX_VARIATIONS,
+} from './NalasBars';
+import type { Bar, Pattern } from './NalasBars';
 
 export const DEFAULT_BACKGROUND = '#1b1d20';
 export const MAX_LABEL_LENGTH = 20;
+
+/** All four bars' settings are kept; `count` says how many are shown. */
+export type BarsSetup = { count: number; bars: Bar[]; randomness: number; background: string };
+
 export const DEFAULT_SETUP: BarsSetup = {
   count: MAX_BAR_COUNT,
   bars: [...DEFAULT_BARS],
+  randomness: 0,
   background: DEFAULT_BACKGROUND,
 };
 
-/** All four bars' settings are kept; `count` says how many are shown. */
-export type BarsSetup = { count: number; bars: Bar[]; background: string };
+// A pattern in a link: its numbers in this order, separated by commas.
+const PATTERN_FIELDS: ReadonlyArray<[keyof Pattern, (value: number) => number]> = [
+  ['repeats', clampRepeats],
+  ['rise', clampSpeed],
+  ['fall', clampSpeed],
+  ['max', clampPercent],
+  ['min', clampPercent],
+  ['riseStart', clampEase],
+  ['riseEnd', clampEase],
+  ['fallStart', clampEase],
+  ['fallEnd', clampEase],
+];
+const PATTERN_SEPARATOR = '~';
 
 /**
  * The setup as a link's query, for example
- * `bars=2&label=Strength&label=Speed&bpm=30,45&max=100,80&min=0,20&wobble=50,50&bg=1b1d20`.
- * Only the bars shown are written. Each label is its own `label=`, so labels can hold commas.
+ * `bars=2&label=Fast&label=Slow&jolt=50,0&wobble=20,50&b1=4,120,120,100,0,100,100,100,100~2,30,30,100,0,0,0,0,0&b2=…&random=10&bg=1b1d20`.
+ * Only the bars shown are written. Each `bN` holds that bar's patterns, separated by `~`.
  */
-export function setupToQuery({ count, bars, background }: BarsSetup): string {
+export function setupToQuery({ count, bars, randomness, background }: BarsSetup): string {
   const shown = bars.slice(0, clampBarCount(count));
-  const list = (pick: (bar: Bar) => number) => shown.map(pick).join(',');
   return [
     `bars=${shown.length}`,
     ...shown.map(bar => `label=${encodeURIComponent(bar.label)}`),
-    `bpm=${list(bar => bar.bpm)}`,
-    `max=${list(bar => bar.max)}`,
-    `min=${list(bar => bar.min)}`,
-    `wobble=${list(bar => bar.wobble)}`,
+    `jolt=${shown.map(bar => bar.jolt).join(',')}`,
+    `wobble=${shown.map(bar => bar.wobble).join(',')}`,
+    ...shown.map((bar, index) => `b${index + 1}=${activePatterns(bar)
+      .map(pattern => PATTERN_FIELDS.map(([key]) => pattern[key]).join(','))
+      .join(PATTERN_SEPARATOR)}`),
+    `random=${randomness}`,
     `bg=${background.replace(/^#/, '').toLowerCase()}`,
   ].join('&');
+}
+
+// A blank or non-numeric entry keeps its default instead of becoming 0.
+function read(value: string | undefined, clamp: (value: number) => number, fallback: number): number {
+  const text = value?.trim();
+  return text && Number.isFinite(Number(text)) ? clamp(Number(text)) : fallback;
+}
+
+function patternsFrom(text: string, fallback: Pattern): Pattern[] {
+  return text.split(PATTERN_SEPARATOR).slice(0, MAX_VARIATIONS + 1).map(entry => {
+    const values = entry.split(',');
+    const pattern = { ...fallback };
+    PATTERN_FIELDS.forEach(([key, clamp], index) => {
+      pattern[key] = read(values[index], clamp, fallback[key]);
+    });
+    return pattern;
+  });
 }
 
 /** Reads a setup from a link's query. Anything missing or invalid keeps its default. */
 export function setupFromQuery(search: string): BarsSetup {
   const params = new URLSearchParams(search);
   const labels = params.getAll('label');
-  const numbers = (key: string) => (params.get(key) ?? '').split(',');
-  const bpms = numbers('bpm');
-  const maxes = numbers('max');
-  const mins = numbers('min');
-  const wobbles = numbers('wobble');
+  const list = (key: string) => (params.get(key) ?? '').split(',');
+  const jolts = list('jolt');
+  const wobbles = list('wobble');
+  // Links from before patterns had one speed, max and min per bar, and one
+  // wobble that covered the jolt as well.
+  const oldBpms = list('bpm');
+  const oldMaxes = list('max');
+  const oldMins = list('min');
+  const oldLink = !params.has('jolt');
 
-  // A blank or non-numeric entry keeps the default instead of becoming 0.
-  const read = (values: string[], index: number, clamp: (value: number) => number, fallback: number) => {
-    const value = values[index]?.trim();
-    return value && Number.isFinite(Number(value)) ? clamp(Number(value)) : fallback;
-  };
-
-  const bars = DEFAULT_BARS.map((bar, index) => ({
-    label: labels[index] === undefined ? bar.label : labels[index].slice(0, MAX_LABEL_LENGTH),
-    bpm: read(bpms, index, clampBpm, bar.bpm),
-    max: read(maxes, index, clampPercent, bar.max),
-    min: read(mins, index, clampPercent, bar.min),
-    wobble: read(wobbles, index, clampWobble, bar.wobble),
-  }));
+  const bars = DEFAULT_BARS.map((bar, index): Bar => {
+    const wobble = read(wobbles[index], clampPercent, bar.wobble);
+    const encoded = params.get(`b${index + 1}`);
+    let patterns: Pattern[];
+    if (encoded) {
+      patterns = patternsFrom(encoded, bar.patterns[0]);
+    } else {
+      const bpm = read(oldBpms[index], value => Math.max(0, value), bar.patterns[0].rise);
+      const max = read(oldMaxes[index], clampPercent, bar.patterns[0].max);
+      const min = read(oldMins[index], clampPercent, bar.patterns[0].min);
+      // 0 BPM stood still at its max.
+      patterns = [bpm === 0
+        ? { ...DEFAULT_PATTERN, max, min: max }
+        : { ...DEFAULT_PATTERN, rise: clampSpeed(bpm), fall: clampSpeed(bpm), max, min }];
+    }
+    return {
+      label: labels[index] === undefined ? bar.label : labels[index].slice(0, MAX_LABEL_LENGTH),
+      jolt: oldLink ? wobble : read(jolts[index], clampPercent, bar.jolt),
+      wobble,
+      variations: patterns.length - 1,
+      patterns,
+    };
+  });
 
   const colour = params.get('bg')?.trim().replace(/^#/, '') ?? '';
-  const background = /^[0-9a-f]{6}$/i.test(colour) ? `#${colour.toLowerCase()}` : DEFAULT_BACKGROUND;
-  const countText = params.get('bars')?.trim();
-  const count = countText && Number.isFinite(Number(countText)) ? clampBarCount(Number(countText)) : MAX_BAR_COUNT;
-  return { count, bars, background };
+  return {
+    count: read(params.get('bars') ?? undefined, clampBarCount, MAX_BAR_COUNT),
+    bars,
+    randomness: read(params.get('random') ?? undefined, clampRandomness, 0),
+    background: /^[0-9a-f]{6}$/i.test(colour) ? `#${colour.toLowerCase()}` : DEFAULT_BACKGROUND,
+  };
 }
 
 /** The query to show in the address bar; empty when everything is at its default. */

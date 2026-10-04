@@ -1,86 +1,181 @@
 import { describe, expect, it } from 'vitest';
 
-import { barPose, clampBarCount, clampBpm, clampPercent, clampWobble, posesAt } from './NalasBars';
+import {
+  activePatterns,
+  clampBarCount,
+  clampEase,
+  clampRandomness,
+  clampSpeed,
+  createBarMotion,
+  DEFAULT_PATTERN,
+  strokeProgress,
+  strokeSeconds,
+  withVariations,
+} from './NalasBars';
+import type { Bar, BarPose, Pattern } from './NalasBars';
 
-const pose = (beat: number, bpm: number, { max = 100, min = 0, wobble = 100 } = {}) => barPose(beat, { bpm, max, min, wobble });
+const STEADY = { riseStart: 0, riseEnd: 0, fallStart: 0, fallEnd: 0 };
 
-describe("Nala's bars motion", () => {
-  it('rises from its min to its max and back once per beat', () => {
-    expect(pose(0, 60).fill).toBeCloseTo(0, 9);
-    expect(pose(0.5, 60).fill).toBeCloseTo(1, 9);
-    expect(pose(1, 60).fill).toBeCloseTo(0, 9);
-    expect(pose(0, 60, { max: 80, min: 30 }).fill).toBeCloseTo(0.3, 9);
-    expect(pose(0.5, 60, { max: 80, min: 30 }).fill).toBeCloseTo(0.8, 9);
+const bar = (patterns: Partial<Pattern>[], extra: Partial<Bar> = {}): Bar => ({
+  label: '',
+  jolt: 0,
+  wobble: 0,
+  variations: patterns.length - 1,
+  patterns: patterns.map(pattern => ({ ...DEFAULT_PATTERN, ...pattern })),
+  ...extra,
+});
+
+/** Samples a bar every hundredth of a second. */
+function sample(target: Bar, seconds: number, options = {}): BarPose[] {
+  const motion = createBarMotion(target, options);
+  return Array.from({ length: Math.round(seconds * 100) + 1 }, (_, step) => motion(step / 100));
+}
+
+/** How many times the white turns round at the top. */
+function tops(poses: BarPose[]): number {
+  let count = 0;
+  for (let i = 1; i < poses.length - 1; i += 1) {
+    if (poses[i].fill > poses[i - 1].fill + 1e-9 && poses[i].fill >= poses[i + 1].fill) count += 1;
+  }
+  return count;
+}
+
+describe('strokes', () => {
+  it('takes half a beat at its speed', () => {
+    expect(strokeSeconds(60)).toBe(0.5);
+    expect(strokeSeconds(30)).toBe(1);
+    expect(strokeSeconds(0)).toBe(30);
   });
 
-  it('takes the whole beat whatever its min and max', () => {
-    // The top is always halfway through the beat, and the white never rests.
-    for (const range of [{ max: 100, min: 0 }, { max: 50, min: 0 }, { max: 60, min: 40 }]) {
-      expect(pose(0.5, 60, range).fill).toBeCloseTo(range.max / 100, 9);
-      expect(pose(0.25, 60, range).fill).toBeCloseTo((range.max + range.min) / 200, 9);
-      expect(pose(0.75, 60, range).fill).toBeCloseTo((range.max + range.min) / 200, 9);
+  it('runs from start to end whatever the easing', () => {
+    for (const [start, end] of [[100, 100], [0, 0], [-100, 50], [25, -60]]) {
+      expect(strokeProgress(0, start, end)).toBe(0);
+      expect(strokeProgress(1, start, end)).toBeCloseTo(1, 12);
+      for (let t = 0; t < 1; t += 0.01) {
+        expect(strokeProgress(t + 0.01, start, end)).toBeGreaterThanOrEqual(strokeProgress(t, start, end) - 1e-12);
+      }
     }
   });
 
-  it('fills as many times a minute as its BPM', () => {
-    const bars = [{ label: '', bpm: 120, max: 40, min: 10, wobble: 1 }];
-    let tops = 0;
-    let previous = posesAt(bars, 0)[0].fill;
-    let rising = false;
-    for (let step = 1; step <= 6000; step += 1) {
-      const { fill } = posesAt(bars, step / 100)[0];
-      if (rising && fill < previous) tops += 1;
-      rising = fill > previous;
-      previous = fill;
+  it('dampens or accelerates the start and end', () => {
+    const speedAtStart = (ease: number) => strokeProgress(0.001, ease, 0) / 0.001;
+    const speedAtEnd = (ease: number) => (1 - strokeProgress(0.999, 0, ease)) / 0.001;
+    expect(speedAtStart(0)).toBeCloseTo(1, 2);
+    // Dampening of 25% starts 25% slower; accelerating 25% starts 25% faster.
+    expect(speedAtStart(25)).toBeCloseTo(0.75, 2);
+    expect(speedAtStart(-25)).toBeCloseTo(1.25, 2);
+    expect(speedAtStart(100)).toBeCloseTo(0, 2);
+    expect(speedAtEnd(40)).toBeCloseTo(0.6, 2);
+    // Steady both ends: halfway through the time is halfway there.
+    expect(strokeProgress(0.5, 0, 0)).toBeCloseTo(0.5, 12);
+  });
+});
+
+describe('bar motion', () => {
+  it('rises and falls as many times a minute as its BPM when rise and fall match', () => {
+    expect(tops(sample(bar([{ rise: 120, fall: 120 }]), 60))).toBe(120);
+  });
+
+  it('gives rising and falling their own speeds', () => {
+    // Rise at 30 (1 s), fall at 100 (0.3 s): one cycle every 1.3 s.
+    const poses = sample(bar([{ rise: 30, fall: 100, ...STEADY }]), 13);
+    expect(tops(poses)).toBe(10);
+    expect(poses[100].fill).toBeCloseTo(1, 6);
+    expect(poses[115].fill).toBeCloseTo(0.5, 1);
+    expect(poses[130].fill).toBeCloseTo(0, 6);
+  });
+
+  it('stays between its min and max', () => {
+    for (const pose of sample(bar([{ rise: 90, fall: 90, max: 80, min: 30 }], { jolt: 100 }), 5)) {
+      expect(pose.fill).toBeGreaterThanOrEqual(0.3 - 1e-9);
+      expect(pose.fill).toBeLessThanOrEqual(0.8 + 1e-9);
     }
-    // 60 seconds at 120 BPM.
-    expect(tops).toBe(120);
   });
 
-  it('stays between its min and max, wobble included', () => {
-    for (let beat = 0; beat < 1; beat += 0.001) {
-      const { fill } = pose(beat, 110, { max: 80, min: 30 });
-      expect(fill).toBeGreaterThanOrEqual(0.3);
-      expect(fill).toBeLessThanOrEqual(0.8);
+  it('plays each pattern its number of times, then loops', () => {
+    // Fast ×4 (0.5 s each), then slow ×2 (2 s each): 6 s, then again.
+    const target = bar([{ rise: 120, fall: 120, repeats: 4 }, { rise: 30, fall: 30, repeats: 2 }]);
+    expect(tops(sample(target, 6))).toBe(6);
+    expect(tops(sample(target, 12))).toBe(12);
+    const poses = sample(target, 6);
+    // During the slow part, the white is still on its way up after half a second.
+    expect(poses[250].fill).toBeLessThan(0.9);
+  });
+
+  it('pauses on a pattern whose min equals its max', () => {
+    const target = bar([{ rise: 60, fall: 60, repeats: 1 }, { rise: 60, fall: 60, max: 0, min: 0, repeats: 2 }], { jolt: 100, wobble: 100 });
+    const pause = sample(target, 3).slice(110, 290);
+    for (const pose of pause) expect(pose).toMatchObject({ fill: 0, lift: 0, sway: 0, tilt: 0, scaleX: 1 });
+  });
+
+  it('moves smoothly from one pattern to the next, even with a different min', () => {
+    const target = bar([{ rise: 60, fall: 60, min: 0 }, { rise: 60, fall: 60, min: 50, max: 90 }]);
+    const poses = sample(target, 8);
+    for (let i = 1; i < poses.length; i += 1) {
+      expect(Math.abs(poses[i].fill - poses[i - 1].fill)).toBeLessThan(0.05);
     }
   });
 
-  it('stands still when its min reaches its max', () => {
-    expect(pose(0.3, 60, { max: 40, min: 40 }).fill).toBe(0.4);
-    expect(pose(0.7, 60, { max: 20, min: 60 }).fill).toBe(0.6);
+  it('keeps the jolt and the wobble apart', () => {
+    const at = (extra: Partial<Bar>) => createBarMotion(bar([{ rise: 60, fall: 60 }], extra))(0.52);
+    const joltOnly = at({ jolt: 100, wobble: 0 });
+    expect(joltOnly.lift).toBeGreaterThan(0);
+    expect(joltOnly.scaleX).toBeGreaterThan(1);
+    expect(joltOnly).toMatchObject({ sway: 0, tilt: 0 });
+
+    const wobbleOnly = at({ jolt: 0, wobble: 100 });
+    expect(wobbleOnly).toMatchObject({ lift: 0, scaleX: 1, scaleY: 1 });
+    expect(Math.abs(wobbleOnly.sway) + Math.abs(wobbleOnly.tilt)).toBeGreaterThan(0);
+
+    // Half the setting is half the movement.
+    expect(at({ jolt: 50 }).lift).toBeCloseTo(joltOnly.lift / 2, 9);
   });
 
-  it('shows a still bar at its max at 0 BPM', () => {
-    expect(pose(0.3, 0, { max: 70 })).toMatchObject({ fill: 0.7, lift: 0, sway: 0, tilt: 0 });
+  it('varies each cycle by up to the randomness, the same way every time', () => {
+    const target = bar([{ rise: 60, fall: 60, ...STEADY }]);
+    const steady = sample(target, 30);
+    const random = sample(target, 30, { randomness: 10 });
+    expect(random).toEqual(sample(target, 30, { randomness: 10 }));
+    expect(random).not.toEqual(steady);
+    // 30 one-second cycles, each 0.9–1.1 s long: between 27 and 34 tops.
+    expect(tops(random)).toBeGreaterThanOrEqual(27);
+    expect(tops(random)).toBeLessThanOrEqual(34);
   });
 
-  it('bounces as much as its wobble, up to the old strongest at 100', () => {
-    const strongest = pose(0.52, 60);
-    const phase = -Math.PI / 2 + 0.52 * Math.PI * 2;
-    const top = Math.max(0, Math.sin(phase)) ** 16;
-    expect(strongest.lift).toBeCloseTo(Math.abs(Math.sin(phase * 4.5)) * top * 24, 9);
-    expect(strongest.scaleX).toBeCloseTo(1 + top * 0.26, 9);
-
-    const half = pose(0.52, 60, { wobble: 50 });
-    expect(half.lift).toBeCloseTo(strongest.lift / 2, 9);
-    expect(half.sway).toBeCloseTo(strongest.sway / 2, 9);
-    expect(half.tilt).toBeCloseTo(strongest.tilt / 2, 9);
-    expect(half.scaleX - 1).toBeCloseTo((strongest.scaleX - 1) / 2, 9);
-
-    // The BPM doesn't change how much it bounces.
-    expect(pose(0.52, 200, { wobble: 50 }).lift).toBeCloseTo(half.lift, 9);
+  it('starts each bar a little later than the one before', () => {
+    const target = bar([{ rise: 60, fall: 60 }]);
+    expect(createBarMotion(target, { index: 0 })(0).fill).toBeCloseTo(0, 9);
+    expect(createBarMotion(target, { index: 1 })(0).fill).toBeGreaterThan(0);
   });
 
-  it('allows 1 to 4 bars', () => {
+  it('can be played backwards in time', () => {
+    const motion = createBarMotion(bar([{ rise: 120, fall: 120, repeats: 3 }, { rise: 40, fall: 40 }]));
+    const later = motion(7.3);
+    motion(0.2);
+    expect(motion(7.3)).toEqual(later);
+  });
+});
+
+describe('variations', () => {
+  it('adds copies of the last pattern, and keeps patterns when variations go down', () => {
+    const one = bar([{ rise: 90, repeats: 4 }]);
+    const three = withVariations(one, 2);
+    expect(activePatterns(three)).toHaveLength(3);
+    expect(three.patterns[2]).toEqual(one.patterns[0]);
+
+    const edited = { ...three, patterns: three.patterns.map((p, i) => (i === 2 ? { ...p, rise: 10 } : p)) };
+    const back = withVariations(withVariations(edited, 0), 2);
+    expect(activePatterns(withVariations(edited, 0))).toHaveLength(1);
+    expect(back.patterns[2].rise).toBe(10);
+  });
+});
+
+describe('limits', () => {
+  it('keeps settings in range', () => {
     expect([0, 1, 2.6, 4, 9, Number.NaN].map(clampBarCount)).toEqual([1, 1, 3, 4, 4, 4]);
-  });
-
-  it('allows any BPM from 0 up, min and max of 0–100 and wobbles of 1–100', () => {
-    expect(clampBpm(-5)).toBe(0);
-    expect(clampBpm(2500)).toBe(2500);
-    expect(clampBpm(Number.NaN)).toBe(0);
-    expect(clampPercent(140)).toBe(100);
-    expect(clampWobble(0)).toBe(1);
-    expect(clampWobble(250)).toBe(100);
+    expect(clampSpeed(0)).toBe(1);
+    expect(clampSpeed(5000)).toBe(5000);
+    expect(clampEase(-300)).toBe(-100);
+    expect(clampRandomness(80)).toBe(50);
   });
 });

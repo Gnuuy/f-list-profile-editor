@@ -3177,7 +3177,8 @@ NALA'S BARS
 
 .nalas-bars-column input,
 .nalas-bars-option input,
-.nalas-bars-option select {
+.nalas-bars-option select,
+.nalas-slider-number {
   box-sizing: border-box;
   color: var(--popup-text, #dceeff);
   font: 12px Verdana, Helvetica, sans-serif;
@@ -3194,23 +3195,118 @@ NALA'S BARS
   font-weight: 700;
 }
 
-.nalas-bars-column input[type="number"] {
-  width: 72px;
-  padding: 4px 6px;
+.nalas-bars-column {
+  padding: 6px 4px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-/* A small caption beside each number, so they can't be mixed up. */
-.nalas-bars-field {
+.nalas-bars-column.is-selected {
+  background: var(--popup-bg, #0b345f);
+  border-color: var(--popup-border, #3977ae);
+}
+
+.nalas-bars-pick,
+.nalas-bars-patterns button {
+  padding: 3px 10px;
+  color: var(--popup-text, #dceeff);
+  font: 600 11px/1.2 Verdana, Helvetica, sans-serif;
+  background: transparent;
+  border: 1px solid var(--popup-border, #3977ae);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.nalas-bars-column.is-selected .nalas-bars-pick,
+.nalas-bars-patterns button.is-selected {
+  color: #ffffff;
+  background: var(--popup-active-bg, #235a8f);
+}
+
+/* The selected bar's settings. */
+.nalas-bars-editor {
   display: grid;
-  grid-template-columns: 44px 72px;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  text-align: right;
+  gap: 10px;
+  padding: 12px 14px;
+  text-align: left;
+  background: var(--popup-bg, #0b345f);
+  border: 1px solid var(--popup-border, #3977ae);
+  border-radius: 5px;
 }
 
-.nalas-bars-field span {
+.nalas-bars-editor h2,
+.nalas-bars-editor h3 {
+  margin: 0;
+  font-size: 13px;
+}
+
+.nalas-bars-pattern {
+  display: grid;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--popup-inset-border, #315b80);
+}
+
+.nalas-bars-sliders {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 6px 18px;
+}
+
+/* Easing reads in pairs: each stroke's start beside its end. */
+.nalas-bars-sliders.is-pairs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.nalas-bars-hint {
+  margin: 0;
   color: var(--popup-muted-text, #bcd0e2);
+  font-size: 11px;
+}
+
+.nalas-bars-patterns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.nalas-bars-patterns button span {
+  opacity: 0.75;
+}
+
+/* A slider with its caption before it and an exact value after. */
+.nalas-slider {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) 56px;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.nalas-slider label {
+  color: var(--popup-muted-text, #bcd0e2);
+}
+
+.nalas-slider input[type="range"] {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--popup-focus, #82c6f0);
+  cursor: pointer;
+}
+
+.nalas-slider-number {
+  width: 56px;
+  padding: 3px 4px;
+}
+
+.nalas-bars-actions .nalas-slider {
+  grid-template-columns: auto 120px 52px;
+  font-size: 12px;
+}
+
+.nalas-bars-actions .nalas-slider label {
+  color: inherit;
 }
 
 .nalas-bars-actions {
