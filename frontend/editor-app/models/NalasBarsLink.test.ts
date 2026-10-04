@@ -32,9 +32,12 @@ describe("Nala's bars links", () => {
 
   it('writes a readable link', () => {
     expect(setupToQuery(DEFAULT_SETUP)).toBe(
+      'bars=1&label=1&jolt=50&wobble=50&crack=0&broken=0&impacts=1&b1=1,30,30,100,0,0,0,0,0&random=0&bg=1b1d20',
+    );
+    expect(setupToQuery({ ...DEFAULT_SETUP, count: 4 })).toBe(
       'bars=4&label=1&label=2&label=3&label=4&jolt=50,50,50,50&wobble=50,50,50,50&crack=0,0,0,0&broken=0,0,0,0&impacts=1,1,1,1'
-      + '&b1=1,30,30,100,0,100,100,100,100&b2=1,45,45,100,0,100,100,100,100'
-      + '&b3=1,60,60,100,0,100,100,100,100&b4=1,80,80,100,0,100,100,100,100&random=0&bg=1b1d20',
+      + '&b1=1,30,30,100,0,0,0,0,0&b2=1,45,45,100,0,0,0,0,0'
+      + '&b3=1,60,60,100,0,0,0,0,0&b4=1,80,80,100,0,0,0,0,0&random=0&bg=1b1d20',
     );
   });
 
@@ -52,11 +55,11 @@ describe("Nala's bars links", () => {
 
   it('keeps defaults for anything missing or invalid', () => {
     const opened = setupFromQuery('?bars=&label=Only%20one&jolt=abc,500&wobble=-3&b1=0,0,,150,-5,300,x&random=99&bg=nope');
-    expect(opened.count).toBe(4);
+    expect(opened.count).toBe(1);
     expect(opened.bars.map(b => b.label)).toEqual(['Only one', '2', '3', '4']);
     expect(opened.bars.map(b => b.jolt)).toEqual([50, 100, 50, 50]);
     expect(opened.bars[0].wobble).toBe(0);
-    expect(opened.bars[0].patterns).toEqual([pattern({ repeats: 1, rise: 1, fall: 30, max: 100, min: 0, riseStart: 100, riseEnd: 100 })]);
+    expect(opened.bars[0].patterns).toEqual([pattern({ repeats: 1, rise: 1, fall: 30, max: 100, min: 0, riseStart: 100 })]);
     expect(opened.randomness).toBe(50);
     expect(opened.background).toBe(DEFAULT_BACKGROUND);
     expect(setupFromQuery('?bars=9').count).toBe(4);
@@ -65,10 +68,14 @@ describe("Nala's bars links", () => {
 
   it('opens links from before patterns the same as they looked', () => {
     const opened = setupFromQuery('?bars=2&label=A&label=B&bpm=90,0&max=60,70&min=10,0&wobble=20,80&bg=2e2828');
+    // Those links always eased in and out.
+    const eased = { riseStart: 100, riseEnd: 100, fallStart: 100, fallEnd: 100 };
     expect(opened.count).toBe(2);
-    expect(opened.bars[0]).toEqual(bar('A', [pattern({ rise: 90, fall: 90, max: 60, min: 10 })], { jolt: 20, wobble: 20 }));
+    expect(opened.bars[0]).toEqual(bar('A', [pattern({ rise: 90, fall: 90, max: 60, min: 10, ...eased })], { jolt: 20, wobble: 20 }));
     // 0 BPM stood still at its max.
-    expect(opened.bars[1].patterns).toEqual([pattern({ max: 70, min: 70 })]);
+    expect(opened.bars[1].patterns).toEqual([pattern({ max: 70, min: 70, ...eased })]);
+    // Bars the link didn't have keep today's defaults.
+    expect(opened.bars.slice(2)).toEqual(DEFAULT_BARS.slice(2).map(b => ({ ...b, jolt: b.wobble })));
     expect(opened.background).toBe('#2e2828');
   });
 

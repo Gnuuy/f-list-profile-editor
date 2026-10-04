@@ -7,9 +7,9 @@ import {
   clampRandomness,
   clampRepeats,
   clampSpeed,
+  DEFAULT_BAR_COUNT,
   DEFAULT_BARS,
   DEFAULT_PATTERN,
-  MAX_BAR_COUNT,
   MAX_VARIATIONS,
 } from './NalasBars';
 import type { Bar, Pattern } from './NalasBars';
@@ -21,7 +21,7 @@ export const MAX_LABEL_LENGTH = 20;
 export type BarsSetup = { count: number; bars: Bar[]; randomness: number; background: string };
 
 export const DEFAULT_SETUP: BarsSetup = {
-  count: MAX_BAR_COUNT,
+  count: DEFAULT_BAR_COUNT,
   bars: [...DEFAULT_BARS],
   randomness: 0,
   background: DEFAULT_BACKGROUND,
@@ -40,6 +40,8 @@ const PATTERN_FIELDS: ReadonlyArray<[keyof Pattern, (value: number) => number]> 
   ['fallEnd', clampEase],
 ];
 const PATTERN_SEPARATOR = '~';
+// Links from before patterns always eased in and out of each stroke.
+const OLD_LINK_PATTERN: Pattern = { ...DEFAULT_PATTERN, riseStart: 100, riseEnd: 100, fallStart: 100, fallEnd: 100 };
 
 /**
  * The setup as a link's query, for example
@@ -104,14 +106,16 @@ export function setupFromQuery(search: string): BarsSetup {
     let patterns: Pattern[];
     if (encoded) {
       patterns = patternsFrom(encoded, bar.patterns[0]);
-    } else {
+    } else if ([oldBpms, oldMaxes, oldMins].some(values => values[index]?.trim())) {
       const bpm = read(oldBpms[index], value => Math.max(0, value), bar.patterns[0].rise);
       const max = read(oldMaxes[index], clampPercent, bar.patterns[0].max);
       const min = read(oldMins[index], clampPercent, bar.patterns[0].min);
       // 0 BPM stood still at its max.
       patterns = [bpm === 0
-        ? { ...DEFAULT_PATTERN, max, min: max }
-        : { ...DEFAULT_PATTERN, rise: clampSpeed(bpm), fall: clampSpeed(bpm), max, min }];
+        ? { ...OLD_LINK_PATTERN, max, min: max }
+        : { ...OLD_LINK_PATTERN, rise: clampSpeed(bpm), fall: clampSpeed(bpm), max, min }];
+    } else {
+      patterns = bar.patterns.map(pattern => ({ ...pattern }));
     }
     return {
       label: labels[index] === undefined ? bar.label : labels[index].slice(0, MAX_LABEL_LENGTH),
@@ -127,7 +131,7 @@ export function setupFromQuery(search: string): BarsSetup {
 
   const colour = params.get('bg')?.trim().replace(/^#/, '') ?? '';
   return {
-    count: read(params.get('bars') ?? undefined, clampBarCount, MAX_BAR_COUNT),
+    count: read(params.get('bars') ?? undefined, clampBarCount, DEFAULT_BAR_COUNT),
     bars,
     randomness: read(params.get('random') ?? undefined, clampRandomness, 0),
     background: /^[0-9a-f]{6}$/i.test(colour) ? `#${colour.toLowerCase()}` : DEFAULT_BACKGROUND,

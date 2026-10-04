@@ -47,10 +47,10 @@ export const DEFAULT_PATTERN: Pattern = {
   fall: 60,
   max: 100,
   min: 0,
-  riseStart: 100,
-  riseEnd: 100,
-  fallStart: 100,
-  fallEnd: 100,
+  riseStart: 0,
+  riseEnd: 0,
+  fallStart: 0,
+  fallEnd: 0,
 };
 
 const defaultBar = (label: string, bpm: number): Bar => ({
@@ -73,6 +73,8 @@ export const DEFAULT_BARS: readonly Bar[] = [
 
 export const MIN_BAR_COUNT = 1;
 export const MAX_BAR_COUNT = DEFAULT_BARS.length;
+/** How many bars the page starts with. */
+export const DEFAULT_BAR_COUNT = 1;
 
 const clampTo = (low: number, high: number, fallback: number) => (value: number) => (
   Number.isFinite(value) ? Math.max(low, Math.min(high, value)) : fallback
@@ -88,7 +90,7 @@ export function clampWhole(low: number, high: number, fallback: number) {
   return (value: number) => (Number.isFinite(value) ? Math.max(low, Math.min(high, Math.round(value))) : fallback);
 }
 
-export const clampBarCount = clampWhole(MIN_BAR_COUNT, MAX_BAR_COUNT, MAX_BAR_COUNT);
+export const clampBarCount = clampWhole(MIN_BAR_COUNT, MAX_BAR_COUNT, DEFAULT_BAR_COUNT);
 export const clampRepeats = clampWhole(1, MAX_REPEATS, 1);
 export const clampVariations = clampWhole(0, MAX_VARIATIONS, 0);
 /** Any whole number of impacts from 1 up. */

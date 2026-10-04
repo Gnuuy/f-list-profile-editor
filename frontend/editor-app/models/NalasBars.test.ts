@@ -176,7 +176,7 @@ describe('variations', () => {
 
 describe('limits', () => {
   it('keeps settings in range', () => {
-    expect([0, 1, 2.6, 4, 9, Number.NaN].map(clampBarCount)).toEqual([1, 1, 3, 4, 4, 4]);
+    expect([0, 1, 2.6, 4, 9, Number.NaN].map(clampBarCount)).toEqual([1, 1, 3, 4, 4, 1]);
     expect(clampSpeed(0)).toBe(1);
     expect(clampSpeed(5000)).toBe(5000);
     expect(clampEase(-300)).toBe(-100);

@@ -719,3 +719,6 @@ fabric.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/rider,csharp,react,angular,visualstudiocode,visualstudio
 .npmrc
+
+# Local prototypes and reference images; never uploaded.
+/Prototype/
