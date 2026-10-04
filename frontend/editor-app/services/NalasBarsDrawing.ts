@@ -22,19 +22,22 @@ export const DEFAULT_BACKGROUND = '#1b1d20';
 /** The flat colours the bars are drawn in, besides the background. */
 export const BARS_COLOURS = [LABEL_COLOUR, TRACK_COLOUR, BORDER_COLOUR, FILL_COLOUR];
 
+// Sizes above are at 1×; the GIF and preview are drawn at twice that.
+export const BARS_SCALE = 2;
+
 export const BARS_WIDTH = PADDING * 2 + COLUMN_WIDTH * 4 + COLUMN_GAP * 3;
 export const BARS_HEIGHT = PADDING * 2 + LABEL_HEIGHT + LABEL_GAP + SHELL_HEIGHT;
 /** Where the columns sit, so controls can line up under them. */
 export const BARS_LAYOUT = { padding: PADDING, columnGap: COLUMN_GAP, columnWidth: COLUMN_WIDTH };
 
-/** Draws the labels and bars, with each bar in its pose, filling the whole canvas. */
+/** Draws the labels and bars, with each bar in its pose, filling a canvas `BARS_SCALE` times the 1× size. */
 export function drawBars(
   context: CanvasRenderingContext2D,
   bars: readonly Bar[],
   poses: readonly BarPose[],
   background: string,
 ) {
-  context.setTransform(1, 0, 0, 1, 0, 0);
+  context.setTransform(BARS_SCALE, 0, 0, BARS_SCALE, 0, 0);
   context.fillStyle = background;
   context.fillRect(0, 0, BARS_WIDTH, BARS_HEIGHT);
 

@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import { describeFileSize } from "../../models/ImageConversion";
 import { clampSpeed, DEFAULT_BARS, planLoop, posesAt } from "../../models/NalasBars";
 import type { Bar } from "../../models/NalasBars";
-import { BARS_HEIGHT, BARS_LAYOUT, BARS_WIDTH, DEFAULT_BACKGROUND, drawBars } from "../../services/NalasBarsDrawing";
+import { BARS_HEIGHT, BARS_LAYOUT, BARS_SCALE, BARS_WIDTH, DEFAULT_BACKGROUND, drawBars } from "../../services/NalasBarsDrawing";
 import { exportBarsGif } from "../../services/NalasBarsGif";
 import { downloadBlob } from "../../utilities/Download";
 
@@ -91,8 +91,8 @@ export default function NalasBarsMainView() {
                 <canvas
                     ref={canvasRef}
                     className="nalas-bars-canvas"
-                    width={BARS_WIDTH}
-                    height={BARS_HEIGHT}
+                    width={BARS_WIDTH * BARS_SCALE}
+                    height={BARS_HEIGHT * BARS_SCALE}
                     role="img"
                     aria-label={`Bouncing bars: ${labels.join(", ")}`}
                 />

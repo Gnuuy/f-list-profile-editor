@@ -3150,9 +3150,10 @@ NALA'S BARS
   gap: 8px;
 }
 
-/* Shown at its real size: the preview is exactly what the GIF looks like. */
+/* Drawn exactly like the GIF, at twice the size, and shown at half that. */
 .nalas-bars-canvas {
   display: block;
+  width: 100%;
   max-width: 100%;
   height: auto;
   border-radius: 5px;

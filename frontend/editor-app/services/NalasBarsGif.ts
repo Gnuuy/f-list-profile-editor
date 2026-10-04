@@ -2,7 +2,10 @@ import { GIFEncoder, quantize } from 'gifenc';
 
 import { GIF_FRAME_DELAY_MS, planLoop, posesAt } from '../models/NalasBars';
 import type { Bar } from '../models/NalasBars';
-import { BARS_COLOURS, BARS_HEIGHT, BARS_WIDTH, drawBars } from './NalasBarsDrawing';
+import { BARS_COLOURS, BARS_HEIGHT, BARS_SCALE, BARS_WIDTH, drawBars } from './NalasBarsDrawing';
+
+const WIDTH = BARS_WIDTH * BARS_SCALE;
+const HEIGHT = BARS_HEIGHT * BARS_SCALE;
 
 // Frames spread over the loop that the colour palette is built from.
 const PALETTE_SAMPLES = 12;
@@ -20,19 +23,19 @@ export async function exportBarsGif(
 ): Promise<Blob> {
   const plan = planLoop(bars.map(bar => bar.speed));
   const canvas = document.createElement('canvas');
-  canvas.width = BARS_WIDTH;
-  canvas.height = BARS_HEIGHT;
+  canvas.width = WIDTH;
+  canvas.height = HEIGHT;
   const context = canvas.getContext('2d', { willReadFrequently: true });
   if (!context) throw new Error('This browser couldn\'t draw the bars.');
 
   const renderFrame = (frame: number) => {
     drawBars(context, bars, posesAt(bars, plan, (frame * plan.seconds) / plan.frames), background);
-    return context.getImageData(0, 0, BARS_WIDTH, BARS_HEIGHT).data;
+    return context.getImageData(0, 0, WIDTH, HEIGHT).data;
   };
 
   // One palette for the whole GIF, from frames across the loop. The last
   // slot is kept for "unchanged since the last frame".
-  const pixelsPerFrame = BARS_WIDTH * BARS_HEIGHT * 4;
+  const pixelsPerFrame = WIDTH * HEIGHT * 4;
   const samples = new Uint8ClampedArray(pixelsPerFrame * PALETTE_SAMPLES);
   for (let sample = 0; sample < PALETTE_SAMPLES; sample += 1) {
     samples.set(renderFrame(Math.floor((sample * plan.frames) / PALETTE_SAMPLES)), sample * pixelsPerFrame);
@@ -48,7 +51,7 @@ export async function exportBarsGif(
   for (let frame = 0; frame < plan.frames; frame += 1) {
     const indexed = toIndex(renderFrame(frame));
     if (!previous) {
-      gif.writeFrame(indexed, BARS_WIDTH, BARS_HEIGHT, {
+      gif.writeFrame(indexed, WIDTH, HEIGHT, {
         palette: [...palette, [0, 0, 0]],
         delay: GIF_FRAME_DELAY_MS,
         repeat: 0,
@@ -59,7 +62,7 @@ export async function exportBarsGif(
       for (let pixel = 0; pixel < changes.length; pixel += 1) {
         if (changes[pixel] === previous[pixel]) changes[pixel] = unchanged;
       }
-      gif.writeFrame(changes, BARS_WIDTH, BARS_HEIGHT, {
+      gif.writeFrame(changes, WIDTH, HEIGHT, {
         delay: GIF_FRAME_DELAY_MS,
         transparent: true,
         transparentIndex: unchanged,
