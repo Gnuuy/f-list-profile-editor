@@ -6,7 +6,7 @@ import { DEFAULT_BACKGROUND, DEFAULT_SETUP, setupFromQuery, setupToQuery, shareQ
 
 const pattern = (changes: Partial<Pattern>): Pattern => ({ ...DEFAULT_PATTERN, ...changes });
 const bar = (label: string, patterns: Pattern[], changes: Partial<Bar> = {}): Bar => ({
-  label, jolt: 50, wobble: 50, crack: false, variations: patterns.length - 1, patterns, ...changes,
+  label, jolt: 50, wobble: 50, crack: false, broken: false, impacts: 1, variations: patterns.length - 1, patterns, ...changes,
 });
 
 const SETUP = {
@@ -15,7 +15,7 @@ const SETUP = {
     bar('Strength, mostly', [
       pattern({ repeats: 4, rise: 180, fall: 140, max: 90, min: 10, riseStart: -25, riseEnd: 40, fallStart: 0, fallEnd: 100 }),
       pattern({ repeats: 2, rise: 30, fall: 30, max: 100, min: 0, riseStart: 0, riseEnd: 0, fallStart: 0, fallEnd: 0 }),
-    ], { jolt: 100, wobble: 0, crack: true }),
+    ], { jolt: 100, wobble: 0, crack: true, broken: true, impacts: 7 }),
     bar('Ünïcödé & #1 + 50%', [pattern({ rise: 87.5, fall: 600, max: 40, min: 40 })], { jolt: 0, wobble: 7 }),
     bar('', [pattern({}), pattern({ repeats: 3 }), pattern({ rise: 2 })]),
     bar('?=&,|~', [pattern({ rise: 45, fall: 45, max: 25 })]),
@@ -32,7 +32,7 @@ describe("Nala's bars links", () => {
 
   it('writes a readable link', () => {
     expect(setupToQuery(DEFAULT_SETUP)).toBe(
-      'bars=4&label=1&label=2&label=3&label=4&jolt=50,50,50,50&wobble=50,50,50,50&crack=0,0,0,0'
+      'bars=4&label=1&label=2&label=3&label=4&jolt=50,50,50,50&wobble=50,50,50,50&crack=0,0,0,0&broken=0,0,0,0&impacts=1,1,1,1'
       + '&b1=1,30,30,100,0,100,100,100,100&b2=1,45,45,100,0,100,100,100,100'
       + '&b3=1,60,60,100,0,100,100,100,100&b4=1,80,80,100,0,100,100,100,100&random=0&bg=1b1d20',
     );
@@ -40,7 +40,7 @@ describe("Nala's bars links", () => {
 
   it('only writes the bars shown and the patterns in use', () => {
     const query = setupToQuery({ ...SETUP, count: 1, bars: [{ ...SETUP.bars[0], variations: 0 }, ...SETUP.bars.slice(1)] });
-    expect(query).toBe('bars=1&label=Strength%2C%20mostly&jolt=100&wobble=0&crack=1'
+    expect(query).toBe('bars=1&label=Strength%2C%20mostly&jolt=100&wobble=0&crack=1&broken=1&impacts=7'
       + '&b1=4,180,140,90,10,-25,40,0,100&random=12&bg=ff00aa');
 
     const opened = setupFromQuery(query);

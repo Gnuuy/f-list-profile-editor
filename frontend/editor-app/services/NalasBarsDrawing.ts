@@ -43,7 +43,10 @@ export function drawBars(
   bars.forEach((bar, index) => {
     const centre = PADDING + index * (COLUMN_WIDTH + COLUMN_GAP) + COLUMN_WIDTH / 2;
     drawLabel(context, bar.label, centre, PADDING + LABEL_HEIGHT / 2);
-    drawTrack(context, poses[index], centre, PADDING + LABEL_HEIGHT + LABEL_GAP + SHELL_HEIGHT);
+    const bottom = PADDING + LABEL_HEIGHT + LABEL_GAP + SHELL_HEIGHT;
+    drawTrack(context, poses[index], centre, bottom);
+    const { broken } = poses[index];
+    if (broken) drawFlyingTop(context, broken.since, broken.seed, centre, bottom);
   });
 }
 
@@ -73,6 +76,9 @@ function drawTrack(context: CanvasRenderingContext2D, pose: BarPose, centre: num
 
   const left = -TRACK_WIDTH / 2;
   const top = -TRACK_HEIGHT;
+  // A broken bar is only drawn below the break.
+  const breakLine = pose.broken ? brokenEdge(pose.broken.seed) : null;
+  if (breakLine) clipBelow(context, breakLine);
   context.fillStyle = BORDER_COLOUR;
   context.beginPath();
   context.roundRect(left, top, TRACK_WIDTH, TRACK_HEIGHT, TRACK_WIDTH / 2);
@@ -94,6 +100,81 @@ function drawTrack(context: CanvasRenderingContext2D, pose: BarPose, centre: num
   context.fillStyle = FILL_COLOUR;
   context.fillRect(inner.left, inner.top + inner.height - fillHeight, inner.width, fillHeight);
   if (pose.crack) drawCrack(context, pose.crack, inner);
+  if (breakLine) {
+    // The rim of the break.
+    context.strokeStyle = BORDER_COLOUR;
+    context.lineWidth = 2;
+    context.lineJoin = 'round';
+    context.beginPath();
+    breakLine.forEach(([x, y], index) => (index === 0 ? context.moveTo(x, y) : context.lineTo(x, y)));
+    context.stroke();
+  }
+  context.restore();
+}
+
+// How far down from the top of the bar the break runs, and how jagged it is.
+const BREAK_DEPTH = 34;
+const BREAK_JAGGEDNESS = 7;
+
+/** The jagged line the top broke off along, across the bar from left to right. */
+function brokenEdge(seed: number): Point[] {
+  const random = randomNumbers(seed ^ 0x2545f491);
+  const steps = 7;
+  const left = -TRACK_WIDTH / 2 - 2;
+  return Array.from({ length: steps + 1 }, (_, step): Point => [
+    left + ((TRACK_WIDTH + 4) * step) / steps,
+    -TRACK_HEIGHT + BREAK_DEPTH + (random() - 0.5) * 2 * BREAK_JAGGEDNESS,
+  ]);
+}
+
+function clipBelow(context: CanvasRenderingContext2D, line: Point[]) {
+  context.beginPath();
+  line.forEach(([x, y], index) => (index === 0 ? context.moveTo(x, y) : context.lineTo(x, y)));
+  context.lineTo(TRACK_WIDTH, 20);
+  context.lineTo(-TRACK_WIDTH, 20);
+  context.closePath();
+  context.clip();
+}
+
+function clipAbove(context: CanvasRenderingContext2D, line: Point[]) {
+  context.beginPath();
+  line.forEach(([x, y], index) => (index === 0 ? context.moveTo(x, y) : context.lineTo(x, y)));
+  context.lineTo(TRACK_WIDTH, -TRACK_HEIGHT - 20);
+  context.lineTo(-TRACK_WIDTH, -TRACK_HEIGHT - 20);
+  context.closePath();
+  context.clip();
+}
+
+// The broken-off top shoots up, spins and falls away under gravity, in pixels and seconds.
+const FLY_UP_SPEED = 240;
+const GRAVITY = 1100;
+const FLY_SECONDS = 1.6;
+
+/** The broken-off top, flying away from where it was. */
+function drawFlyingTop(context: CanvasRenderingContext2D, since: number, seed: number, centre: number, bottom: number) {
+  if (since > FLY_SECONDS) return;
+  const random = randomNumbers(seed ^ 0x68e31da4);
+  const sideways = (random() < 0.5 ? -1 : 1) * (30 + random() * 70);
+  const spin = (random() < 0.5 ? -1 : 1) * (3 + random() * 5);
+  const pivot = -TRACK_HEIGHT + BREAK_DEPTH / 2;
+
+  context.save();
+  context.globalAlpha = Math.max(0, Math.min(1, (FLY_SECONDS - since) / 0.4));
+  context.translate(centre + sideways * since, bottom - FLY_UP_SPEED * since + (GRAVITY * since * since) / 2);
+  context.translate(0, pivot);
+  context.rotate(spin * since);
+  context.translate(0, -pivot);
+  clipAbove(context, brokenEdge(seed));
+
+  const left = -TRACK_WIDTH / 2;
+  context.fillStyle = BORDER_COLOUR;
+  context.beginPath();
+  context.roundRect(left, -TRACK_HEIGHT, TRACK_WIDTH, TRACK_HEIGHT, TRACK_WIDTH / 2);
+  context.fill();
+  context.fillStyle = TRACK_COLOUR;
+  context.beginPath();
+  context.roundRect(left + TRACK_BORDER, -TRACK_HEIGHT + TRACK_BORDER, TRACK_WIDTH - TRACK_BORDER * 2, TRACK_HEIGHT - TRACK_BORDER * 2, (TRACK_WIDTH - TRACK_BORDER * 2) / 2);
+  context.fill();
   context.restore();
 }
 

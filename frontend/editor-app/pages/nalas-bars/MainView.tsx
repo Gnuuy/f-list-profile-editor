@@ -3,8 +3,10 @@ import type { CSSProperties } from "react";
 
 import {
     activePatterns,
+    BREAK_SPEED,
     clampBarCount,
     clampEase,
+    clampImpacts,
     clampPercent,
     clampRandomness,
     clampRepeats,
@@ -57,13 +59,18 @@ export default function NalasBarsMainView() {
     const [selectedBar, setSelectedBar] = useState(0);
     const [selectedPattern, setSelectedPattern] = useState(0);
     const [running, setRunning] = useState(true);
+    // How far the animation has played, in seconds.
+    const timeRef = useRef(0);
+    // When each bar's Broken was switched on: slams only count from then. A
+    // shared link with Broken already on counts from the start.
+    const [countSlamsFrom, setCountSlamsFrom] = useState<number[]>(() => setup.bars.map(() => 0));
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     const { count, bars: allBars, randomness, background } = setup;
     const bars = useMemo(() => allBars.slice(0, count), [allBars, count]);
     const motions = useMemo(
-        () => bars.map((bar, index) => createBarMotion(bar, { index, randomness })),
-        [bars, randomness],
+        () => bars.map((bar, index) => createBarMotion(bar, { index, randomness, countSlamsFrom: countSlamsFrom[index] })),
+        [bars, randomness, countSlamsFrom],
     );
 
     const barIndex = Math.min(selectedBar, count - 1);
@@ -78,13 +85,13 @@ export default function NalasBarsMainView() {
     useEffect(() => {
         const context = canvasRef.current?.getContext("2d");
         if (!context) return;
-        let time = 0;
+
         let previous = performance.now();
         let frame = requestAnimationFrame(function animate(now) {
             const current = scene.current;
-            if (current.running) time += Math.min(0.05, (now - previous) / 1000);
+            if (current.running) timeRef.current += Math.min(0.05, (now - previous) / 1000);
             previous = now;
-            drawBars(context, current.bars, current.motions.map(motion => motion(time)), current.background);
+            drawBars(context, current.bars, current.motions.map(motion => motion(timeRef.current)), current.background);
             frame = requestAnimationFrame(animate);
         });
         return () => cancelAnimationFrame(frame);
@@ -211,14 +218,6 @@ export default function NalasBarsMainView() {
                         clamp={clampPercent}
                         onChange={value => changeBar(barIndex, old => ({ ...old, wobble: value }))}
                     />
-                    <label className="nalas-toggle">
-                        <input
-                            type="checkbox"
-                            checked={bar.crack}
-                            onChange={event => changeBar(barIndex, old => ({ ...old, crack: event.target.checked }))}
-                        />
-                        Crack on impact
-                    </label>
                     <SliderField
                         caption="Variations"
                         value={bar.variations}
@@ -228,10 +227,44 @@ export default function NalasBarsMainView() {
                         onChange={value => changeBar(barIndex, old => withVariations(old, value))}
                     />
                 </div>
+                <div className="nalas-bars-sliders">
+                    <label className="nalas-toggle">
+                        <input
+                            type="checkbox"
+                            checked={bar.crack}
+                            onChange={event => changeBar(barIndex, old => ({ ...old, crack: event.target.checked }))}
+                        />
+                        Crack on impact
+                    </label>
+                    <label className="nalas-toggle">
+                        <input
+                            type="checkbox"
+                            checked={bar.broken}
+                            onChange={event => {
+                                const broken = event.target.checked;
+                                // Switching it on starts counting slams afresh; switching it off mends the bar.
+                                if (broken) setCountSlamsFrom(current => current.map((from, i) => (i === barIndex ? timeRef.current : from)));
+                                changeBar(barIndex, old => ({ ...old, broken }));
+                            }}
+                        />
+                        Broken
+                    </label>
+                    {bar.broken && (
+                        <SliderField
+                            caption="Impacts"
+                            value={bar.impacts}
+                            min={1}
+                            max={20}
+                            clamp={clampImpacts}
+                            onChange={value => changeBar(barIndex, old => ({ ...old, impacts: value }))}
+                        />
+                    )}
+                </div>
                 <p className="nalas-bars-hint">
                     Jolt is the hop and squash as the white hits the top; Wobble is the sway and tilt. Crack on impact
-                    cracks the top of the bar each time the white hits it, which needs a Max of 90 or more. Variations
-                    add more patterns for this bar to loop through.
+                    cracks the top of the bar each time the white hits it, which needs a Max of 90 or more. Broken
+                    makes the top break off and fly away once the white has slammed into it that many Impacts with a
+                    Rise speed above {BREAK_SPEED}. Variations add more patterns for this bar to loop through.
                 </p>
 
                 {bar.variations > 0 && (

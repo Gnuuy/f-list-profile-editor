@@ -26,6 +26,10 @@ export type Bar = {
   wobble: number;
   /** Whether the top of the bar cracks when the white hits it. */
   crack: boolean;
+  /** Whether the top breaks off once the white has slammed into it faster than BREAK_SPEED `impacts` times. */
+  broken: boolean;
+  /** How many slams it takes to break the top off, 1 or more. */
+  impacts: number;
   /** How many patterns follow the first: 0 plays one pattern over and over. */
   variations: number;
   /** At least `variations + 1` patterns. Extra ones are kept for when variations go back up. */
@@ -36,6 +40,7 @@ export const MAX_VARIATIONS = 9;
 export const MIN_SPEED = 1;
 export const MAX_REPEATS = 99;
 export const MAX_RANDOMNESS = 50;
+export const MAX_IMPACTS = 999;
 
 export const DEFAULT_PATTERN: Pattern = {
   repeats: 1,
@@ -54,6 +59,8 @@ const defaultBar = (label: string, bpm: number): Bar => ({
   jolt: 50,
   wobble: 50,
   crack: false,
+  broken: false,
+  impacts: 1,
   variations: 0,
   patterns: [{ ...DEFAULT_PATTERN, rise: bpm, fall: bpm }],
 });
@@ -85,6 +92,7 @@ export function clampWhole(low: number, high: number, fallback: number) {
 export const clampBarCount = clampWhole(MIN_BAR_COUNT, MAX_BAR_COUNT, MAX_BAR_COUNT);
 export const clampRepeats = clampWhole(1, MAX_REPEATS, 1);
 export const clampVariations = clampWhole(0, MAX_VARIATIONS, 0);
+export const clampImpacts = clampWhole(1, MAX_IMPACTS, 1);
 
 /** The patterns a bar plays, in order. */
 export function activePatterns(bar: Bar): Pattern[] {
@@ -129,7 +137,12 @@ export type BarPose = {
   scaleY: number;
   /** Cracks at the top of the bar after the white hits it, or null. */
   crack: Crack | null;
+  /** Once the top has broken off: how long ago, and the shape of the break. */
+  broken: { since: number; seed: number } | null;
 };
+
+/** A rise faster than this, in BPM, that hits the top breaks it off. */
+export const BREAK_SPEED = 80;
 
 export type Crack = {
   /** Picks this impact's crack shape. */
@@ -171,12 +184,20 @@ function movement(distance: number): number {
 
 export type BarMotion = (seconds: number) => BarPose;
 
+export type MotionOptions = {
+  /** The bar's place in the row, which staggers its start and seeds its randomness. */
+  index?: number;
+  randomness?: number;
+  /** Slams only count towards breaking from this many seconds in: when Broken was switched on. */
+  countSlamsFrom?: number;
+};
+
 /**
  * A bar's movement over time: it plays each of its patterns `repeats` times in
  * turn, then starts over. Randomness stretches or shortens each cycle by up to
  * that percentage, the same way every time, so bars drift apart.
  */
-export function createBarMotion(bar: Bar, { index = 0, randomness = 0 } = {}): BarMotion {
+export function createBarMotion(bar: Bar, { index = 0, randomness = 0, countSlamsFrom = 0 }: MotionOptions = {}): BarMotion {
   const patterns = activePatterns(bar);
   const jolt = clampPercent(bar.jolt) / 100;
   const wobble = clampPercent(bar.wobble) / 100;
@@ -202,10 +223,34 @@ export function createBarMotion(bar: Bar, { index = 0, randomness = 0 } = {}): B
 
   // Walks forward cycle by cycle, remembering where it got to, so playing
   // on is quick. Going back in time starts again from the beginning.
-  const first = () => ({ number: 0, patternIndex: 0, repeat: 0, cycle: cycleAt(0, 0, 0, lowOf(patterns[patterns.length - 1])) });
+  const first = () => ({
+    number: 0,
+    patternIndex: 0,
+    repeat: 0,
+    cycle: cycleAt(0, 0, 0, lowOf(patterns[patterns.length - 1])),
+    /** When the top broke off, if it has. */
+    brokeAt: null as number | null,
+    /** Slams into the top in the cycles already played. */
+    slams: 0,
+  });
   let state = first();
   // Each bar starts a little later in its first cycle than the one before, so they don't move in step.
   const offset = index * 0.12 * (state.cycle.riseSeconds + state.cycle.fallSeconds);
+  // When a cycle's rise slams into the top hard enough to break it, if that's
+  // after Broken was switched on.
+  const impactsToBreak = clampImpacts(bar.impacts);
+  const slam = (cycle: Cycle) => {
+    const impact = cycle.start + cycle.riseSeconds;
+    // The small allowance keeps a rise from 90 to 100 counting, despite rounding.
+    const hard = clampSpeed(cycle.pattern.rise) > BREAK_SPEED && cycle.top >= 0.9 && cycle.top - cycle.from >= 0.1 - 1e-9;
+    return bar.broken && hard && impact >= countSlamsFrom + offset ? impact : null;
+  };
+
+  // Counts a finished cycle's slam, breaking the top off on the last one it takes.
+  const countSlam = (before: { brokeAt: number | null; slams: number }, impact: number | null) => {
+    const slams = before.slams + (impact === null ? 0 : 1);
+    return { slams, brokeAt: before.brokeAt ?? (impact !== null && slams === impactsToBreak ? impact : null) };
+  };
 
   return seconds => {
     const time = Math.max(0, seconds + offset);
@@ -224,9 +269,16 @@ export function createBarMotion(bar: Bar, { index = 0, randomness = 0 } = {}): B
         patternIndex,
         repeat,
         cycle: cycleAt(number, cycle.start + cycle.riseSeconds + cycle.fallSeconds, patternIndex, cycle.bottom),
+        ...countSlam(state, slam(cycle)),
       };
     }
-    return poseInCycle(state.cycle, time - state.cycle.start, jolt, wobble, bar.crack ? seed : null);
+    const impact = slam(state.cycle);
+    // The breaking slam can be in the cycle playing now.
+    if (state.brokeAt === null && impact !== null && time >= impact && state.slams + 1 === impactsToBreak) {
+      state.brokeAt = impact;
+    }
+    const pose = poseInCycle(state.cycle, time - state.cycle.start, jolt, wobble, bar.crack ? seed : null);
+    return state.brokeAt === null ? pose : { ...pose, broken: { since: time - state.brokeAt, seed } };
   };
 }
 
@@ -264,6 +316,7 @@ function poseInCycle(
     scaleX: 1 + jolt * 0.26,
     scaleY: 1 - jolt * 0.2,
     crack: rising || crackSeed === null ? null : crackAfterImpact(cycle, local - riseSeconds, crackSeed),
+    broken: null,
   };
 }
 

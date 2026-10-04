@@ -21,6 +21,8 @@ const bar = (patterns: Partial<Pattern>[], extra: Partial<Bar> = {}): Bar => ({
   jolt: 0,
   wobble: 0,
   crack: false,
+  broken: false,
+  impacts: 1,
   variations: patterns.length - 1,
   patterns: patterns.map(pattern => ({ ...DEFAULT_PATTERN, ...pattern })),
   ...extra,
@@ -210,5 +212,61 @@ describe('cracks', () => {
     expect(cracking({ max: 95 })(0.6).crack!.fade).toBeCloseTo(0.5, 6);
     // A pause at the top doesn't keep cracking.
     expect(cracking({ max: 100, min: 100 })(0.6).crack).toBeNull();
+  });
+});
+
+describe('breaking', () => {
+  const breaking = (patterns: Partial<Pattern>[], broken = true, impacts = 1) => createBarMotion(bar(patterns, { broken, impacts }));
+
+  it('breaks the top off the first time the white slams into it faster than 80', () => {
+    // Slow ×2 (1.5 s each), then fast ×1: rising at 120 hits the top 0.25 s into it, at 3.25 s.
+    const motion = breaking([{ rise: 40, fall: 40, repeats: 2 }, { rise: 120, fall: 120 }]);
+    expect(motion(3.2).broken).toBeNull();
+    expect(motion(3.3).broken).toMatchObject({ since: expect.closeTo(0.05, 6) });
+    // It stays broken, through the slow pattern and beyond.
+    expect(motion(6).broken!.since).toBeCloseTo(2.75, 6);
+    expect(motion(60).broken!.since).toBeCloseTo(56.75, 6);
+    expect(motion(60).broken!.seed).toBe(motion(3.3).broken!.seed);
+  });
+
+  it('takes as many slams as its impacts setting, only counting hard ones', () => {
+    // Fast (0.5 s, slam at 0.25 s) then slow (1.5 s, too slow to count), over and over:
+    // slams at 0.25, 2.25 and 4.25 s.
+    const motion = breaking([{ rise: 120, fall: 120 }, { rise: 40, fall: 40 }], true, 3);
+    expect(motion(4.2).broken).toBeNull();
+    expect(motion(4.3)!.broken!.since).toBeCloseTo(0.05, 6);
+    expect(motion(30)!.broken!.since).toBeCloseTo(25.75, 6);
+    // Played again from the start, it waits for the third slam again.
+    expect(breaking([{ rise: 120, fall: 120 }, { rise: 40, fall: 40 }], true, 3)(2.3).broken).toBeNull();
+  });
+
+  it('only counts slams from when Broken was switched on', () => {
+    // Slams at 0.25, 0.75, 1.25 … s. Switched on at 2 s, the second slam after that is at 2.75 s.
+    const target = bar([{ rise: 120, fall: 120 }], { broken: true, impacts: 2 });
+    expect(createBarMotion(target)(0.8).broken).not.toBeNull();
+    const fromTwo = createBarMotion(target, { countSlamsFrom: 2 });
+    expect(fromTwo(2.7).broken).toBeNull();
+    expect(fromTwo(2.8)!.broken!.since).toBeCloseTo(0.05, 6);
+  });
+
+  it('counts a rise from 90 to 100 as a slam', () => {
+    // Rising from 90 to 100 at 120: slams at 0.25 s, then every 0.5 s.
+    const motion = breaking([{ rise: 120, fall: 120, min: 90, max: 100 }], true, 2);
+    expect(motion(0.7).broken).toBeNull();
+    expect(motion(0.8).broken).not.toBeNull();
+  });
+
+  it('stays whole when it never slams hard enough, or is switched off', () => {
+    expect(breaking([{ rise: 80, fall: 80 }])(30).broken).toBeNull();
+    expect(breaking([{ rise: 200, fall: 200, max: 85 }])(30).broken).toBeNull();
+    expect(breaking([{ rise: 200, fall: 200 }], false)(30).broken).toBeNull();
+  });
+
+  it('breaks at the same moment when played again from the start', () => {
+    const motion = breaking([{ rise: 40, fall: 40, repeats: 2 }, { rise: 120, fall: 120 }]);
+    const later = motion(9);
+    motion(1);
+    expect(motion(1).broken).toBeNull();
+    expect(motion(9)).toEqual(later);
   });
 });
