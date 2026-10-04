@@ -3208,7 +3208,8 @@ NALA'S BARS
 }
 
 .nalas-bars-pick,
-.nalas-bars-patterns button {
+.nalas-bars-patterns button,
+.nalas-bars-reset-pattern {
   padding: 3px 10px;
   color: var(--popup-text, #dceeff);
   font: 600 11px/1.2 Verdana, Helvetica, sans-serif;
@@ -3239,6 +3240,23 @@ NALA'S BARS
 .nalas-bars-editor h3 {
   margin: 0;
   font-size: 13px;
+}
+
+/* The pattern's name, if it has variations, with its reset on the right. */
+.nalas-bars-pattern-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nalas-bars-reset-pattern {
+  margin-left: auto;
+}
+
+.nalas-bars-reset-pattern:hover,
+.nalas-bars-reset-pattern:focus-visible {
+  background: var(--popup-active-bg, #235a8f);
 }
 
 .nalas-bars-pattern {

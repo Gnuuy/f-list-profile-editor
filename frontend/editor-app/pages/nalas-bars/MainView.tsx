@@ -13,6 +13,7 @@ import {
     clampSpeed,
     clampVariations,
     createBarMotion,
+    DEFAULT_BARS,
     MAX_BAR_COUNT,
     MAX_RANDOMNESS,
     MAX_VARIATIONS,
@@ -22,11 +23,12 @@ import {
     withVariations,
 } from "../../models/NalasBars";
 import type { Bar, Pattern } from "../../models/NalasBars";
-import { MAX_LABEL_LENGTH, setupFromQuery, shareQuery } from "../../models/NalasBarsLink";
+import { DEFAULT_SETUP, MAX_LABEL_LENGTH, setupFromQuery, shareQuery } from "../../models/NalasBarsLink";
 import type { BarsSetup } from "../../models/NalasBarsLink";
 import { BARS_HEIGHT, BARS_LAYOUT, BARS_SCALE, barsWidth, drawBars } from "../../services/NalasBarsDrawing";
 import { copyToClipboard } from "../../utilities/Clipboard";
 import { toast } from "../../utilities/Toast";
+import { ConfirmDialog } from "../../views/components/ConfirmDialog";
 import { NumberField, SliderField } from "./SliderField";
 
 type PatternSlider = {
@@ -67,6 +69,7 @@ export default function NalasBarsMainView() {
     const [running, setRunning] = useState(true);
     // Whether the bar being edited plays only the pattern being edited, instead of all its patterns in turn.
     const [onlyEditedPattern, setOnlyEditedPattern] = useState(false);
+    const [confirmingReset, setConfirmingReset] = useState(false);
     // How far the animation has played, in seconds.
     const timeRef = useRef(0);
     // When each bar's patterns had Broken switched on: their slams only count
@@ -138,6 +141,23 @@ export default function NalasBarsMainView() {
             ...old,
             patterns: old.patterns.map((p, i) => (i === patternIndex ? { ...p, ...changes } : p)),
         }));
+    };
+    // Back to how the bar's first pattern starts out on a fresh page.
+    const resetPattern = () => {
+        changePattern(DEFAULT_BARS[barIndex].patterns[0]);
+        toast(bar.variations > 0 ? `Pattern ${patternIndex + 1} is back to its start values.` : "The pattern is back to its start values.");
+    };
+    // Everything as on a fresh page, playing from the start.
+    const resetEverything = () => {
+        setConfirmingReset(false);
+        setSetup(DEFAULT_SETUP);
+        setSelectedBar(0);
+        setSelectedPattern(0);
+        setOnlyEditedPattern(false);
+        setCountSlamsFrom(DEFAULT_SETUP.bars.map(() => []));
+        setRunning(true);
+        timeRef.current = 0;
+        toast("Everything is back to the start values.");
     };
     const selectBar = (index: number) => {
         if (index !== barIndex) setSelectedPattern(0);
@@ -257,7 +277,12 @@ export default function NalasBarsMainView() {
                 )}
 
                 <div className="nalas-bars-pattern">
-                    {bar.variations > 0 && <h3>Pattern {patternIndex + 1}</h3>}
+                    <div className="nalas-bars-pattern-header">
+                        {bar.variations > 0 && <h3>Pattern {patternIndex + 1}</h3>}
+                        <button type="button" className="nalas-bars-reset-pattern" onClick={resetPattern}>
+                            Reset pattern
+                        </button>
+                    </div>
                     <div className="nalas-bars-sliders">{PATTERN_SLIDERS.map(patternSlider)}</div>
                     <div className="nalas-bars-sliders is-pairs">{EASING_SLIDERS.map(patternSlider)}</div>
                     <div className="nalas-bars-sliders">{SHAKE_SLIDERS.map(patternSlider)}</div>
@@ -339,7 +364,20 @@ export default function NalasBarsMainView() {
                 <button type="button" onClick={() => void copyLink()}>
                     Copy link
                 </button>
+                <button type="button" onClick={() => setConfirmingReset(true)}>
+                    Reset everything
+                </button>
             </div>
+
+            {confirmingReset && (
+                <ConfirmDialog
+                    title="Reset everything?"
+                    message="Every bar, pattern, label and colour goes back to its start values. Copy the link first if you might want these settings again."
+                    confirmLabel="Reset everything"
+                    onCancel={() => setConfirmingReset(false)}
+                    onConfirm={resetEverything}
+                />
+            )}
         </div>
     );
 }
