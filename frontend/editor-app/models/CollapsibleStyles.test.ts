@@ -40,7 +40,15 @@ describe('collapsible state styles', () => {
     );
   });
 
-  it('keeps the faint shadow on closed white dropdown titles in every theme', () => {
+  it("draws light theme dropdowns white with black titles over any [color], like F-list", () => {
+    expect(css).toMatch(/\.light \{[^}]*--collapse-closed-color: #ffffff;[^}]*--collapse-open-color: #ffffff;[^}]*--collapse-border: 0 none;/s);
+    expect(css).toMatch(
+      /\.light \.ProseMirror \.collapse\.indentable,\s*\.light \.ProseMirror \.collapse > \.collapse-header,\s*\.light \.ProseMirror \.collapse > \.collapse-header \.collapse-title\s*\{[^}]*color: #000000 !important;/s,
+    );
+    expect(css).toMatch(/\.light \.ProseMirror \.collapse > \.collapse-header\s*\{[^}]*box-shadow: none;/s);
+  });
+
+  it('keeps the faint shadow on closed white dropdown titles in the default and dark themes', () => {
     const rule = css.indexOf('.ProseMirror .collapse.is-collapsed:is([style*="color: #ffffff" i]');
     const darkRule = css.indexOf('.dark .ProseMirror .collapse.is-collapsed > .collapse-header');
     expect(rule).toBeGreaterThan(-1);

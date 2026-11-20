@@ -43,8 +43,8 @@ type PatternSlider = {
 // Each pattern's sliders, in reading order.
 const PATTERN_SLIDERS: readonly PatternSlider[] = [
     { key: "repeats", caption: "Repeats", min: 1, max: 20, clamp: clampRepeats },
-    { key: "rise", caption: "Rise speed", min: MIN_SPEED, max: 300, clamp: clampSpeed },
-    { key: "fall", caption: "Fall speed", min: MIN_SPEED, max: 300, clamp: clampSpeed },
+    { key: "rise", caption: "Rise speed", min: MIN_SPEED, max: 400, clamp: clampSpeed },
+    { key: "fall", caption: "Fall speed", min: MIN_SPEED, max: 400, clamp: clampSpeed },
     { key: "max", caption: "Max", min: 0, max: 100, clamp: clampPercent },
     { key: "min", caption: "Min", min: 0, max: 100, clamp: clampPercent },
 ];

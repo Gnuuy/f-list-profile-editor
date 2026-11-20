@@ -81,20 +81,65 @@ THEME VARIABLES
 }
 
 .light {
-  --profile-text: #bbbbcc;
+  /* F-list's light theme leaves the profile tab panel with jQuery UI's own
+     text colour and font (.ui-widget-content and .ui-widget). */
+  --profile-text: #222222;
+  --profile-font-family: "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+  --page-text: #333333;
   --bg: #ffffff;
   --bodyBg: #dddddd;
   --sidebarBg: #eeffff;
+  --sidebarBorder: #ffffff;
   --navBarBg: linear-gradient(to bottom, #3d3d3d, #222222);
   --navButtonBorder: #222222;
   --navButtonBg: var(--navBarBg);
+  --navButtonHover: #666666;
   --headerBg: #778888;
   --headerBorderColor: #556666;
-  --footerBg: linear-gradient(to bottom, #eeffff, #eeffff);
+  --footerBg: #eeffff;
   --footerBorder: #cccccc;
   --editorBorder: #ccffcc;
-  --editorButtonBg: linear-gradient(to bottom, #2468af, #dfeffc);
-  --editorButtonHover: #666666;
+  /* The toolbar sits where F-list's profile tabs are, so its buttons use the
+     light jQuery UI tab states: default, hover and active. */
+  --tab-border: #c5dbec;
+  --tab-text: #2e6e9e;
+  --tab-hover-border: #79b7e7;
+  --tab-hover-text: #1d5987;
+  --tab-active-text: #e17009;
+  --tab-active-bg: linear-gradient(to bottom, #f5f8f9 0%, #f5f8f9 40%, #fafcfc 75%, #fafcfc 100%);
+  --editorButtonBg: linear-gradient(to bottom, #eaf4fd 0%, #eaf4fd 64%, #e3f1fc 64%, #eff6fd 100%);
+  --editorToolbarButtonBg: var(--editorButtonBg);
+  --editorButtonHover: linear-gradient(to bottom, #ddecf7 0%, #ddecf7 50%, #d0e5f5 50%, #e5f0f9 100%);
+  --quote-text: #333333;
+  /* F-list's toplight.png: a 1px white line along the top of each quote. */
+  --quote-background:
+    linear-gradient(#ffffff, #ffffff) top left / 100% 1px no-repeat,
+    linear-gradient(to bottom, #eeffff, #ccdddd);
+  --quote-border: #ccdddd;
+  --collapse-closed-color: #ffffff;
+  --collapse-open-color: #ffffff;
+  --collapse-border: 0 none;
+  --hr-color: #ccdddd;
+  --page-edge-shadow: 0 0 8px #999999;
+  /* Menus and dialogs follow F-list's light jQuery UI dialogs. */
+  --popup-bg: #fcfdfd;
+  --popup-inset-bg: #ffffff;
+  --popup-overlay-bg: rgba(252, 253, 253, 0.92);
+  --popup-border: #a6c9e2;
+  --popup-inset-border: #c5dbec;
+  --popup-overlay-border: rgba(121, 183, 231, 0.65);
+  --popup-text: #222222;
+  --popup-muted-text: #555555;
+  --popup-faint-text: #888888;
+  --popup-link: #2e6e9e;
+  --popup-button-bg: var(--editorButtonBg);
+  --popup-button-text: #2e6e9e;
+  --popup-primary-bg: var(--editorButtonHover);
+  --popup-hover-bg: #d0e5f5;
+  --popup-active-bg: #d0e5f5;
+  --popup-active-border: #79b7e7;
+  --popup-focus: #79b7e7;
+  --popup-focus-ring: rgba(121, 183, 231, 0.3);
 }
 
 /* =========================================
@@ -111,7 +156,7 @@ body {
   background-repeat: repeat;
   background-attachment: fixed;
   background-size: auto;
-  color: #ffffff;
+  color: var(--page-text, #ffffff);
   font-family: Verdana, Helvetica, sans-serif;
   font-size: 12px;
   margin: 0;
@@ -309,7 +354,7 @@ LAYOUT
   background-color: var(--sidebarBg);
   background-repeat: repeat-y;
   background-position: right top;
-  border-left: 1px solid var(--navButtonBorder);
+  border-left: 1px solid var(--sidebarBorder, var(--navButtonBorder));
   word-break: break-word;
 }
 
@@ -400,6 +445,27 @@ EDITOR
   white-space: pre-wrap;
   overflow-wrap: break-word;
   word-break: break-word;
+}
+
+/* F-list's light theme keeps jQuery UI's .ui-widget font on the profile tabs:
+   1.1em Lucida Grande, so 13.2px here. The tab and panel paddings are in em
+   and grow with it, as on F-list. */
+.light .f-list-profile-workspace {
+  font-family: var(--profile-font-family);
+  font-size: 1.1em;
+}
+
+.light .f-list-profile-canvas .ProseMirror {
+  font-family: var(--profile-font-family);
+  font-size: 1em;
+}
+
+/* The light theme removes every text shadow on the page (body * with
+   !important), including the ones F-list's colour classes add. */
+.light .f-list-profile-canvas *,
+.light .f-list-profile-canvas *::before,
+.light .f-list-profile-canvas *::after {
+  text-shadow: none !important;
 }
 
 .ProseMirror input,
@@ -547,15 +613,16 @@ EDITOR
 /* A physical newline after an alignment tag becomes a real <br> after that
    display block on F-list. Raw left-aligned text also records the newline for
    exact export, but its trailing <br> is visually absorbed by a following
-   block and must not receive this extra margin. */
+   block and must not receive this extra margin. The blank line is one line
+   of profile text (1lh): 15px in Verdana, taller in the light theme's font. */
 .ProseMirror p[style*="text-align"][data-f-list-break-after="true"] {
-  margin-bottom: 15px;
+  margin-bottom: 1lh;
 }
 
 /* Adjacent vertical margins collapse, but F-list's blank line sits between
-   them: the 15px line plus the HR's own 6px margin. */
+   them: the blank line plus the HR's own 0.5em margin. */
 .ProseMirror p[style*="text-align"][data-f-list-break-after="true"]:has(+ hr) {
-  margin-bottom: 21px;
+  margin-bottom: calc(1lh + 0.5em);
 }
 
 .ProseMirror strong {
@@ -629,17 +696,18 @@ EDITOR
   color: var(--hr-color, #082d44);
   background-color: var(--hr-color, #082d44);
   border: 1px solid var(--hr-color, #082d44);
-  margin: 6px 0;
+  /* The browser's default HR margin, which F-list keeps: 6px at 12px. */
+  margin: 0.5em 0;
 }
 
-/* [hr] and a newline: the HR's 6px margin, then a 15px blank line. */
+/* [hr] and a newline: the HR's 0.5em margin, then a blank line. */
 .ProseMirror hr[data-f-list-break-after="true"] {
-  margin-bottom: 21px;
+  margin-bottom: calc(0.5em + 1lh);
 }
 
-/* The next HR's 6px top margin sits below that line instead of collapsing. */
+/* The next HR's top margin sits below that line instead of collapsing. */
 .ProseMirror hr[data-f-list-break-after="true"]:has(+ hr) {
-  margin-bottom: 27px;
+  margin-bottom: calc(1em + 1lh);
 }
 
 .ProseMirror a {
@@ -688,6 +756,52 @@ EDITOR
   font-size: 1.4em;
 }
 
+/* jQuery UI's light .ui-widget-content a: links in the profile are #222222
+   and don't change on hover. */
+.light .ProseMirror a,
+.light .ProseMirror a:hover {
+  color: #222222;
+}
+
+/* F-list's own chain icon from its ParsedLink sprite, placed as F-list places
+   it: 1px into the link's 22px left padding, 7px below the top of its
+   2px-padded box. */
+.light .ProseMirror a[data-link-host] {
+  padding: 2px 0 2px 22px;
+  background: url('/icons/parsed-link.png') 1px 7px no-repeat;
+}
+
+.light .ProseMirror a[data-link-host]::before {
+  content: none;
+}
+
+/* The [hostname] is 0.8em of the text around the link, in its colour. On
+   F-list the space before it is full size, about 0.08em of the hostname wider
+   in this font than the 0.8em space here, so the margin adds that back. */
+.light .ProseMirror a[data-link-host]::after {
+  margin-left: calc(2px + 0.08em);
+  color: inherit;
+  font-size: 0.8em;
+}
+
+/* [small] and [big] wrap the whole link on F-list, so the link itself takes
+   the size, and with it the icon in its padding. The label keeps one size. */
+.light .ProseMirror a[data-link-host]:has(span[style*="font-size: 0.8em"]) {
+  font-size: 0.8em;
+}
+
+.light .ProseMirror a[data-link-host]:has(span[style*="font-size: 1.4em"]) {
+  font-size: 1.4em;
+}
+
+.light .ProseMirror a[data-link-host] span:is([style*="font-size: 0.8em"], [style*="font-size: 1.4em"]) {
+  font-size: 1em !important;
+}
+
+.light .ProseMirror a[data-link-host]:has(span:is([style*="font-size: 0.8em"], [style*="font-size: 1.4em"]))::after {
+  font-size: 0.8em;
+}
+
 .ProseMirror span[style*="color"] {
   text-shadow: #000 0 1px 2px;
 }
@@ -715,6 +829,71 @@ EDITOR
 .dark .ProseMirror [style*="color: rgb(0, 0, 0)"] {
   color: #888888 !important;
   text-shadow: #161313 0 1px 2px, #1f1b1b 0 0 2px;
+}
+
+/* F-list's light theme has its own colour classes, so most [color] values
+   differ from the other themes. On F-list a [color] wraps the whole link, so
+   the link, its underline and its [hostname] take that colour too; red, blue
+   and black keep their values and are listed for those links. */
+.light .ProseMirror span:is([style*="color: #ff4444" i], [style*="color: rgb(255, 68, 68)"]),
+.light .ProseMirror a:has(span:is([style*="color: #ff4444" i], [style*="color: rgb(255, 68, 68)"])) {
+  color: #ff4444 !important;
+}
+
+.light .ProseMirror span:is([style*="color: #ffa500" i], [style*="color: rgb(255, 165, 0)"]),
+.light .ProseMirror a:has(span:is([style*="color: #ffa500" i], [style*="color: rgb(255, 165, 0)"])) {
+  color: #f2951a !important;
+}
+
+.light .ProseMirror span:is([style*="color: #ffff00" i], [style*="color: rgb(255, 255, 0)"]),
+.light .ProseMirror a:has(span:is([style*="color: #ffff00" i], [style*="color: rgb(255, 255, 0)"])) {
+  color: #dbb21a !important;
+}
+
+.light .ProseMirror span:is([style*="color: #44ff44" i], [style*="color: rgb(68, 255, 68)"]),
+.light .ProseMirror a:has(span:is([style*="color: #44ff44" i], [style*="color: rgb(68, 255, 68)"])) {
+  color: #1fde30 !important;
+}
+
+.light .ProseMirror span:is([style*="color: #00ffff" i], [style*="color: rgb(0, 255, 255)"]),
+.light .ProseMirror a:has(span:is([style*="color: #00ffff" i], [style*="color: rgb(0, 255, 255)"])) {
+  color: #00cccc !important;
+}
+
+.light .ProseMirror span:is([style*="color: #1e90ff" i], [style*="color: rgb(30, 144, 255)"]),
+.light .ProseMirror a:has(span:is([style*="color: #1e90ff" i], [style*="color: rgb(30, 144, 255)"])) {
+  color: #1e90ff !important;
+}
+
+.light .ProseMirror span:is([style*="color: #e2afff" i], [style*="color: rgb(226, 175, 255)"]),
+.light .ProseMirror a:has(span:is([style*="color: #e2afff" i], [style*="color: rgb(226, 175, 255)"])) {
+  color: #dd00ff !important;
+}
+
+.light .ProseMirror span:is([style*="color: #ffcbdb" i], [style*="color: rgb(255, 203, 219)"]),
+.light .ProseMirror a:has(span:is([style*="color: #ffcbdb" i], [style*="color: rgb(255, 203, 219)"])) {
+  color: #ff89bf !important;
+}
+
+.light .ProseMirror span:is([style*="color: #aa840c" i], [style*="color: rgb(170, 132, 12)"]),
+.light .ProseMirror a:has(span:is([style*="color: #aa840c" i], [style*="color: rgb(170, 132, 12)"])) {
+  color: #967117 !important;
+}
+
+.light .ProseMirror span:is([style*="color: #000000"], [style*="color: rgb(0, 0, 0)"]),
+.light .ProseMirror a:has(span:is([style*="color: #000000"], [style*="color: rgb(0, 0, 0)"])) {
+  color: #000000 !important;
+}
+
+.light .ProseMirror span:is([style*="color: #ffffff" i], [style*="color: rgb(255, 255, 255)"], [style*="color: white" i]),
+.light .ProseMirror span:is([style*="color: #ffffff" i], [style*="color: rgb(255, 255, 255)"], [style*="color: white" i]) a,
+.light .ProseMirror a:has(span:is([style*="color: #ffffff" i], [style*="color: rgb(255, 255, 255)"], [style*="color: white" i])) {
+  color: #aaaaaa !important;
+}
+
+.light .ProseMirror span:is([style*="color: #d3d3d3" i], [style*="color: rgb(211, 211, 211)"]),
+.light .ProseMirror a:has(span:is([style*="color: #d3d3d3" i], [style*="color: rgb(211, 211, 211)"])) {
+  color: #777777 !important;
 }
 
 /* =========================================
@@ -956,7 +1135,8 @@ QUOTES
   --quote-colour: initial;
 }
 
-/* Nothing on F-list resets a [color]'s text shadow inside a quote, in any theme. */
+/* Nothing on F-list resets a [color]'s text shadow inside a quote, in the
+   default or dark theme. The light theme has no text shadows at all. */
 .ProseMirror blockquote.indentable[data-color] {
   text-shadow: #000 0 1px 2px;
 }
@@ -974,9 +1154,9 @@ QUOTES
   position: relative;
   display: flex;
   align-items: center;
-  /* One 15px line, like F-list's header. The actions button is positioned
-     over it, so it needs no extra height. */
-  min-height: 15px;
+  /* One line, like F-list's header. The actions button is positioned over
+     it, so it needs no extra height. */
+  min-height: 1lh;
   margin-bottom: 5px;
   padding-right: 24px;
   font-weight: bold;
@@ -995,35 +1175,35 @@ QUOTES
 
 /* A newline after [/indent] is a <br> after that block on F-list: one blank line. */
 .ProseMirror div[data-indent-block][data-f-list-break-after="true"] {
-  margin-bottom: 15px;
+  margin-bottom: 1lh;
 }
 
 .ProseMirror div[data-indent-block][data-f-list-break-after="true"]:has(+ hr) {
-  margin-bottom: 21px;
+  margin-bottom: calc(1lh + 0.5em);
 }
 
 .ProseMirror blockquote.indentable[data-f-list-break-after="true"] {
-  margin-bottom: 17px;
+  margin-bottom: calc(2px + 1lh);
 }
 
-/* The blank line sits above the HR's 6px margin instead of collapsing into it. */
+/* The blank line sits above the HR's margin instead of collapsing into it. */
 .ProseMirror .node-blockquote:has(+ hr) > blockquote.indentable[data-f-list-break-after="true"] {
-  margin-bottom: 23px;
+  margin-bottom: calc(2px + 1lh + 0.5em);
 }
 
 /* A quote's 2px top margin also stays below a blank line. */
 .ProseMirror p[style*="text-align"][data-f-list-break-after="true"]:has(+ .node-blockquote),
 .ProseMirror div[data-indent-block][data-f-list-break-after="true"]:has(+ .node-blockquote),
 .ProseMirror .node-collapsible:has(+ .node-blockquote) > .collapse-indent-wrapper[data-f-list-break-after="true"] {
-  margin-bottom: 17px;
+  margin-bottom: calc(1lh + 2px);
 }
 
 .ProseMirror .node-blockquote:has(+ .node-blockquote) > blockquote.indentable[data-f-list-break-after="true"] {
-  margin-bottom: 19px;
+  margin-bottom: calc(2px + 1lh + 2px);
 }
 
 .ProseMirror hr[data-f-list-break-after="true"]:has(+ .node-blockquote) {
-  margin-bottom: 23px;
+  margin-bottom: calc(0.5em + 1lh + 2px);
 }
 
 .ProseMirror blockquote.indentable:hover .indent-handle,
@@ -1051,15 +1231,15 @@ COLLAPSIBLE
   max-width: 100%;
 }
 
-/* A newline after [/collapse] is one 15px blank line on F-list. */
+/* A newline after [/collapse] is one blank line on F-list. */
 .ProseMirror .collapse-indent-wrapper.has-separated-next,
 .ProseMirror .collapse-indent-wrapper[data-f-list-break-after="true"] {
-  margin-bottom: 15px;
+  margin-bottom: 1lh;
 }
 
-/* That line sits above the HR's 6px margin instead of collapsing into it. */
+/* That line sits above the HR's margin instead of collapsing into it. */
 .ProseMirror .node-collapsible:has(+ hr) > .collapse-indent-wrapper[data-f-list-break-after="true"] {
-  margin-bottom: 21px;
+  margin-bottom: calc(1lh + 0.5em);
 }
 
 .ProseMirror .collapse.indentable {
@@ -1193,13 +1373,26 @@ COLLAPSIBLE
   text-shadow: inherit;
 }
 
-/* [color=white] text keeps a faint dark shadow on F-list in every theme,
-   including closed dropdown titles that are white themselves or inherit white
-   from their dropdown. */
+/* [color=white] text keeps a faint dark shadow on F-list in the default and
+   dark themes, including closed dropdown titles that are white themselves or
+   inherit white from their dropdown. */
 .ProseMirror .collapse.is-collapsed:is([style*="color: #ffffff" i], [style*="color: rgb(255, 255, 255)"]) > .collapse-header,
 .ProseMirror .collapse:is([style*="color: #ffffff" i], [style*="color: rgb(255, 255, 255)"])
   .collapse.is-collapsed:not(.has-custom-colour) > .collapse-header {
   text-shadow: #000 0 1px 2px;
+}
+
+/* F-list's light theme draws every dropdown header white with a black title,
+   open or closed, nested or not, with no border or shadow. That black also
+   wins over a [color] around the dropdown, and the open contents inherit it. */
+.light .ProseMirror .collapse.indentable,
+.light .ProseMirror .collapse > .collapse-header,
+.light .ProseMirror .collapse > .collapse-header .collapse-title {
+  color: #000000 !important;
+}
+
+.light .ProseMirror .collapse > .collapse-header {
+  box-shadow: none;
 }
 
 /* An outer BBCode colour wraps the whole dropdown. Nested dropdowns without
@@ -3418,4 +3611,170 @@ NALA'S BARS
   margin: 0;
   font-size: 11px;
   opacity: 0.8;
+}
+
+/* =========================================
+LIGHT THEME: EDITOR CONTROLS
+F-list's light theme pairs a dark navigation bar with light jQuery UI tabs,
+buttons and dialogs. The editor's own controls follow those. Everything in
+the profile itself is styled with its counterpart above.
+========================================= */
+.light .header {
+  /* #Header h3 is white on the light theme's grey-green header. */
+  color: #ffffff;
+}
+
+/* Toolbar and sidebar buttons look like the light theme's profile tabs. */
+.light .editor-toolbar,
+.light .editor-bubble-menu {
+  --editorBorder: var(--tab-border);
+}
+
+.light .editor-toolbar-button,
+.light .unicode-font-select,
+.light .editor-sidebar-actions > button {
+  color: var(--tab-text);
+}
+
+.light .editor-sidebar-actions > button {
+  border-color: var(--tab-border);
+}
+
+.light .editor-toolbar-button:hover,
+.light .unicode-font-select:hover,
+.light .unicode-font-select:focus-visible,
+.light .editor-sidebar-actions > button:hover,
+.light .editor-sidebar-actions > button:focus-visible {
+  color: var(--tab-hover-text);
+  border-color: var(--tab-hover-border);
+}
+
+.light .editor-toolbar-button.editor-toolbar-button-active {
+  color: var(--tab-active-text);
+  background: var(--tab-active-bg);
+  border-color: var(--tab-hover-border);
+}
+
+.light .editor-toolbar-button-icon > svg,
+.light .editor-toolbar-button-glyph {
+  color: inherit;
+  filter: none;
+  text-shadow: none;
+}
+
+.light .unicode-font-select option {
+  color: var(--popup-text);
+}
+
+.light .current-draft {
+  background: #ddeeee;
+  border-color: #ccdddd;
+}
+
+/* Editor-only grips on quotes and dropdowns, darkened for a light page. */
+.light .ProseMirror blockquote.indentable:hover .indent-handle,
+.light .ProseMirror blockquote.indentable.is-selected .indent-handle,
+.light .ProseMirror .collapse.indentable:hover .indent-bar,
+.light .ProseMirror .collapse.indentable.is-selected .indent-bar {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0));
+}
+
+/* Menus and dialogs: dark text on the light dialog colours. */
+.light :is(
+  .ProseMirror .structural-block-actions,
+  .ProseMirror .structural-block-actions-trigger,
+  .ProseMirror .structural-block-action-menu,
+  .colour-menu,
+  .colour-menu-close,
+  .link-menu-field,
+  .link-menu-field input,
+  .horizontal-rule-option,
+  .eicon-menu,
+  .eicon-menu-close,
+  .eicon-search,
+  .character-icon-menu,
+  .character-icon-menu-close,
+  .character-icon-search-row input,
+  .import-dialog,
+  .import-dialog-close,
+  .import-dialog input[type="url"],
+  .import-dialog input[type="text"],
+  .import-dialog textarea
+) {
+  color: var(--popup-text);
+}
+
+/* Buttons, selected tabs and badges use the jQuery UI button text colour. */
+.light :is(
+  .ProseMirror .structural-block-action-item,
+  .link-menu-button,
+  .colour-action,
+  .eicon-menu-status button,
+  .eicon-section-tab:hover,
+  .eicon-section-tab.is-active,
+  .eicon-menu-title-icon,
+  .character-icon-menu-symbol,
+  .character-icon-search-row button,
+  .character-icon-insert,
+  .import-dialog-tabs button:hover,
+  .import-dialog-tabs button.is-active,
+  .import-dialog-actions button,
+  .block-drag-handle,
+  .profile-draft-actions button,
+  .image-converter-actions button,
+  .image-converter-drop button,
+  .nalas-bars-column.is-selected .nalas-bars-pick,
+  .nalas-bars-patterns button.is-selected,
+  .nalas-bars-actions button
+) {
+  color: var(--popup-button-text);
+}
+
+/* Destructive actions keep their dark red with white text. */
+.light :is(
+  .ProseMirror .structural-block-action-item.is-danger:hover:not(:disabled),
+  .ProseMirror .structural-block-action-item.is-danger:focus-visible,
+  .reset-dialog .import-dialog-actions button.reset-confirm,
+  .profile-draft-actions button.is-danger:hover,
+  .profile-draft-actions button.is-danger:focus-visible
+) {
+  color: #ffffff;
+}
+
+/* The colour swatches preview the light theme's own colour classes. */
+.light .colour-option[data-colour-name="orange"] .colour-option-chip { background: #f2951a; }
+.light .colour-option[data-colour-name="yellow"] .colour-option-chip { background: #dbb21a; }
+.light .colour-option[data-colour-name="green"] .colour-option-chip { background: #1fde30; }
+.light .colour-option[data-colour-name="cyan"] .colour-option-chip { background: #00cccc; }
+.light .colour-option[data-colour-name="purple"] .colour-option-chip { background: #dd00ff; }
+.light .colour-option[data-colour-name="pink"] .colour-option-chip { background: #ff89bf; }
+.light .colour-option[data-colour-name="brown"] .colour-option-chip { background: #967117; }
+.light .colour-option[data-colour-name="white"] .colour-option-chip { background: #aaaaaa; }
+.light .colour-option[data-colour-name="gray"] .colour-option-chip { background: #777777; }
+
+/* The [hr] previews show the line on the light profile background. */
+.light .horizontal-rule-preview {
+  color: var(--profile-text);
+  background: var(--bg);
+  border-color: var(--popup-inset-border);
+}
+
+.light .image-converter-item.is-error .image-converter-status {
+  color: #cd0a0a;
+}
+
+/* The FAQ uses the profile's light text style and dropdowns. */
+.light .faq-content {
+  font: 400 1em/normal var(--profile-font-family);
+}
+
+.light .faq-content a,
+.light .faq-content a:hover {
+  color: #222222;
+}
+
+.light .faq-dropdown[open],
+.light .faq-dropdown > summary {
+  color: #000000;
+  box-shadow: none;
 }
